@@ -32,6 +32,23 @@ from .analysis import (
     filter_by_strategy,
     generate_thesis,
 )
+from .news import (
+    NewsCategory,
+    NewsPriority,
+    RawNewsItem,
+    ScoredNewsItem,
+    NewsAggregatorConfig,
+    extract_tickers,
+    score_source_credibility,
+    score_recency,
+    score_keywords,
+    score_news_item,
+    aggregate_news,
+    deduplicate_news,
+    filter_by_category,
+    filter_by_ticker,
+    filter_by_priority,
+)
 
 __all__ = [
     # Primitives (observation layer)
@@ -70,4 +87,20 @@ __all__ = [
     # Serialization
     "to_json_dict",
     "from_json_dict",
+    # News aggregation
+    "NewsCategory",
+    "NewsPriority",
+    "RawNewsItem",
+    "ScoredNewsItem",
+    "NewsAggregatorConfig",
+    "extract_tickers",
+    "score_source_credibility",
+    "score_recency",
+    "score_keywords",
+    "score_news_item",
+    "aggregate_news",
+    "deduplicate_news",
+    "filter_by_category",
+    "filter_by_ticker",
+    "filter_by_priority",
 ]
