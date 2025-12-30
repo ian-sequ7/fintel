@@ -1,0 +1,34 @@
+---
+interface Props {
+  text: string;
+  variant?: "success" | "warning" | "danger" | "neutral" | "accent";
+  size?: "sm" | "md";
+  class?: string;
+}
+
+const { text, variant = "neutral", size = "sm", class: className = "" } = Astro.props;
+
+const variantClasses = {
+  success: "bg-success/15 text-success border-success/30",
+  warning: "bg-warning/15 text-warning border-warning/30",
+  danger: "bg-danger/15 text-danger border-danger/30",
+  neutral: "bg-bg-elevated text-text-secondary border-border",
+  accent: "bg-accent/15 text-accent border-accent/30",
+};
+
+const sizeClasses = {
+  sm: "text-xs px-2 py-0.5",
+  md: "text-sm px-2.5 py-1",
+};
+---
+
+<span
+  class:list={[
+    "inline-flex items-center font-medium rounded-full border",
+    variantClasses[variant],
+    sizeClasses[size],
+    className,
+  ]}
+>
+  {text}
+</span>

@@ -1,0 +1,73 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/primitives/Card.astro";
+import IndicatorCard from "../components/composed/IndicatorCard.astro";
+import RiskCard from "../components/composed/RiskCard.astro";
+import { getMacroData, getMacroRisks } from "../data/report";
+
+const macro = getMacroData();
+
+// Sort risks by severity
+const sortedRisks = [...macro.risks].sort((a, b) => {
+  const severityOrder = { high: 0, medium: 1, low: 2 };
+  return severityOrder[a.severity] - severityOrder[b.severity];
+});
+---
+
+<Layout title="Macro Analysis">
+  <!-- Page header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-text-primary">Macro Analysis</h1>
+    <p class="text-text-secondary">
+      Key economic indicators and market headwinds
+    </p>
+  </div>
+
+  <!-- Indicators grid -->
+  <section class="mb-8">
+    <h2 class="text-lg font-semibold text-text-primary mb-4">Economic Indicators</h2>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {macro.indicators.map((indicator) => (
+        <IndicatorCard indicator={indicator} />
+      ))}
+    </div>
+  </section>
+
+  <!-- Macro risks -->
+  <section>
+    <h2 class="text-lg font-semibold text-text-primary mb-4">Market Headwinds</h2>
+    {sortedRisks.length === 0 ? (
+      <Card>
+        <p class="text-text-secondary text-center py-8">
+          No significant macro risks identified at this time.
+        </p>
+      </Card>
+    ) : (
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {sortedRisks.map((risk) => (
+          <RiskCard risk={risk} />
+        ))}
+      </div>
+    )}
+  </section>
+
+  <!-- Context section -->
+  <section class="mt-8">
+    <Card title="Market Context">
+      <div class="prose prose-sm text-text-secondary max-w-none">
+        <p>
+          The macro environment is analyzed using key Federal Reserve Economic Data (FRED)
+          indicators including unemployment rate, federal funds rate, CPI inflation, and GDP growth.
+        </p>
+        <p class="mt-2">
+          Risks are classified by severity:
+        </p>
+        <ul class="mt-2 space-y-1">
+          <li><strong class="text-danger">High:</strong> Immediate attention required, may significantly impact positions</li>
+          <li><strong class="text-warning">Medium:</strong> Monitor closely, potential for escalation</li>
+          <li><strong class="text-success">Low:</strong> Awareness level, minimal near-term impact expected</li>
+        </ul>
+      </div>
+    </Card>
+  </section>
+</Layout>

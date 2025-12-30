@@ -1,0 +1,85 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/primitives/Card.astro";
+import FilterBar from "../components/composed/FilterBar.astro";
+import PickCard from "../components/composed/PickCard.astro";
+import { getPicks } from "../data/report";
+import type { Timeframe, StockPick, SortOption } from "../data/types";
+
+// Get filter from URL params
+const timeframeParam = Astro.url.searchParams.get("timeframe") as Timeframe | "all" | null;
+const sortParam = (Astro.url.searchParams.get("sort") ?? "conviction") as SortOption;
+const activeTimeframe = timeframeParam ?? "all";
+
+// Get picks with sorting from the data layer
+const picks = getPicks(activeTimeframe, sortParam, "desc");
+
+const timeframeFilters = [
+  { value: "all", label: "All" },
+  { value: "short", label: "Short-term" },
+  { value: "medium", label: "Medium-term" },
+  { value: "long", label: "Long-term" },
+];
+
+const sortOptions = [
+  { value: "conviction", label: "Conviction" },
+  { value: "ticker", label: "Ticker" },
+];
+---
+
+<Layout title="Stock Picks">
+  <!-- Page header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-text-primary">Stock Picks</h1>
+    <p class="text-text-secondary">
+      {picks.length} picks across your watchlist
+    </p>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
+    <FilterBar
+      filters={timeframeFilters}
+      activeFilter={activeTimeframe}
+      paramName="timeframe"
+    />
+
+    <div class="flex items-center gap-2 ml-auto">
+      <span class="text-sm text-text-secondary">Sort by:</span>
+      <select
+        class="bg-bg-surface border border-border rounded-lg px-3 py-1.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent"
+        id="sort-select"
+      >
+        {sortOptions.map((option) => (
+          <option value={option.value} selected={sortParam === option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+
+  <!-- Picks grid -->
+  {picks.length === 0 ? (
+    <Card>
+      <p class="text-text-secondary text-center py-8">
+        No picks found for the selected filter.
+      </p>
+    </Card>
+  ) : (
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {picks.map((pick) => (
+        <PickCard pick={pick} />
+      ))}
+    </div>
+  )}
+</Layout>
+
+<script>
+  const sortSelect = document.getElementById("sort-select") as HTMLSelectElement;
+  sortSelect?.addEventListener("change", () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("sort", sortSelect.value);
+    window.location.href = url.toString();
+  });
+</script>

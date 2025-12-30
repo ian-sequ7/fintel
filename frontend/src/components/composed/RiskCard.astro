@@ -1,0 +1,63 @@
+---
+import Badge from "../primitives/Badge.astro";
+import type { MacroRisk } from "../../data/types";
+
+interface Props {
+  risk: MacroRisk;
+  class?: string;
+}
+
+const { risk, class: className = "" } = Astro.props;
+
+const severityColors = {
+  low: "success",
+  medium: "warning",
+  high: "danger",
+} as const;
+
+const severityBars = {
+  low: 1,
+  medium: 2,
+  high: 3,
+};
+---
+
+<div
+  class:list={[
+    "bg-bg-surface border border-border rounded-lg p-4",
+    className,
+  ]}
+>
+  <div class="flex items-start justify-between mb-2">
+    <h4 class="font-semibold text-text-primary">{risk.name}</h4>
+    <Badge text={risk.severity.toUpperCase()} variant={severityColors[risk.severity]} />
+  </div>
+
+  <p class="text-sm text-text-secondary mb-3">
+    {risk.description}
+  </p>
+
+  <!-- Severity indicator bars -->
+  <div class="flex gap-1 mb-3">
+    {
+      [1, 2, 3].map((level) => (
+        <div
+          class:list={[
+            "h-1.5 w-8 rounded-full",
+            level <= severityBars[risk.severity]
+              ? severityColors[risk.severity] === "danger"
+                ? "bg-danger"
+                : severityColors[risk.severity] === "warning"
+                  ? "bg-warning"
+                  : "bg-success"
+              : "bg-bg-elevated",
+          ]}
+        />
+      ))
+    }
+  </div>
+
+  <div class="text-xs text-text-secondary">
+    <span class="font-medium">Impact:</span> {risk.impact}
+  </div>
+</div>

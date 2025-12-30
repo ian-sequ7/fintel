@@ -1,0 +1,54 @@
+---
+interface Props {
+  score: number; // 0-1
+  showLabel?: boolean;
+  size?: "sm" | "md";
+  class?: string;
+}
+
+const { score, showLabel = true, size = "md", class: className = "" } = Astro.props;
+
+// Calculate color based on score (green for high, yellow for medium, red for low)
+const percentage = Math.round(score * 100);
+
+// Color stops: red (0%) -> yellow (50%) -> green (100%)
+function _getColor(s: number): string {
+  if (s >= 0.7) return "bg-success";
+  if (s >= 0.4) return "bg-warning";
+  return "bg-danger";
+}
+
+const barColor = _getColor(score);
+
+const sizeClasses = {
+  sm: "h-1.5",
+  md: "h-2",
+};
+
+const labelSizes = {
+  sm: "text-xs",
+  md: "text-sm",
+};
+---
+
+<div class:list={["w-full", className]}>
+  {
+    showLabel && (
+      <div class="flex justify-between items-center mb-1">
+        <span class:list={["font-medium text-text-secondary", labelSizes[size]]}>
+          Conviction
+        </span>
+        <span class:list={["font-semibold text-text-primary", labelSizes[size]]}>
+          {percentage}%
+        </span>
+      </div>
+    )
+  }
+  <div class:list={["w-full bg-bg-elevated rounded-full overflow-hidden", sizeClasses[size]]}>
+    <div
+      class:list={["h-full rounded-full transition-all duration-300", barColor]}
+      style={`width: ${percentage}%`}
+    >
+    </div>
+  </div>
+</div>

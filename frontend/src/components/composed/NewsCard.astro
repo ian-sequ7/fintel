@@ -1,0 +1,82 @@
+---
+import Badge from "../primitives/Badge.astro";
+import { formatRelativeTime } from "../../data/report";
+import type { NewsItem } from "../../data/types";
+
+interface Props {
+  news: NewsItem;
+  compact?: boolean;
+  class?: string;
+}
+
+const { news, compact = false, class: className = "" } = Astro.props;
+---
+
+<a
+  href={news.url}
+  target="_blank"
+  rel="noopener noreferrer"
+  class:list={[
+    "block bg-bg-surface border border-border rounded-lg hover:border-accent transition-colors",
+    compact ? "p-3" : "p-4",
+    className,
+  ]}
+>
+  <div class="flex items-start gap-3">
+    <div class="flex-1 min-w-0">
+      <h4
+        class:list={[
+          "font-medium text-text-primary hover:text-accent transition-colors",
+          compact ? "text-sm line-clamp-1" : "line-clamp-2",
+        ]}
+      >
+        {news.headline}
+      </h4>
+
+      {
+        news.excerpt && !compact && (
+          <p class="text-sm text-text-secondary mt-1 line-clamp-2">
+            {news.excerpt}
+          </p>
+        )
+      }
+
+      <div class="flex items-center gap-2 mt-2">
+        <span class="text-xs text-text-secondary">{news.source}</span>
+        <span class="text-xs text-text-secondary">·</span>
+        <span class="text-xs text-text-secondary">
+          {formatRelativeTime(news.publishedAt)}
+        </span>
+        {
+          news.tickersMentioned.length > 0 && (
+            <>
+              <span class="text-xs text-text-secondary">·</span>
+              {news.tickersMentioned.slice(0, 2).map((ticker) => (
+                <Badge text={ticker} variant="accent" size="sm" />
+              ))}
+            </>
+          )
+        }
+      </div>
+    </div>
+
+    {
+      news.relevanceScore !== undefined && !compact && (
+        <div class="flex-shrink-0">
+          <div
+            class:list={[
+              "text-xs font-medium px-2 py-1 rounded",
+              news.relevanceScore >= 0.8
+                ? "bg-success/15 text-success"
+                : news.relevanceScore >= 0.5
+                  ? "bg-warning/15 text-warning"
+                  : "bg-bg-elevated text-text-secondary",
+            ]}
+          >
+            {Math.round(news.relevanceScore * 100)}%
+          </div>
+        </div>
+      )
+    }
+  </div>
+</a>

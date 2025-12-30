@@ -1,0 +1,56 @@
+---
+interface Props {
+  label: string;
+  value: string | number;
+  change?: number;
+  unit?: string;
+  trend?: "up" | "down" | "flat";
+  class?: string;
+}
+
+const {
+  label,
+  value,
+  change,
+  unit = "",
+  trend,
+  class: className = "",
+} = Astro.props;
+
+const trendColors = {
+  up: "text-success",
+  down: "text-danger",
+  flat: "text-text-secondary",
+};
+
+const trendIcons = {
+  up: "↑",
+  down: "↓",
+  flat: "→",
+};
+
+const displayTrend = trend ?? (change !== undefined ? (change > 0 ? "up" : change < 0 ? "down" : "flat") : undefined);
+---
+
+<div
+  class:list={[
+    "bg-bg-surface border border-border rounded-lg p-4",
+    className,
+  ]}
+>
+  <p class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-1">
+    {label}
+  </p>
+  <div class="flex items-baseline gap-2">
+    <span class="text-2xl font-semibold text-text-primary">
+      {value}{unit && <span class="text-lg text-text-secondary">{unit}</span>}
+    </span>
+    {
+      displayTrend && change !== undefined && (
+        <span class:list={["text-sm font-medium", trendColors[displayTrend]]}>
+          {trendIcons[displayTrend]} {Math.abs(change).toFixed(2)}
+        </span>
+      )
+    }
+  </div>
+</div>

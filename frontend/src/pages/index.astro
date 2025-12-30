@@ -1,0 +1,168 @@
+---
+import Layout from "../layouts/Layout.astro";
+import MetricCard from "../components/primitives/MetricCard.astro";
+import Badge from "../components/primitives/Badge.astro";
+import Card from "../components/primitives/Card.astro";
+import PickCard from "../components/composed/PickCard.astro";
+import NewsCard from "../components/composed/NewsCard.astro";
+import {
+  getTopPicks,
+  getPicks,
+  getMacroRisks,
+  getMacroIndicators,
+  getNews,
+  getGeneratedAt,
+  getWatchlist,
+  formatRelativeTime,
+} from "../data/report";
+
+const topPicks = getTopPicks();
+const allPicks = getPicks("all");
+const macroRisks = getMacroRisks();
+const macroIndicators = getMacroIndicators();
+const latestNews = getNews("all");
+const watchlist = getWatchlist();
+const generatedAt = getGeneratedAt();
+
+// Calculate summary metrics
+const avgConviction = allPicks.length > 0
+  ? allPicks.reduce((sum, p) => sum + p.convictionScore, 0) / allPicks.length
+  : 0;
+
+const highRisks = macroRisks.filter((r) => r.severity === "high");
+const totalNews = latestNews.length;
+---
+
+<Layout title="Overview">
+  <!-- Page header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-text-primary">Dashboard Overview</h1>
+    <p class="text-text-secondary">
+      Last updated: {formatRelativeTime(generatedAt.toISOString())}
+    </p>
+  </div>
+
+  <!-- Metrics strip -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <MetricCard
+      label="Watchlist"
+      value={watchlist.length}
+      unit=" stocks"
+    />
+    <MetricCard
+      label="Avg Conviction"
+      value={Math.round(avgConviction * 100)}
+      unit="%"
+    />
+    <MetricCard
+      label="High Risks"
+      value={highRisks.length}
+      trend={highRisks.length > 0 ? "down" : "flat"}
+    />
+    <MetricCard
+      label="News Items"
+      value={totalNews}
+    />
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Main content (2 cols) -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Top picks by timeframe -->
+      <Card title="Top Picks">
+        <div class="grid md:grid-cols-3 gap-4">
+          {topPicks.map((pick) => (
+            <PickCard pick={pick} />
+          ))}
+        </div>
+        <a
+          href="/picks"
+          class="block text-center text-sm text-accent hover:underline mt-4"
+        >
+          View all picks →
+        </a>
+      </Card>
+
+      <!-- Macro risks summary -->
+      <Card title="Macro Headwinds">
+        {macroRisks.length === 0 ? (
+          <p class="text-text-secondary">No significant risks identified.</p>
+        ) : (
+          <div class="space-y-3">
+            {macroRisks.slice(0, 3).map((risk) => (
+              <div class="flex items-start gap-3 p-3 bg-bg-elevated rounded-lg">
+                <Badge
+                  text={risk.severity.toUpperCase()}
+                  variant={
+                    risk.severity === "high"
+                      ? "danger"
+                      : risk.severity === "medium"
+                        ? "warning"
+                        : "success"
+                  }
+                />
+                <div>
+                  <h4 class="font-medium text-text-primary">{risk.name}</h4>
+                  <p class="text-sm text-text-secondary">{risk.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        <a
+          href="/macro"
+          class="block text-center text-sm text-accent hover:underline mt-4"
+        >
+          View macro analysis →
+        </a>
+      </Card>
+    </div>
+
+    <!-- Sidebar (1 col) -->
+    <div class="space-y-6">
+      <!-- Macro indicators -->
+      <Card title="Key Indicators">
+        <div class="space-y-3">
+          {macroIndicators.slice(0, 4).map((indicator) => (
+            <div class="flex items-center justify-between py-2 border-b border-border last:border-0">
+              <span class="text-sm text-text-secondary">{indicator.name}</span>
+              <div class="flex items-center gap-2">
+                <span class="font-medium text-text-primary">
+                  {indicator.value.toFixed(1)}{indicator.unit}
+                </span>
+                {indicator.trend && (
+                  <span
+                    class:list={[
+                      "text-xs",
+                      indicator.trend === "up" ? "text-success" : indicator.trend === "down" ? "text-danger" : "text-text-secondary",
+                    ]}
+                  >
+                    {indicator.trend === "up" ? "↑" : indicator.trend === "down" ? "↓" : "→"}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <!-- Latest news -->
+      <Card title="Latest News">
+        <div class="space-y-3">
+          {latestNews
+            .slice(0, 5)
+            .map((news) => (
+              <NewsCard news={news} compact />
+            ))
+          }
+        </div>
+        <a
+          href="/news"
+          class="block text-center text-sm text-accent hover:underline mt-4"
+        >
+          View all news →
+        </a>
+      </Card>
+    </div>
+  </div>
+</Layout>

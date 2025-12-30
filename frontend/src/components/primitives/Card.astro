@@ -1,0 +1,46 @@
+---
+interface Props {
+  title?: string;
+  variant?: "default" | "highlight" | "danger";
+  padding?: "none" | "sm" | "md" | "lg";
+  class?: string;
+}
+
+const {
+  title,
+  variant = "default",
+  padding = "md",
+  class: className = "",
+} = Astro.props;
+
+const variantClasses = {
+  default: "bg-bg-surface border-border",
+  highlight: "bg-bg-elevated border-accent",
+  danger: "bg-bg-surface border-danger",
+};
+
+const paddingClasses = {
+  none: "",
+  sm: "p-3",
+  md: "p-4",
+  lg: "p-6",
+};
+---
+
+<div
+  class:list={[
+    "rounded-lg border",
+    variantClasses[variant],
+    paddingClasses[padding],
+    className,
+  ]}
+>
+  {
+    title && (
+      <h3 class="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-3">
+        {title}
+      </h3>
+    )
+  }
+  <slot />
+</div>

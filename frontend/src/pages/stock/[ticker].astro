@@ -1,0 +1,206 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Card from "../../components/primitives/Card.astro";
+import Badge from "../../components/primitives/Badge.astro";
+import ConvictionBar from "../../components/primitives/ConvictionBar.astro";
+import NewsCard from "../../components/composed/NewsCard.astro";
+import PriceChart from "../../components/islands/PriceChart";
+import { getPicks, getStockDetail, getNewsForStock, formatChange, formatPrice, formatLargeNumber } from "../../data/report";
+import type { StockPick, StockDetail } from "../../data/types";
+
+export function getStaticPaths() {
+  const allPicks = getPicks("all");
+
+  return allPicks.map((pick) => ({
+    params: { ticker: pick.ticker },
+    props: { pick },
+  }));
+}
+
+interface Props {
+  pick: StockPick;
+}
+
+const { pick } = Astro.props;
+
+// Get detailed stock data
+const stockDetail = getStockDetail(pick.ticker);
+
+// Get company news for this ticker
+const companyNews = getNewsForStock(pick.ticker);
+
+const timeframeLabels = {
+  short: "Short-term",
+  medium: "Medium-term",
+  long: "Long-term",
+};
+
+const timeframeColors = {
+  short: "accent",
+  medium: "warning",
+  long: "success",
+} as const;
+
+function _formatPrice(price: number | undefined): string {
+  if (price === undefined) return "-";
+  return formatPrice(price);
+}
+
+function _formatLargeNumber(num: number | undefined): string {
+  if (num === undefined) return "-";
+  return formatLargeNumber(num);
+}
+---
+
+<Layout title={pick.ticker}>
+  <!-- Back link -->
+  <a
+    href="/picks"
+    class="inline-flex items-center gap-1 text-sm text-text-secondary hover:text-accent mb-4"
+  >
+    ← Back to picks
+  </a>
+
+  <!-- Stock header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-3xl font-bold text-text-primary">{pick.ticker}</h1>
+        <Badge text={timeframeLabels[pick.timeframe]} variant={timeframeColors[pick.timeframe]} size="md" />
+      </div>
+      <p class="text-text-secondary">{pick.companyName}</p>
+      <div class="flex items-baseline gap-2 mt-1">
+        <span class="text-2xl font-semibold text-text-primary">
+          {_formatPrice(pick.currentPrice)}
+        </span>
+        <span
+          class:list={[
+            "text-sm font-medium",
+            pick.priceChange >= 0 ? "text-success" : "text-danger",
+          ]}
+        >
+          {formatChange(pick.priceChange)} ({formatChange(pick.priceChangePercent, true)})
+        </span>
+      </div>
+    </div>
+
+    <div class="flex gap-2">
+      {pick.entryPrice && (
+        <div class="text-right">
+          <p class="text-xs text-text-secondary">Entry</p>
+          <p class="font-medium text-text-primary">{_formatPrice(pick.entryPrice)}</p>
+        </div>
+      )}
+      {pick.targetPrice && (
+        <div class="text-right">
+          <p class="text-xs text-text-secondary">Target</p>
+          <p class="font-medium text-success">{_formatPrice(pick.targetPrice)}</p>
+        </div>
+      )}
+      {pick.stopLoss && (
+        <div class="text-right">
+          <p class="text-xs text-text-secondary">Stop</p>
+          <p class="font-medium text-danger">{_formatPrice(pick.stopLoss)}</p>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Main content (2 cols) -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Price chart -->
+      <Card title="Price Chart" padding="sm">
+        <PriceChart ticker={pick.ticker} height={350} client:load />
+      </Card>
+
+      <!-- Thesis -->
+      <Card title="Investment Thesis">
+        <p class="text-text-primary leading-relaxed">{pick.thesis}</p>
+        <div class="mt-4">
+          <ConvictionBar score={pick.convictionScore} />
+        </div>
+      </Card>
+
+      <!-- Risk factors -->
+      <Card title="Risk Factors">
+        {pick.riskFactors.length === 0 ? (
+          <p class="text-text-secondary">No specific risk factors identified.</p>
+        ) : (
+          <ul class="space-y-2">
+            {pick.riskFactors.map((risk) => (
+              <li class="flex items-start gap-2">
+                <span class="text-danger mt-1">•</span>
+                <span class="text-text-primary">{risk}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+    </div>
+
+    <!-- Sidebar (1 col) -->
+    <div class="space-y-6">
+      <!-- Key metrics -->
+      {stockDetail?.fundamentals && (
+        <Card title="Key Metrics">
+          <div class="space-y-3">
+            <div class="flex justify-between py-2 border-b border-border">
+              <span class="text-text-secondary">Market Cap</span>
+              <span class="font-medium text-text-primary">
+                {_formatLargeNumber(pick.marketCap)}
+              </span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-border">
+              <span class="text-text-secondary">P/E (Trailing)</span>
+              <span class="font-medium text-text-primary">
+                {stockDetail.fundamentals.peTrailing?.toFixed(1) ?? "-"}
+              </span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-border">
+              <span class="text-text-secondary">P/E (Forward)</span>
+              <span class="font-medium text-text-primary">
+                {stockDetail.fundamentals.peForward?.toFixed(1) ?? "-"}
+              </span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-border">
+              <span class="text-text-secondary">Volume</span>
+              <span class="font-medium text-text-primary">
+                {stockDetail.fundamentals.avgVolume?.toLocaleString() ?? "-"}
+              </span>
+            </div>
+            {stockDetail.fundamentals.revenueGrowth !== undefined && (
+              <div class="flex justify-between py-2 border-b border-border">
+                <span class="text-text-secondary">Revenue Growth</span>
+                <span class="font-medium text-text-primary">
+                  {(stockDetail.fundamentals.revenueGrowth * 100).toFixed(1)}%
+                </span>
+              </div>
+            )}
+            {stockDetail.fundamentals.profitMargin !== undefined && (
+              <div class="flex justify-between py-2">
+                <span class="text-text-secondary">Profit Margin</span>
+                <span class="font-medium text-text-primary">
+                  {(stockDetail.fundamentals.profitMargin * 100).toFixed(1)}%
+                </span>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
+      <!-- Related news -->
+      <Card title="Related News">
+        {companyNews.length === 0 ? (
+          <p class="text-text-secondary text-sm">No recent news for this stock.</p>
+        ) : (
+          <div class="space-y-3">
+            {companyNews.slice(0, 5).map((news) => (
+              <NewsCard news={news} compact />
+            ))}
+          </div>
+        )}
+      </Card>
+    </div>
+  </div>
+</Layout>
