@@ -1,0 +1,130 @@
+# Fintel Configuration
+# Copy to fintel.toml and customize as needed.
+# API keys should be set via environment variables (see below).
+
+# Default tickers to track
+watchlist = [
+    "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA",
+    "META", "TSLA", "BRK-B", "JPM", "V",
+]
+
+# =============================================================================
+# API Keys (set via environment variables for security)
+# =============================================================================
+# FINTEL_ALPHA_VANTAGE_KEY=your_key_here
+# FINTEL_FINNHUB_KEY=your_key_here
+# FINTEL_POLYGON_KEY=your_key_here
+# FINTEL_QUANDL_KEY=your_key_here
+
+# =============================================================================
+# Cache TTL Settings
+# =============================================================================
+[cache_ttl]
+price_minutes = 1           # Real-time price data (1-60 min)
+fundamental_hours = 24      # Fundamental data (1-168 hours)
+macro_hours = 168           # Macro indicators (24-720 hours = 1-30 days)
+news_minutes = 60           # News feed (5-240 min)
+sentiment_hours = 4         # Social sentiment (1-24 hours)
+
+# =============================================================================
+# Rate Limits (requests per minute)
+# =============================================================================
+[rate_limits]
+yahoo = 60
+fred = 30
+reddit = 30
+rss = 60
+
+# =============================================================================
+# HTTP Client Settings
+# =============================================================================
+[http]
+timeout_seconds = 10.0
+user_agent = "FintelBot/1.0"
+max_retries = 3
+retry_delay_seconds = 1.0
+
+# =============================================================================
+# Analysis Thresholds
+# =============================================================================
+
+[thresholds.valuation]
+pe_low = 15.0           # PE below = cheap
+pe_high = 30.0          # PE above = expensive
+peg_fair = 1.0          # PEG below = undervalued for growth
+pb_low = 1.0            # Price-to-book below = cheap
+pb_high = 5.0           # Price-to-book above = expensive
+
+[thresholds.growth]
+revenue_high = 0.20     # 20%+ revenue growth = high growth
+revenue_low = 0.05      # Below 5% = low growth
+earnings_high = 0.25    # 25%+ earnings growth = high growth
+
+[thresholds.quality]
+profit_margin_good = 0.15   # 15%+ profit margin = good
+roe_good = 0.15             # 15%+ return on equity = good
+
+[thresholds.macro]
+unemployment_high = 5.0         # Above = recession risk
+inflation_high = 4.0            # Above = Fed hawkish
+vix_high = 25.0                 # Above = high fear/volatility
+consumer_sentiment_low = 60.0   # Below = weak consumer
+
+# Scoring weights (must sum to 1.0)
+[thresholds.scoring_weights]
+valuation = 0.25
+growth = 0.25
+quality = 0.20
+momentum = 0.15
+analyst = 0.15
+
+# =============================================================================
+# Data Sources
+# =============================================================================
+[data_sources]
+# FRED economic indicators to track
+macro_series = [
+    "UNRATE",       # Unemployment Rate
+    "CPIAUCSL",     # CPI Inflation
+    "GDP",          # Gross Domestic Product
+    "FEDFUNDS",     # Federal Funds Rate
+    "T10Y2Y",       # 10Y-2Y Treasury Spread (yield curve)
+    "UMCSENT",      # Consumer Sentiment
+    "INDPRO",       # Industrial Production
+    "HOUST",        # Housing Starts
+]
+
+# Reddit subreddits for sentiment analysis
+reddit_subreddits = [
+    "stocks",
+    "wallstreetbets",
+    "investing",
+]
+
+# RSS news feeds
+[data_sources.rss_feeds]
+google_market = "https://news.google.com/rss/search?q=stock+market&hl=en-US&gl=US&ceid=US:en"
+google_economy = "https://news.google.com/rss/search?q=economy+finance&hl=en-US&gl=US&ceid=US:en"
+marketwatch = "https://feeds.marketwatch.com/marketwatch/topstories/"
+
+# Yahoo news count per ticker
+yahoo_news_count = 10
+
+# =============================================================================
+# Output Preferences
+# =============================================================================
+[output]
+max_picks_per_timeframe = 5     # Max picks per short/medium/long term
+max_news_items = 20             # Max news items in report
+date_format = "%Y-%m-%d %H:%M"
+include_social_news = true
+
+# =============================================================================
+# Pipeline Behavior
+# =============================================================================
+[pipeline]
+price_stale_minutes = 30    # Flag stale price data
+macro_stale_days = 7        # Flag stale macro data
+news_stale_hours = 24       # Flag stale news
+fail_fast = false           # Stop on first error (true) or continue (false)
+min_healthy_sources = 2     # Minimum sources required for healthy pipeline

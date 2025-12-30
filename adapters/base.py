@@ -1,11 +1,24 @@
+"""
+Base adapter with caching, rate limiting, and structured logging.
+
+All adapters should inherit from BaseAdapter to get:
+- Response caching with configurable TTL
+- Rate limiting per source
+- Structured logging at boundaries
+- Common HTTP request handling
+"""
+
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import Any
+import json
 import time
 import logging
+import urllib.request
+import urllib.error
 
 from domain import Observation, Category
-from ports import RateLimitError, FetchError
+from ports import RateLimitError, FetchError, ParseError, DataError, ErrorCode
 from config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -166,3 +179,223 @@ class BaseAdapter(ABC):
             ticker=ticker,
             reliability=self.reliability,
         )
+
+    # ========================================================================
+    # HTTP Helpers (shared by all adapters)
+    # ========================================================================
+
+    def _http_get(
+        self,
+        url: str,
+        headers: dict[str, str] | None = None,
+        timeout: float | None = None,
+    ) -> bytes:
+        """
+        Make HTTP GET request with standardized error handling.
+
+        Args:
+            url: URL to fetch
+            headers: Additional headers (User-Agent added automatically)
+            timeout: Request timeout (defaults to config value)
+
+        Returns:
+            Response body as bytes
+
+        Raises:
+            RateLimitError: On 429 response
+            FetchError: On other HTTP or network errors
+        """
+        settings = self._settings
+        timeout = timeout or settings.request_timeout
+
+        req_headers = {"User-Agent": settings.user_agent}
+        if headers:
+            req_headers.update(headers)
+
+        req = urllib.request.Request(url, headers=req_headers)
+
+        # Log request
+        logger.debug(
+            f"HTTP GET {url}",
+            extra={"source": self.source_name, "url": url},
+        )
+        start_time = time.monotonic()
+
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                data = resp.read()
+                elapsed = time.monotonic() - start_time
+
+                # Log response
+                logger.debug(
+                    f"HTTP 200 OK ({len(data)} bytes, {elapsed:.2f}s)",
+                    extra={
+                        "source": self.source_name,
+                        "url": url,
+                        "status": 200,
+                        "size": len(data),
+                        "elapsed_ms": int(elapsed * 1000),
+                    },
+                )
+                return data
+
+        except urllib.error.HTTPError as e:
+            elapsed = time.monotonic() - start_time
+            logger.warning(
+                f"HTTP {e.code} from {url} ({elapsed:.2f}s)",
+                extra={
+                    "source": self.source_name,
+                    "url": url,
+                    "status": e.code,
+                    "elapsed_ms": int(elapsed * 1000),
+                },
+            )
+            raise FetchError.from_http_error(
+                source=self.source_name,
+                status_code=e.code,
+                url=url,
+                response_body=e.reason,
+            )
+
+        except urllib.error.URLError as e:
+            elapsed = time.monotonic() - start_time
+            logger.warning(
+                f"Network error for {url}: {e.reason} ({elapsed:.2f}s)",
+                extra={
+                    "source": self.source_name,
+                    "url": url,
+                    "error": str(e.reason),
+                    "elapsed_ms": int(elapsed * 1000),
+                },
+            )
+            raise FetchError.from_network_error(
+                source=self.source_name,
+                error=e,
+                url=url,
+            )
+
+    def _http_get_json(
+        self,
+        url: str,
+        headers: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Make HTTP GET request and parse JSON response.
+
+        Args:
+            url: URL to fetch
+            headers: Additional headers
+
+        Returns:
+            Parsed JSON as dict
+
+        Raises:
+            FetchError: On HTTP or network errors
+            ParseError: On JSON parse errors
+        """
+        data = self._http_get(url, headers)
+
+        try:
+            return json.loads(data.decode("utf-8"))
+        except json.JSONDecodeError as e:
+            logger.warning(
+                f"JSON parse error for {url}: {e}",
+                extra={
+                    "source": self.source_name,
+                    "url": url,
+                    "error": str(e),
+                },
+            )
+            raise ParseError(
+                source=self.source_name,
+                format_type="json",
+                reason=str(e),
+                raw_content=data.decode("utf-8", errors="replace")[:500],
+                cause=e,
+            )
+
+    def _http_get_text(
+        self,
+        url: str,
+        headers: dict[str, str] | None = None,
+        encoding: str = "utf-8",
+    ) -> str:
+        """
+        Make HTTP GET request and return text.
+
+        Args:
+            url: URL to fetch
+            headers: Additional headers
+            encoding: Text encoding
+
+        Returns:
+            Response as string
+        """
+        data = self._http_get(url, headers)
+        return data.decode(encoding)
+
+    # ========================================================================
+    # Input Validation Helpers
+    # ========================================================================
+
+    def _validate_ticker(self, ticker: str) -> str:
+        """
+        Validate and normalize ticker symbol.
+
+        Args:
+            ticker: Ticker to validate
+
+        Returns:
+            Normalized ticker (uppercase)
+
+        Raises:
+            ValidationError: If ticker is invalid
+        """
+        from ports import ValidationError
+
+        if not ticker:
+            raise ValidationError.invalid_ticker(ticker, "Ticker cannot be empty")
+
+        ticker = ticker.upper().strip()
+
+        # Basic format validation: 1-10 chars, letters/numbers/dash/dot
+        import re
+        if not re.match(r'^[A-Z0-9.\-]{1,10}$', ticker):
+            raise ValidationError.invalid_ticker(
+                ticker,
+                "Must be 1-10 uppercase letters, numbers, dots, or dashes"
+            )
+
+        return ticker
+
+    def _validate_limit(self, limit: int, max_limit: int = 100) -> int:
+        """
+        Validate a limit parameter.
+
+        Args:
+            limit: Limit value to validate
+            max_limit: Maximum allowed limit
+
+        Returns:
+            Validated limit
+
+        Raises:
+            ValidationError: If limit is invalid
+        """
+        from ports import ValidationError
+
+        if limit < 1:
+            raise ValidationError(
+                reason=f"Limit must be >= 1, got {limit}",
+                field="limit",
+                value=limit,
+                source=self.source_name,
+            )
+        if limit > max_limit:
+            raise ValidationError(
+                reason=f"Limit must be <= {max_limit}, got {limit}",
+                field="limit",
+                value=limit,
+                source=self.source_name,
+            )
+        return limit

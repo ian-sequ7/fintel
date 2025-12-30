@@ -2,178 +2,96 @@
 Fintel CLI - Financial Intelligence Command Line Interface.
 
 Usage:
-    python -m fintel report [--output FILE] [--format FORMAT]
-    python -m fintel picks [--timeframe TIMEFRAME] [--count N]
-    python -m fintel news [--category CATEGORY] [--limit N]
-    python -m fintel macro
+    fintel report [--output FILE] [--format FORMAT] [--dry-run] [--verbose]
+    fintel picks [--timeframe TIMEFRAME] [--count N]
+    fintel news [--category CATEGORY] [--limit N]
+    fintel macro
+    fintel status
+
+Examples:
+    fintel report                          # Full markdown report to stdout
+    fintel report -o report.md             # Save to file
+    fintel report -f json --dry-run        # JSON with mock data
+    fintel report --verbose                # Debug data flow
+    fintel picks --timeframe short -n 3    # Top 3 short-term picks
+    fintel news --category market          # Market-wide news only
 """
 
 import argparse
+import json
 import sys
+import logging
 from datetime import datetime
 from pathlib import Path
 
-from domain import (
-    StockPick,
-    MacroIndicator,
-    Risk,
-    Trend,
-    Impact,
-    ScoredNewsItem,
-    NewsCategory,
-    identify_headwinds,
-)
-from domain.models import Timeframe
-from domain.analysis_types import RiskCategory
-from adapters import YahooAdapter, FredAdapter
-from orchestration.news_aggregator import NewsAggregator
+from orchestration.pipeline import Pipeline, PipelineConfig, run_pipeline, SourceStatus
+from domain import Strategy, StrategyType
 from presentation.report import ReportData, generate_markdown_report, write_report
 from presentation.json_api import to_json
 from presentation.export import export_all
 
 
-def build_report_data(
-    tickers: list[str] | None = None,
-    include_news: bool = True,
-) -> ReportData:
-    """
-    Build report data by fetching from all sources.
-
-    This is the main orchestration function that coordinates
-    adapters, analyzers, and aggregators.
-    """
-    tickers = tickers or ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA"]
-
-    print("Fetching data...", file=sys.stderr)
-
-    # Fetch macro data
-    print("  - Macro indicators", file=sys.stderr)
-    fred = FredAdapter()
-    try:
-        macro_obs = fred.get_all_indicators()
-        macro_indicators = []
-        for obs in macro_obs:
-            macro_indicators.append(MacroIndicator(
-                name=obs.data.get("name", "Unknown"),
-                series_id=obs.data.get("series_id"),
-                current_value=obs.data.get("value", 0),
-                unit=obs.data.get("unit", ""),
-                trend=Trend.STABLE,  # Would need historical data for trend
-                impact_assessment=Impact.NEUTRAL,
-            ))
-    except Exception as e:
-        print(f"  ! Macro fetch failed: {e}", file=sys.stderr)
-        macro_indicators = []
-
-    # Identify macro risks
-    macro_risks = identify_headwinds(macro_indicators)
-
-    # Fetch news
-    market_news = []
-    company_news = []
-
-    if include_news:
-        print("  - News aggregation", file=sys.stderr)
-        aggregator = NewsAggregator()
-
-        try:
-            all_news = aggregator.aggregate(
-                tickers=tickers,
-                include_market=True,
-                include_social=True,
-            )
-
-            # Separate by category
-            for item in all_news:
-                if item.category == NewsCategory.MARKET_WIDE:
-                    market_news.append(item)
-                elif item.category in [NewsCategory.COMPANY, NewsCategory.SECTOR]:
-                    company_news.append(item)
-        except Exception as e:
-            print(f"  ! News fetch failed: {e}", file=sys.stderr)
-
-    # Generate stock picks (simplified - in production would use full analysis)
-    print("  - Generating picks", file=sys.stderr)
-    yahoo = YahooAdapter()
-
-    short_picks = []
-    medium_picks = []
-    long_picks = []
-
-    for ticker in tickers[:5]:  # Limit for demo
-        try:
-            price_obs = yahoo.get_price(ticker)
-            if not price_obs:
-                continue
-
-            price_data = price_obs[0].data
-
-            # Simple scoring based on available data
-            change_pct = price_data.get("change_percent", 0)
-
-            # Classify by momentum
-            if change_pct > 2:
-                timeframe = Timeframe.SHORT
-            elif change_pct < -2:
-                timeframe = Timeframe.LONG  # Contrarian
-            else:
-                timeframe = Timeframe.MEDIUM
-
-            # Create pick
-            pick = StockPick(
-                ticker=ticker,
-                timeframe=timeframe,
-                conviction_score=0.6 + (change_pct / 100) if -40 < change_pct < 40 else 0.5,
-                thesis=f"{ticker} trading at ${price_data.get('price', 0):.2f} with {change_pct:.1f}% recent change.",
-                risk_factors=["Market volatility", "Sector rotation"],
-                entry_price=price_data.get("price"),
-            )
-
-            if timeframe == Timeframe.SHORT:
-                short_picks.append(pick)
-            elif timeframe == Timeframe.MEDIUM:
-                medium_picks.append(pick)
-            else:
-                long_picks.append(pick)
-
-        except Exception as e:
-            print(f"  ! Failed to analyze {ticker}: {e}", file=sys.stderr)
-
-    print("Done.", file=sys.stderr)
-
-    return ReportData(
-        generated_at=datetime.now(),
-        macro_indicators=macro_indicators,
-        macro_risks=macro_risks,
-        short_term_picks=sorted(short_picks, key=lambda x: x.conviction_score, reverse=True),
-        medium_term_picks=sorted(medium_picks, key=lambda x: x.conviction_score, reverse=True),
-        long_term_picks=sorted(long_picks, key=lambda x: x.conviction_score, reverse=True),
-        market_news=market_news[:10],
-        company_news=company_news[:10],
-        watchlist=tickers,
+def setup_logging(verbose: bool) -> None:
+    """Configure logging based on verbosity."""
+    level = logging.DEBUG if verbose else logging.WARNING
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%H:%M:%S",
     )
 
 
 def cmd_report(args: argparse.Namespace) -> int:
     """Generate full report."""
-    data = build_report_data(
-        tickers=args.tickers.split(",") if args.tickers else None,
-        include_news=not args.no_news,
+    setup_logging(args.verbose)
+
+    # Parse tickers
+    tickers = args.tickers.split(",") if args.tickers else None
+
+    # Parse strategy
+    strategy = None
+    if args.strategy:
+        strategy_map = {
+            "value": Strategy.value_strategy(),
+            "growth": Strategy.growth_strategy(),
+            "dividend": Strategy.dividend_strategy(),
+            "balanced": Strategy(),
+        }
+        strategy = strategy_map.get(args.strategy, Strategy())
+
+    # Show mode
+    if args.dry_run:
+        print("Running in DRY-RUN mode (using mock data)...", file=sys.stderr)
+    if args.verbose:
+        print("VERBOSE mode enabled", file=sys.stderr)
+
+    # Run pipeline
+    print("Generating report...", file=sys.stderr)
+    data = run_pipeline(
+        watchlist=tickers,
+        dry_run=args.dry_run,
+        verbose=args.verbose,
+        strategy=strategy,
     )
 
+    # Output
     if args.format == "json":
-        import json
         output = json.dumps(to_json(data), indent=2, default=str)
         if args.output:
             Path(args.output).write_text(output)
+            print(f"JSON report written to {args.output}", file=sys.stderr)
         else:
             print(output)
+
     elif args.format == "all":
         if not args.output:
             print("Error: --output directory required for 'all' format", file=sys.stderr)
             return 1
         files = export_all(data, args.output)
-        print(f"Exported to: {list(files.values())}", file=sys.stderr)
+        print(f"Exported files:", file=sys.stderr)
+        for fmt, path in files.items():
+            print(f"  - {fmt}: {path}", file=sys.stderr)
+
     else:  # markdown
         content = generate_markdown_report(data)
         if args.output:
@@ -182,14 +100,25 @@ def cmd_report(args: argparse.Namespace) -> int:
         else:
             print(content)
 
+    # Summary
+    total_picks = len(data.short_term_picks) + len(data.medium_term_picks) + len(data.long_term_picks)
+    total_news = len(data.market_news) + len(data.company_news)
+    print(f"\nSummary: {total_picks} picks, {len(data.macro_risks)} risks, {total_news} news items", file=sys.stderr)
+
     return 0
 
 
 def cmd_picks(args: argparse.Namespace) -> int:
     """Show stock picks."""
-    data = build_report_data(
-        tickers=args.tickers.split(",") if args.tickers else None,
-        include_news=False,
+    setup_logging(args.verbose)
+
+    tickers = args.tickers.split(",") if args.tickers else None
+
+    print("Analyzing stocks...", file=sys.stderr)
+    data = run_pipeline(
+        watchlist=tickers,
+        dry_run=args.dry_run,
+        verbose=args.verbose,
     )
 
     all_picks = []
@@ -202,55 +131,220 @@ def cmd_picks(args: argparse.Namespace) -> int:
 
     all_picks = sorted(all_picks, key=lambda x: x.conviction_score, reverse=True)[:args.count]
 
-    for pick in all_picks:
-        print(f"\n{pick.ticker} ({pick.timeframe.value})")
-        print(f"  Conviction: {pick.conviction_score:.0%}")
-        print(f"  {pick.thesis}")
-        if pick.risk_factors:
-            print(f"  Risks: {', '.join(pick.risk_factors[:2])}")
+    if not all_picks:
+        print("No picks found.", file=sys.stderr)
+        return 0
 
+    print(f"\n{'='*60}")
+    print(f"  STOCK PICKS ({args.timeframe.upper()} TERM)")
+    print(f"{'='*60}")
+
+    for i, pick in enumerate(all_picks, 1):
+        conviction_pct = int(pick.conviction_score * 100)
+        bar = "█" * (conviction_pct // 10) + "░" * (10 - conviction_pct // 10)
+
+        print(f"\n{i}. {pick.ticker} ({pick.timeframe.value})")
+        print(f"   Conviction: [{bar}] {conviction_pct}%")
+        print(f"   {pick.thesis}")
+
+        if pick.entry_price and pick.target_price:
+            upside = ((pick.target_price - pick.entry_price) / pick.entry_price) * 100
+            print(f"   Entry: ${pick.entry_price:.2f} → Target: ${pick.target_price:.2f} ({upside:+.1f}%)")
+
+        if pick.risk_factors:
+            print(f"   Risks: {', '.join(pick.risk_factors[:2])}")
+
+    print()
     return 0
 
 
 def cmd_news(args: argparse.Namespace) -> int:
     """Show news."""
+    setup_logging(args.verbose)
+
+    from orchestration.news_aggregator import NewsAggregator
+    from domain import NewsCategory
+
+    print("Fetching news...", file=sys.stderr)
     aggregator = NewsAggregator()
 
     if args.category == "market":
         news = aggregator.get_market_news(limit=args.limit)
     elif args.category == "social":
         news = aggregator.get_social_sentiment(limit=args.limit)
+    elif args.category == "company":
+        news = [n for n in aggregator.aggregate()[:args.limit * 2]
+                if n.category in [NewsCategory.COMPANY, NewsCategory.SECTOR]][:args.limit]
     else:
         news = aggregator.aggregate()[:args.limit]
 
+    if not news:
+        print("No news found.", file=sys.stderr)
+        return 0
+
+    print(f"\n{'='*60}")
+    print(f"  NEWS ({args.category.upper()})")
+    print(f"{'='*60}")
+
+    priority_icons = {
+        "critical": "🚨",
+        "high": "⚠️ ",
+        "medium": "📌",
+        "low": "📎",
+    }
+
     for item in news:
-        priority = {"critical": "🚨", "high": "⚠️", "medium": "📌", "low": "📎"}.get(
-            item.priority.value, ""
-        )
-        print(f"\n{priority} {item.title}")
-        print(f"   {item.source} | {item.category.value} | Score: {item.relevance_score:.2f}")
+        icon = priority_icons.get(item.priority.value, "  ")
+        score = int(item.relevance_score * 100)
+
+        print(f"\n{icon} {item.title}")
+        print(f"   {item.source} | {item.category.value} | Relevance: {score}%")
+
         if item.tickers_mentioned:
             print(f"   Tickers: {', '.join(item.tickers_mentioned[:5])}")
+        if item.url:
+            print(f"   {item.url}")
 
+    print()
     return 0
 
 
 def cmd_macro(args: argparse.Namespace) -> int:
     """Show macro environment."""
-    fred = FredAdapter()
+    setup_logging(args.verbose)
 
-    print("\n## Macro Indicators\n")
+    from adapters import FredAdapter
+    from domain import identify_headwinds, MacroIndicator, Trend, Impact
+
+    print("Fetching macro data...", file=sys.stderr)
+    fred = FredAdapter()
 
     try:
         observations = fred.get_all_indicators()
-        for obs in observations:
-            name = obs.data.get("name", "Unknown")
-            value = obs.data.get("value", 0)
-            unit = obs.data.get("unit", "")
-            print(f"  {name}: {value}{unit}")
     except Exception as e:
         print(f"Error fetching macro data: {e}", file=sys.stderr)
         return 1
+
+    print(f"\n{'='*60}")
+    print("  MACROECONOMIC ENVIRONMENT")
+    print(f"{'='*60}")
+
+    print("\n### Key Indicators\n")
+    print(f"{'Indicator':<30} {'Value':>12} {'Unit':<10}")
+    print("-" * 55)
+
+    indicators = []
+    for obs in observations:
+        name = obs.data.get("name", "Unknown")
+        value = obs.data.get("value", 0)
+        unit = obs.data.get("unit", "")
+
+        print(f"{name:<30} {value:>12.2f} {unit:<10}")
+
+        indicators.append(MacroIndicator(
+            name=name,
+            series_id=obs.data.get("series_id"),
+            current_value=value,
+            unit=unit,
+            trend=Trend.STABLE,
+            impact_assessment=Impact.NEUTRAL,
+        ))
+
+    # Identify risks
+    risks = identify_headwinds(indicators)
+
+    if risks:
+        print("\n### Headwinds & Risks\n")
+        for i, risk in enumerate(risks[:5], 1):
+            severity_pct = int(risk.severity * 100)
+            print(f"{i}. {risk.name} (severity: {severity_pct}%)")
+            print(f"   {risk.description}")
+            print()
+
+    return 0
+
+
+def cmd_status(args: argparse.Namespace) -> int:
+    """Show pipeline status and data source health."""
+    setup_logging(args.verbose)
+
+    print("Checking data sources...", file=sys.stderr)
+
+    config = PipelineConfig(watchlist=["AAPL"])  # Just test one ticker
+    pipeline = Pipeline(config, dry_run=False, verbose=args.verbose)
+
+    # Run minimal pipeline to check sources
+    try:
+        pipeline.run()
+    except Exception as e:
+        print(f"Pipeline error: {e}", file=sys.stderr)
+
+    status = pipeline.get_status()
+
+    print(f"\n{'='*60}")
+    print("  DATA SOURCE STATUS")
+    print(f"{'='*60}\n")
+
+    # Group by source type
+    source_health = {
+        "yahoo": [],
+        "fred": [],
+        "reddit": [],
+        "rss": [],
+    }
+
+    for name, result in status.sources.items():
+        for src_type in source_health.keys():
+            if name.startswith(src_type) or src_type in name:
+                source_health[src_type].append(result)
+                break
+
+    status_icons = {
+        SourceStatus.OK: "✅",
+        SourceStatus.PARTIAL: "⚠️",
+        SourceStatus.FAILED: "❌",
+        SourceStatus.SKIPPED: "⏭️",
+        SourceStatus.STALE: "🕐",
+    }
+
+    for src_type, results in source_health.items():
+        if not results:
+            continue
+
+        ok_count = sum(1 for r in results if r.status == SourceStatus.OK)
+        total = len(results)
+
+        overall = "✅" if ok_count == total else ("⚠️" if ok_count > 0 else "❌")
+        print(f"{overall} {src_type.upper()}: {ok_count}/{total} endpoints OK")
+
+        if args.verbose:
+            for r in results:
+                icon = status_icons.get(r.status, "?")
+                error_msg = f" - {r.error}" if r.error else ""
+                print(f"   {icon} {r.source}{error_msg}")
+
+    print()
+
+    if status.warnings:
+        print("Warnings:")
+        for w in status.warnings[:5]:
+            print(f"  ⚠️ {w}")
+        print()
+
+    if status.errors:
+        print("Errors:")
+        for e in status.errors[:5]:
+            print(f"  ❌ {e}")
+        print()
+
+    # Overall health
+    if status.is_healthy:
+        print("Overall: ✅ Pipeline healthy")
+    else:
+        print("Overall: ⚠️ Pipeline degraded (some sources unavailable)")
+
+    if status.duration:
+        print(f"Check duration: {status.duration.total_seconds():.1f}s")
 
     return 0
 
@@ -260,7 +354,28 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="fintel",
         description="Financial Intelligence System",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  fintel report                      Generate markdown report
+  fintel report -o report.md         Save to file
+  fintel report --dry-run            Use mock data
+  fintel report --verbose            Debug output
+  fintel report -f json              JSON output
+  fintel picks --timeframe short     Short-term picks only
+  fintel news --category market      Market-wide news
+  fintel macro                       Macro indicators
+  fintel status                      Check data sources
+        """,
     )
+
+    # Global flags
+    parser.add_argument(
+        "--verbose", "-v",
+        action="store_true",
+        help="Enable verbose/debug output",
+    )
+
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # Report command
@@ -273,7 +388,22 @@ def main(argv: list[str] | None = None) -> int:
         help="Output format",
     )
     report_parser.add_argument("-t", "--tickers", help="Comma-separated tickers")
-    report_parser.add_argument("--no-news", action="store_true", help="Skip news")
+    report_parser.add_argument(
+        "--strategy",
+        choices=["value", "growth", "dividend", "balanced"],
+        default="balanced",
+        help="Investment strategy",
+    )
+    report_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Use mock data instead of live data",
+    )
+    report_parser.add_argument(
+        "--verbose", "-v",
+        action="store_true",
+        help="Enable verbose output",
+    )
     report_parser.set_defaults(func=cmd_report)
 
     # Picks command
@@ -285,23 +415,32 @@ def main(argv: list[str] | None = None) -> int:
         help="Timeframe filter",
     )
     picks_parser.add_argument("-n", "--count", type=int, default=10, help="Number of picks")
-    picks_parser.add_argument("-t", "--tickers", help="Comma-separated tickers to analyze")
+    picks_parser.add_argument("-t", "--tickers", help="Comma-separated tickers")
+    picks_parser.add_argument("--dry-run", action="store_true", help="Use mock data")
+    picks_parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
     picks_parser.set_defaults(func=cmd_picks)
 
     # News command
     news_parser = subparsers.add_parser("news", help="Show news")
     news_parser.add_argument(
         "-c", "--category",
-        choices=["all", "market", "social"],
+        choices=["all", "market", "company", "social"],
         default="all",
         help="News category",
     )
     news_parser.add_argument("-n", "--limit", type=int, default=10, help="Number of items")
+    news_parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
     news_parser.set_defaults(func=cmd_news)
 
     # Macro command
     macro_parser = subparsers.add_parser("macro", help="Show macro environment")
+    macro_parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
     macro_parser.set_defaults(func=cmd_macro)
+
+    # Status command
+    status_parser = subparsers.add_parser("status", help="Check data source health")
+    status_parser.add_argument("--verbose", "-v", action="store_true", help="Show details")
+    status_parser.set_defaults(func=cmd_status)
 
     args = parser.parse_args(argv)
     return args.func(args)

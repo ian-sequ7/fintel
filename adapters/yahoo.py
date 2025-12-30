@@ -8,18 +8,17 @@ Most reliable free source for:
 - Analyst recommendations
 """
 
-import json
-import urllib.request
-import urllib.error
+import logging
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
 from domain import Observation, Category
-from ports import FetchError, RateLimitError
-from config import get_settings
+from ports import FetchError, DataError, ValidationError
 
 from .base import BaseAdapter
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -78,54 +77,56 @@ class YahooAdapter(BaseAdapter):
     def reliability(self) -> float:
         return 0.9  # Very reliable
 
-    def _request(self, url: str) -> dict[str, Any]:
-        """Make HTTP request to Yahoo API."""
-        settings = get_settings()
-        headers = {"User-Agent": settings.user_agent}
-        req = urllib.request.Request(url, headers=headers)
-
-        try:
-            with urllib.request.urlopen(req, timeout=settings.request_timeout) as resp:
-                return json.loads(resp.read().decode("utf-8"))
-        except urllib.error.HTTPError as e:
-            if e.code == 429:
-                raise RateLimitError()
-            raise FetchError(self.source_name, f"HTTP {e.code}: {e.reason}")
-        except urllib.error.URLError as e:
-            raise FetchError(self.source_name, f"Connection error: {e.reason}")
-        except json.JSONDecodeError as e:
-            raise FetchError(self.source_name, f"Invalid JSON: {e}")
-
     def _fetch_impl(self, **kwargs) -> list[Observation]:
         """Route to specific fetch method based on data_type."""
         data_type = kwargs.get("data_type", "price")
         ticker = kwargs.get("ticker")
 
+        # Input validation
         if not ticker:
-            raise FetchError(self.source_name, "ticker is required")
+            raise ValidationError(
+                reason="ticker parameter is required",
+                field="ticker",
+                source=self.source_name,
+            )
+
+        ticker = self._validate_ticker(ticker)
+
+        valid_types = ("price", "fundamentals", "news")
+        if data_type not in valid_types:
+            raise ValidationError(
+                reason=f"data_type must be one of {valid_types}, got '{data_type}'",
+                field="data_type",
+                value=data_type,
+                source=self.source_name,
+            )
 
         if data_type == "price":
             return self._fetch_price(ticker)
         elif data_type == "fundamentals":
             return self._fetch_fundamentals(ticker)
-        elif data_type == "news":
+        else:  # news
             return self._fetch_news(ticker)
-        else:
-            raise FetchError(self.source_name, f"Unknown data_type: {data_type}")
 
     def _fetch_price(self, ticker: str) -> list[Observation]:
         """Fetch current price data."""
         url = f"{self.BASE_URL}/v8/finance/chart/{ticker}?interval=1d&range=1d"
-        data = self._request(url)
+        data = self._http_get_json(url)
 
         result = data.get("chart", {}).get("result", [])
         if not result:
-            raise FetchError(self.source_name, f"No data for {ticker}")
+            raise DataError.empty(
+                source=self.source_name,
+                description=f"No price data returned for {ticker}",
+            )
 
         meta = result[0].get("meta", {})
         quote = result[0].get("indicators", {}).get("quote", [{}])[0]
 
-        price = meta.get("regularMarketPrice", 0)
+        price = meta.get("regularMarketPrice")
+        if price is None:
+            raise DataError.missing(self.source_name, field="regularMarketPrice")
+
         prev_close = meta.get("previousClose", price)
 
         price_data = PriceData(
@@ -136,6 +137,15 @@ class YahooAdapter(BaseAdapter):
             change_percent=((price - prev_close) / prev_close * 100) if prev_close else 0,
             volume=quote.get("volume", [0])[-1] if quote.get("volume") else 0,
             market_cap=meta.get("marketCap"),
+        )
+
+        logger.debug(
+            f"Fetched price for {ticker}: ${price_data.price:.2f}",
+            extra={
+                "ticker": ticker,
+                "price": price_data.price,
+                "change_percent": price_data.change_percent,
+            },
         )
 
         return [self._create_observation(
@@ -156,10 +166,15 @@ class YahooAdapter(BaseAdapter):
         url = f"{self.BASE_URL}/v10/finance/quoteSummary/{ticker}?modules={modules}"
 
         try:
-            data = self._request(url)
-        except FetchError:
-            # Fundamentals endpoint may be restricted, return empty
-            return []
+            data = self._http_get_json(url)
+        except FetchError as e:
+            # Fundamentals endpoint may be restricted for some tickers
+            # Log and re-raise - let caller decide how to handle
+            logger.warning(
+                f"Fundamentals unavailable for {ticker}: {e.message}",
+                extra={"ticker": ticker, "error_code": e.code.value},
+            )
+            raise
 
         result = data.get("quoteSummary", {}).get("result", [{}])[0]
         fin = result.get("financialData", {})
@@ -181,6 +196,15 @@ class YahooAdapter(BaseAdapter):
             recommendation=recs.get("buy") and "buy" or recs.get("sell") and "sell" or "hold",
         )
 
+        logger.debug(
+            f"Fetched fundamentals for {ticker}: PE={fundamental_data.pe_trailing}",
+            extra={
+                "ticker": ticker,
+                "pe_trailing": fundamental_data.pe_trailing,
+                "pe_forward": fundamental_data.pe_forward,
+            },
+        )
+
         return [Observation(
             source=self.source_name,
             timestamp=datetime.now(),
@@ -200,12 +224,17 @@ class YahooAdapter(BaseAdapter):
 
     def _fetch_news(self, ticker: str) -> list[Observation]:
         """Fetch company news."""
-        url = f"{self.BASE_URL}/v1/finance/search?q={ticker}&newsCount=10"
-        data = self._request(url)
+        # Get news count from config
+        news_count = self._settings.config.data_sources.yahoo_news_count
+        url = f"{self.BASE_URL}/v1/finance/search?q={ticker}&newsCount={news_count}"
+        data = self._http_get_json(url)
 
         news_items = data.get("news", [])
-        observations = []
+        if not news_items:
+            logger.debug(f"No news found for {ticker}")
+            return []
 
+        observations = []
         for item in news_items:
             pub_time = item.get("providerPublishTime")
             published = datetime.fromtimestamp(pub_time) if pub_time else None
@@ -229,6 +258,11 @@ class YahooAdapter(BaseAdapter):
                 ticker=ticker,
                 reliability=self.reliability,
             ))
+
+        logger.debug(
+            f"Fetched {len(observations)} news items for {ticker}",
+            extra={"ticker": ticker, "count": len(observations)},
+        )
 
         return observations
 
