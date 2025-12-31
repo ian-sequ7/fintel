@@ -34,7 +34,7 @@ export async function getReport(): Promise<FinancialReport> {
   }
 
   try {
-    const data = await import("../../data/report.json");
+    const data = await import("./report.json");
     _cachedReport = data.default as FinancialReport;
     return _cachedReport;
   } catch (error) {
@@ -59,7 +59,7 @@ export function getReportSync(): FinancialReport {
 
 // Initialize cache at module load (for static builds)
 try {
-  const data = await import("../../data/report.json");
+  const data = await import("./report.json");
   _cachedReport = data.default as FinancialReport;
 } catch {
   // Will use mock data
