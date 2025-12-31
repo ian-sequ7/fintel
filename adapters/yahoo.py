@@ -6,12 +6,16 @@ Most reliable free source for:
 - Fundamentals (PE, market cap, revenue)
 - Company news
 - Analyst recommendations
+
+Uses yfinance library for fundamentals as the raw API now requires auth.
 """
 
 import logging
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
+
+import yfinance as yf
 
 from domain import Observation, Category
 from ports import FetchError, DataError, ValidationError
@@ -161,66 +165,82 @@ class YahooAdapter(BaseAdapter):
         )]
 
     def _fetch_fundamentals(self, ticker: str) -> list[Observation]:
-        """Fetch fundamental data (PE, growth, etc.)."""
-        modules = "financialData,defaultKeyStatistics,recommendationTrend"
-        url = f"{self.BASE_URL}/v10/finance/quoteSummary/{ticker}?modules={modules}"
-
+        """Fetch fundamental data (PE, growth, etc.) using yfinance library."""
         try:
-            data = self._http_get_json(url)
-        except FetchError as e:
-            # Fundamentals endpoint may be restricted for some tickers
-            # Log and re-raise - let caller decide how to handle
-            logger.warning(
-                f"Fundamentals unavailable for {ticker}: {e.message}",
-                extra={"ticker": ticker, "error_code": e.code.value},
+            stock = yf.Ticker(ticker)
+            info = stock.info
+
+            if not info or info.get("regularMarketPrice") is None:
+                raise DataError.empty(
+                    source=self.source_name,
+                    description=f"No fundamental data returned for {ticker}",
+                )
+
+            # Extract fundamental metrics
+            fundamental_data = FundamentalData(
+                symbol=ticker,
+                pe_trailing=info.get("trailingPE"),
+                pe_forward=info.get("forwardPE"),
+                peg_ratio=info.get("pegRatio"),
+                price_to_book=info.get("priceToBook"),
+                revenue_growth=info.get("revenueGrowth"),
+                profit_margin=info.get("profitMargins"),
+                recommendation=info.get("recommendationKey", "hold"),
             )
-            raise
 
-        result = data.get("quoteSummary", {}).get("result", [{}])[0]
-        fin = result.get("financialData", {})
-        stats = result.get("defaultKeyStatistics", {})
-        recs = result.get("recommendationTrend", {}).get("trend", [{}])[0]
-
-        def _get_raw(d: dict, key: str) -> float | None:
-            val = d.get(key, {})
-            return val.get("raw") if isinstance(val, dict) else None
-
-        fundamental_data = FundamentalData(
-            symbol=ticker,
-            pe_trailing=_get_raw(stats, "trailingPE"),
-            pe_forward=_get_raw(stats, "forwardPE"),
-            peg_ratio=_get_raw(stats, "pegRatio"),
-            price_to_book=_get_raw(stats, "priceToBook"),
-            revenue_growth=_get_raw(fin, "revenueGrowth"),
-            profit_margin=_get_raw(fin, "profitMargins"),
-            recommendation=recs.get("buy") and "buy" or recs.get("sell") and "sell" or "hold",
-        )
-
-        logger.debug(
-            f"Fetched fundamentals for {ticker}: PE={fundamental_data.pe_trailing}",
-            extra={
-                "ticker": ticker,
-                "pe_trailing": fundamental_data.pe_trailing,
-                "pe_forward": fundamental_data.pe_forward,
-            },
-        )
-
-        return [Observation(
-            source=self.source_name,
-            timestamp=datetime.now(),
-            category=Category.FUNDAMENTAL,
-            data={
+            # Extract additional metrics for richer analysis
+            additional_data = {
                 "pe_trailing": fundamental_data.pe_trailing,
                 "pe_forward": fundamental_data.pe_forward,
                 "peg_ratio": fundamental_data.peg_ratio,
                 "price_to_book": fundamental_data.price_to_book,
+                "price_to_sales": info.get("priceToSalesTrailing12Months"),
                 "revenue_growth": fundamental_data.revenue_growth,
+                "earnings_growth": info.get("earningsGrowth"),
                 "profit_margin": fundamental_data.profit_margin,
+                "roe": info.get("returnOnEquity"),
+                "roa": info.get("returnOnAssets"),
+                "dividend_yield": info.get("dividendYield"),
+                "payout_ratio": info.get("payoutRatio"),
                 "recommendation": fundamental_data.recommendation,
-            },
-            ticker=ticker,
-            reliability=self.reliability,
-        )]
+                "analyst_rating": info.get("recommendationMean"),
+                "price_target": info.get("targetMeanPrice"),
+                "target_high": info.get("targetHighPrice"),
+                "target_low": info.get("targetLowPrice"),
+                "market_cap": info.get("marketCap"),
+                "fifty_two_week_high": info.get("fiftyTwoWeekHigh"),
+                "fifty_two_week_low": info.get("fiftyTwoWeekLow"),
+                "beta": info.get("beta"),
+            }
+
+            logger.debug(
+                f"Fetched fundamentals for {ticker}: PE={fundamental_data.pe_trailing}",
+                extra={
+                    "ticker": ticker,
+                    "pe_trailing": fundamental_data.pe_trailing,
+                    "pe_forward": fundamental_data.pe_forward,
+                },
+            )
+
+            return [Observation(
+                source=self.source_name,
+                timestamp=datetime.now(),
+                category=Category.FUNDAMENTAL,
+                data=additional_data,
+                ticker=ticker,
+                reliability=self.reliability,
+            )]
+
+        except Exception as e:
+            logger.warning(
+                f"Fundamentals unavailable for {ticker}: {e}",
+                extra={"ticker": ticker},
+            )
+            raise FetchError(
+                code="E999",
+                message=f"Failed to fetch fundamentals for {ticker}: {e}",
+                source=self.source_name,
+            )
 
     def _fetch_news(self, ticker: str) -> list[Observation]:
         """Fetch company news."""

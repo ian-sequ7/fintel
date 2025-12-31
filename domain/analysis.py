@@ -369,6 +369,15 @@ def classify_timeframe(
     if metrics.revenue_growth is not None:
         if metrics.revenue_growth > config.revenue_growth_high:
             signals["short"] += 1
+            signals["medium"] += 2
+        elif metrics.revenue_growth > config.revenue_growth_low:
+            signals["medium"] += 1
+
+    # Earnings growth favors medium-term
+    if metrics.earnings_growth is not None:
+        if metrics.earnings_growth > config.earnings_growth_high:
+            signals["medium"] += 2
+        elif metrics.earnings_growth > 0:
             signals["medium"] += 1
 
     # Value stocks (low PE) are better for long term
@@ -376,17 +385,34 @@ def classify_timeframe(
         if metrics.pe_trailing < config.pe_low:
             signals["long"] += 2
         elif metrics.pe_trailing > config.pe_high:
-            signals["short"] += 1  # Momentum play
+            signals["short"] += 2  # High valuation momentum play
 
     # Strong momentum suggests short-term opportunity
     if metrics.price_change_1m is not None:
         if abs(metrics.price_change_1m) > config.momentum_strong:
+            signals["short"] += 3
+        elif abs(metrics.price_change_1m) > config.momentum_strong / 2:
+            signals["short"] += 1
+
+    # 3-month momentum for short-medium
+    if metrics.price_change_3m is not None:
+        if abs(metrics.price_change_3m) > config.momentum_strong * 2:
             signals["short"] += 2
+        elif abs(metrics.price_change_3m) > config.momentum_strong:
+            signals["medium"] += 1
+
+    # Volume spike indicates short-term catalyst
+    if metrics.volume_ratio is not None and metrics.volume_ratio > config.volume_spike:
+        signals["short"] += 2
 
     # Quality metrics suggest long-term hold
     if metrics.profit_margin is not None and metrics.profit_margin > config.profit_margin_good:
         signals["long"] += 1
         signals["medium"] += 1
+
+    # ROE favors quality long-term holds
+    if metrics.roe is not None and metrics.roe > config.roe_good:
+        signals["long"] += 1
 
     # Dividend yield suggests long-term
     if metrics.dividend_yield is not None and metrics.dividend_yield > 0.02:
@@ -395,17 +421,46 @@ def classify_timeframe(
     # Analyst price target proximity
     if metrics.upside_potential is not None:
         if metrics.upside_potential > 30:
-            signals["medium"] += 1
-        elif metrics.upside_potential > 10:
-            signals["short"] += 1
+            signals["medium"] += 2
+        elif metrics.upside_potential > 15:
+            signals["short"] += 2
 
-    # Determine winner
-    if signals["long"] >= signals["medium"] and signals["long"] >= signals["short"]:
+    # Determine winner with strict comparisons
+    if signals["long"] > signals["medium"] and signals["long"] > signals["short"]:
         return Timeframe.LONG
-    elif signals["short"] > signals["medium"]:
+    elif signals["short"] > signals["medium"] and signals["short"] > signals["long"]:
         return Timeframe.SHORT
-    else:
+    elif signals["medium"] > signals["short"] and signals["medium"] > signals["long"]:
         return Timeframe.MEDIUM
+
+    # Tiebreaker: use characteristic metrics to break ties
+    # Momentum favors short, growth favors medium, stability favors long
+    if signals["short"] == signals["medium"] == signals["long"]:
+        # Three-way tie: check momentum first
+        if metrics.price_change_1m is not None and abs(metrics.price_change_1m) > 0.05:
+            return Timeframe.SHORT
+        elif metrics.revenue_growth is not None and metrics.revenue_growth > 0.10:
+            return Timeframe.MEDIUM
+        else:
+            return Timeframe.LONG
+    elif signals["short"] == signals["long"]:
+        # Short vs Long tie: momentum wins for short
+        if metrics.price_change_1m is not None and abs(metrics.price_change_1m) > 0.03:
+            return Timeframe.SHORT
+        else:
+            return Timeframe.LONG
+    elif signals["short"] == signals["medium"]:
+        # Short vs Medium tie: strong momentum wins for short
+        if metrics.price_change_1m is not None and abs(metrics.price_change_1m) > 0.08:
+            return Timeframe.SHORT
+        else:
+            return Timeframe.MEDIUM
+    else:  # signals["medium"] == signals["long"]
+        # Medium vs Long tie: growth wins for medium
+        if metrics.revenue_growth is not None and metrics.revenue_growth > 0.15:
+            return Timeframe.MEDIUM
+        else:
+            return Timeframe.LONG
 
 
 # ============================================================================
@@ -437,40 +492,94 @@ def identify_headwinds(
 
     # Check unemployment
     unemp = by_id.get("UNRATE") or by_name.get("unemployment rate")
-    if unemp and unemp.current_value > config.unemployment_high:
-        risks.append(Risk(
-            category=RiskCategory.MACRO,
-            name="High Unemployment",
-            description=f"Unemployment at {unemp.current_value}% signals weak labor market",
-            severity=min(1.0, (unemp.current_value - config.unemployment_high) / 3 + 0.5),
-            probability=0.8,
-            source_indicator="UNRATE",
-        ))
+    if unemp:
+        # Flag if unemployment is elevated (>4.0%) or rising sharply
+        if unemp.current_value > config.unemployment_high:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="High Unemployment",
+                description=f"Unemployment at {unemp.current_value}% signals weak labor market",
+                severity=min(1.0, (unemp.current_value - config.unemployment_high) / 3 + 0.5),
+                probability=0.8,
+                source_indicator="UNRATE",
+            ))
+        elif unemp.current_value > 4.0 and unemp.trend == Trend.RISING:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Rising Unemployment",
+                description=f"Unemployment at {unemp.current_value}% and rising - labor market softening",
+                severity=0.6,
+                probability=0.7,
+                source_indicator="UNRATE",
+            ))
 
     # Check inflation
     cpi = by_id.get("CPIAUCSL") or by_name.get("cpi (inflation)")
-    if cpi and cpi.trend == Trend.RISING:
-        severity = 0.6 if cpi.current_value > config.inflation_high else 0.4
-        risks.append(Risk(
-            category=RiskCategory.MACRO,
-            name="Rising Inflation",
-            description="Rising inflation may force Fed to maintain restrictive policy",
-            severity=severity,
-            probability=0.7,
-            source_indicator="CPIAUCSL",
-        ))
+    if cpi:
+        # Flag if inflation is elevated (>3.0%) or rising
+        if cpi.current_value > config.inflation_high:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Elevated Inflation",
+                description=f"Inflation at {cpi.current_value}% above Fed target - policy may stay restrictive",
+                severity=0.7,
+                probability=0.75,
+                source_indicator="CPIAUCSL",
+            ))
+        elif cpi.current_value > 3.0:
+            if cpi.trend == Trend.RISING:
+                risks.append(Risk(
+                    category=RiskCategory.MACRO,
+                    name="Rising Inflation",
+                    description="Rising inflation may force Fed to maintain restrictive policy",
+                    severity=0.6,
+                    probability=0.7,
+                    source_indicator="CPIAUCSL",
+                ))
+            else:
+                # Even stable inflation above 3% is a risk
+                risks.append(Risk(
+                    category=RiskCategory.MACRO,
+                    name="Above-Target Inflation",
+                    description=f"Inflation at {cpi.current_value}% remains above Fed's 2% target",
+                    severity=0.5,
+                    probability=0.65,
+                    source_indicator="CPIAUCSL",
+                ))
 
     # Check Fed Funds rate trend
     fed = by_id.get("FEDFUNDS") or by_name.get("federal funds rate")
-    if fed and fed.trend == Trend.RISING:
-        risks.append(Risk(
-            category=RiskCategory.MACRO,
-            name="Rising Interest Rates",
-            description="Higher rates increase borrowing costs and reduce equity valuations",
-            severity=0.6,
-            probability=0.75,
-            source_indicator="FEDFUNDS",
-        ))
+    if fed:
+        # Flag if rates are high (>5%) or rising
+        if fed.current_value > 5.0:
+            if fed.trend == Trend.RISING:
+                risks.append(Risk(
+                    category=RiskCategory.MACRO,
+                    name="Rising Interest Rates",
+                    description="Higher rates increase borrowing costs and reduce equity valuations",
+                    severity=0.7,
+                    probability=0.75,
+                    source_indicator="FEDFUNDS",
+                ))
+            else:
+                # Even stable high rates are a risk
+                risks.append(Risk(
+                    category=RiskCategory.MACRO,
+                    name="Elevated Interest Rates",
+                    description=f"Fed funds rate at {fed.current_value}% restricts economic growth",
+                    severity=0.6,
+                    probability=0.7,
+                    source_indicator="FEDFUNDS",
+                ))
+        elif fed.trend == Trend.RISING:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Rising Interest Rates",
+                description="Higher rates increase borrowing costs and reduce equity valuations",
+                severity=0.5,
+                probability=0.7,
+                source_indicator="FEDFUNDS",
+            ))
 
     # Check yield curve (10Y-2Y spread)
     spread = by_id.get("T10Y2Y") or by_name.get("10y-2y treasury spread")
@@ -734,21 +843,82 @@ def generate_thesis(
     else:
         parts.append(f"{metrics.ticker} faces headwinds")
 
-    # Valuation commentary
-    if score.valuation_score > 0.7:
-        parts.append("with attractive valuation")
-    elif score.valuation_score < 0.3:
-        parts.append("despite rich valuation")
+    # Valuation details with specific numbers
+    val_details = []
+    if metrics.pe_trailing is not None:
+        val_details.append(f"PE of {metrics.pe_trailing:.1f}")
+    if metrics.peg_ratio is not None and metrics.peg_ratio > 0:
+        val_details.append(f"PEG of {metrics.peg_ratio:.2f}")
 
-    # Growth commentary
-    if score.growth_score > 0.7:
-        parts.append("and strong growth trajectory")
-    elif score.growth_score < 0.3:
-        parts.append("but limited growth")
+    if val_details:
+        if score.valuation_score > 0.7:
+            parts.append(f"with attractive valuation ({', '.join(val_details)})")
+        elif score.valuation_score < 0.3:
+            parts.append(f"despite rich valuation ({', '.join(val_details)})")
+        else:
+            parts.append(f"trading at {', '.join(val_details)}")
 
-    # Quality commentary
-    if score.quality_score > 0.7:
-        parts.append("backed by solid fundamentals")
+    # Growth details with specific numbers
+    growth_details = []
+    if metrics.revenue_growth is not None:
+        growth_pct = metrics.revenue_growth * 100
+        if growth_pct > 0:
+            growth_details.append(f"{growth_pct:.0f}% revenue growth")
+        else:
+            growth_details.append(f"{abs(growth_pct):.0f}% revenue decline")
+
+    if metrics.earnings_growth is not None:
+        eg_pct = metrics.earnings_growth * 100
+        if eg_pct > 0:
+            growth_details.append(f"{eg_pct:.0f}% earnings growth")
+
+    if growth_details:
+        if score.growth_score > 0.7:
+            parts.append(f"with strong growth ({', '.join(growth_details)})")
+        elif score.growth_score < 0.3:
+            parts.append(f"but limited growth ({', '.join(growth_details)})")
+        else:
+            parts.append(f"showing {', '.join(growth_details)}")
+
+    # Quality/profitability metrics
+    quality_details = []
+    if metrics.profit_margin is not None:
+        pm_pct = metrics.profit_margin * 100
+        quality_details.append(f"{pm_pct:.1f}% profit margin")
+    if metrics.roe is not None:
+        roe_pct = metrics.roe * 100
+        quality_details.append(f"{roe_pct:.1f}% ROE")
+
+    if quality_details and score.quality_score > 0.7:
+        parts.append(f"backed by solid fundamentals ({', '.join(quality_details)})")
+
+    # Momentum with specific price changes
+    if score.momentum_score > 0.6:
+        momentum_details = []
+        if metrics.price_change_3m is not None:
+            change_pct = metrics.price_change_3m * 100
+            if abs(change_pct) > 5:
+                momentum_details.append(f"up {change_pct:.0f}% over 3 months")
+        elif metrics.price_change_1m is not None:
+            change_pct = metrics.price_change_1m * 100
+            if abs(change_pct) > 3:
+                momentum_details.append(f"up {change_pct:.0f}% in the past month")
+
+        if momentum_details:
+            parts.append(f". Momentum is strong: {', '.join(momentum_details)}")
+
+    # Analyst targets
+    if metrics.price_target is not None and metrics.upside_potential is not None:
+        upside = metrics.upside_potential
+        if upside > 5:  # Only mention if material upside
+            parts.append(f". Analysts see {upside:.0f}% upside to ${metrics.price_target:.2f} target")
+        elif upside < -5:
+            parts.append(f". Trading {abs(upside):.0f}% above ${metrics.price_target:.2f} analyst target")
+
+    # Dividend commentary
+    if metrics.dividend_yield is not None and metrics.dividend_yield > 0.02:
+        div_pct = metrics.dividend_yield * 100
+        parts.append(f". Offers {div_pct:.1f}% dividend yield")
 
     # Risk summary
     if risks:

@@ -28,6 +28,7 @@ from orchestration.pipeline import Pipeline, PipelineConfig, run_pipeline, Sourc
 from domain import Strategy, StrategyType
 from presentation.report import ReportData, generate_markdown_report, write_report
 from presentation.json_api import to_json
+from presentation.frontend_export import export_for_frontend
 from presentation.export import export_all
 
 
@@ -76,11 +77,13 @@ def cmd_report(args: argparse.Namespace) -> int:
 
     # Output
     if args.format == "json":
-        output = json.dumps(to_json(data), indent=2, default=str)
         if args.output:
-            Path(args.output).write_text(output)
+            # Use frontend-compatible export when writing to file
+            export_for_frontend(data, data.stock_metrics, args.output)
             print(f"JSON report written to {args.output}", file=sys.stderr)
         else:
+            # Print to stdout using original format
+            output = json.dumps(to_json(data), indent=2, default=str)
             print(output)
 
     elif args.format == "all":

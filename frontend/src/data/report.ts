@@ -342,7 +342,8 @@ export function formatChange(change: number, isPercent = false): string {
 /**
  * Format large numbers (market cap, volume).
  */
-export function formatLargeNumber(num: number): string {
+export function formatLargeNumber(num: number | null | undefined): string {
+  if (num === null || num === undefined) return "-";
   if (num >= 1e12) return `$${(num / 1e12).toFixed(2)}T`;
   if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`;
   if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`;
@@ -353,7 +354,8 @@ export function formatLargeNumber(num: number): string {
 /**
  * Format price.
  */
-export function formatPrice(price: number): string {
+export function formatPrice(price: number | null | undefined): string {
+  if (price === null || price === undefined) return "-";
   return `$${price.toFixed(2)}`;
 }
 

@@ -727,6 +727,8 @@ class Pipeline:
             market_news=market_news[:max_news],
             company_news=company_news[:max_news],
             watchlist=self.config.watchlist,
+            stock_metrics=metrics,
+            conviction_scores=scores,
         )
 
         # Add warnings to report if needed

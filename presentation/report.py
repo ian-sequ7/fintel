@@ -19,6 +19,7 @@ from domain import (
     MacroIndicator,
     Trend,
     Impact,
+    ConvictionScore,
 )
 from domain.models import Timeframe as ModelTimeframe
 
@@ -48,6 +49,10 @@ class ReportData:
     # Metadata
     title: str = "Stock Picks Report"
     watchlist: list[str] = field(default_factory=list)
+
+    # Stock metrics (for frontend enrichment)
+    stock_metrics: dict = field(default_factory=dict)
+    conviction_scores: dict = field(default_factory=dict)  # ticker -> ConvictionScore
 
 
 def _format_date(dt: datetime) -> str:

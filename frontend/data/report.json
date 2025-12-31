@@ -1,294 +1,101 @@
 {
-  "generatedAt": "2025-12-30T23:00:14.074Z",
+  "generatedAt": "2025-12-30T16:41:34.485634",
   "version": "1.0.0",
   "watchlist": [
     "AAPL",
     "MSFT",
-    "NVDA",
     "GOOGL",
     "AMZN",
+    "NVDA",
     "META",
     "TSLA",
+    "BRK-B",
     "JPM",
-    "V",
-    "JNJ",
-    "UNH",
-    "XOM",
-    "CVX",
-    "PG",
-    "HD"
+    "V"
   ],
   "picks": {
-    "short": [
-      {
-        "ticker": "NVDA",
-        "companyName": "NVIDIA Corp.",
-        "currentPrice": 871.17,
-        "priceChange": -4.84,
-        "priceChangePercent": -0.55,
-        "convictionScore": 0.88,
-        "timeframe": "short",
-        "thesis": "AI infrastructure demand accelerating. Data center revenue growth exceeding expectations. Near-term catalyst with earnings.",
-        "riskFactors": [
-          "Valuation stretched",
-          "Supply chain constraints",
-          "Customer concentration"
-        ],
-        "sector": "technology",
-        "entryPrice": 853.75,
-        "targetPrice": 1001.85,
-        "marketCap": 12372982303682
-      },
-      {
-        "ticker": "META",
-        "companyName": "Meta Platforms Inc.",
-        "currentPrice": 472.48,
-        "priceChange": -2.93,
-        "priceChangePercent": -0.62,
-        "convictionScore": 0.76,
-        "timeframe": "short",
-        "thesis": "Reels monetization improving rapidly. Cost discipline driving margin expansion. Ad market recovery underway.",
-        "riskFactors": [
-          "Ad spending slowdown",
-          "Regulatory pressure",
-          "Competition from TikTok"
-        ],
-        "sector": "communications",
-        "entryPrice": 463.03,
-        "targetPrice": 543.35,
-        "marketCap": 5694902085716
-      },
-      {
-        "ticker": "AMZN",
-        "companyName": "Amazon.com Inc.",
-        "currentPrice": 178.12,
-        "priceChange": 0.61,
-        "priceChangePercent": 0.34,
-        "convictionScore": 0.72,
-        "timeframe": "short",
-        "thesis": "AWS re-acceleration visible. Retail margins expanding. Advertising business growing 20%+ YoY.",
-        "riskFactors": [
-          "Competition in cloud",
-          "Labor costs",
-          "Antitrust scrutiny"
-        ],
-        "sector": "consumer",
-        "entryPrice": 174.56,
-        "targetPrice": 204.84,
-        "marketCap": 2174526055225
-      },
-      {
-        "ticker": "TSLA",
-        "companyName": "Tesla Inc.",
-        "currentPrice": 245.41,
-        "priceChange": 0.14,
-        "priceChangePercent": 0.06,
-        "convictionScore": 0.65,
-        "timeframe": "short",
-        "thesis": "Cybertruck production ramping. Energy storage business accelerating. FSD improvements driving take rate.",
-        "riskFactors": [
-          "Price competition",
-          "Demand uncertainty",
-          "Regulatory changes"
-        ],
-        "sector": "consumer",
-        "entryPrice": 240.5,
-        "targetPrice": 282.22,
-        "marketCap": 1919777853585
-      }
-    ],
-    "medium": [
-      {
-        "ticker": "MSFT",
-        "companyName": "Microsoft Corp.",
-        "currentPrice": 416.33,
-        "priceChange": 1.02,
-        "priceChangePercent": 0.25,
-        "convictionScore": 0.85,
-        "timeframe": "medium",
-        "thesis": "Azure growth reaccelerating with AI workloads. Copilot monetization just beginning. Enterprise moat strengthening.",
-        "riskFactors": [
-          "Enterprise spending slowdown",
-          "Competition from AWS",
-          "Antitrust concerns"
-        ],
-        "sector": "technology",
-        "entryPrice": 408,
-        "targetPrice": 478.78,
-        "marketCap": 3432715846341
-      },
-      {
-        "ticker": "GOOGL",
-        "companyName": "Alphabet Inc.",
-        "currentPrice": 176.64,
-        "priceChange": 1.39,
-        "priceChangePercent": 0.79,
-        "convictionScore": 0.78,
-        "timeframe": "medium",
-        "thesis": "Search moat intact despite AI fears. Cloud growth strong. Gemini integration across products.",
-        "riskFactors": [
-          "Antitrust rulings",
-          "AI disruption to search",
-          "YouTube ad pressure"
-        ],
-        "sector": "communications",
-        "entryPrice": 173.11,
-        "targetPrice": 203.14,
-        "marketCap": 2135786232222
-      },
-      {
-        "ticker": "V",
-        "companyName": "Visa Inc.",
-        "currentPrice": 272.02,
-        "priceChange": 2.8,
-        "priceChangePercent": 1.04,
-        "convictionScore": 0.74,
-        "timeframe": "medium",
-        "thesis": "Cross-border travel recovery ongoing. Digital payments secular growth. Pricing power intact.",
-        "riskFactors": [
-          "Regulation",
-          "Competition from fintech",
-          "Economic slowdown"
-        ],
-        "sector": "finance",
-        "entryPrice": 266.58,
-        "targetPrice": 312.82,
-        "marketCap": 3338674797991
-      },
-      {
-        "ticker": "UNH",
-        "companyName": "UnitedHealth Group",
-        "currentPrice": 516.36,
-        "priceChange": 2.57,
-        "priceChangePercent": 0.5,
-        "convictionScore": 0.7,
-        "timeframe": "medium",
-        "thesis": "Healthcare cost management expertise. Optum growth engine. Demographic tailwinds.",
-        "riskFactors": [
-          "Regulatory pressure",
-          "Medicare rate changes",
-          "Competition"
-        ],
-        "sector": "healthcare",
-        "entryPrice": 506.03,
-        "targetPrice": 593.81,
-        "marketCap": 7157964566165
-      },
-      {
-        "ticker": "HD",
-        "companyName": "Home Depot",
-        "currentPrice": 353.1,
-        "priceChange": 2.52,
-        "priceChangePercent": 0.72,
-        "convictionScore": 0.68,
-        "timeframe": "medium",
-        "thesis": "Pro segment resilient. Housing turnover will recover. Market share gains from competitors.",
-        "riskFactors": [
-          "Housing slowdown",
-          "Consumer spending",
-          "Labor costs"
-        ],
-        "sector": "consumer",
-        "entryPrice": 346.04,
-        "targetPrice": 406.06,
-        "marketCap": 2903156018634
-      }
-    ],
+    "short": [],
+    "medium": [],
     "long": [
       {
         "ticker": "AAPL",
         "companyName": "Apple Inc.",
-        "currentPrice": 224.01,
-        "priceChange": 1.27,
-        "priceChangePercent": 0.57,
-        "convictionScore": 0.86,
+        "currentPrice": 273.08,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.5,
         "timeframe": "long",
-        "thesis": "Services flywheel compounding. Ecosystem stickiness unmatched. Vision Pro opens new category. India growth.",
-        "riskFactors": [
-          "China exposure",
-          "Hardware saturation",
-          "Regulatory pressure"
-        ],
+        "thesis": "AAPL faces headwinds.",
+        "riskFactors": [],
         "sector": "technology",
-        "entryPrice": 219.53,
-        "targetPrice": 257.61,
-        "marketCap": 1600799922751
+        "entryPrice": 273.08,
+        "targetPrice": null,
+        "stopLoss": null,
+        "marketCap": null
       },
       {
-        "ticker": "JPM",
-        "companyName": "JPMorgan Chase",
-        "currentPrice": 187.53,
-        "priceChange": 1.2,
-        "priceChangePercent": 0.64,
-        "convictionScore": 0.75,
+        "ticker": "MSFT",
+        "companyName": "Microsoft Corp.",
+        "currentPrice": 487.48,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.5,
         "timeframe": "long",
-        "thesis": "Best-in-class bank. Net interest income benefiting from rates. Investment banking recovery coming.",
-        "riskFactors": [
-          "Credit losses",
-          "Regulatory capital",
-          "Rate sensitivity"
-        ],
-        "sector": "finance",
-        "entryPrice": 183.78,
-        "targetPrice": 215.66,
-        "marketCap": 1300935478989
+        "thesis": "MSFT faces headwinds.",
+        "riskFactors": [],
+        "sector": "technology",
+        "entryPrice": 487.48,
+        "targetPrice": null,
+        "stopLoss": null,
+        "marketCap": null
       },
       {
-        "ticker": "JNJ",
-        "companyName": "Johnson & Johnson",
-        "currentPrice": 146.55,
-        "priceChange": 0.56,
-        "priceChangePercent": 0.38,
-        "convictionScore": 0.72,
+        "ticker": "TSLA",
+        "companyName": "Tesla Inc.",
+        "currentPrice": 454.43,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.5,
         "timeframe": "long",
-        "thesis": "Pharma pipeline strong post-split. MedTech recovery. Dividend aristocrat with pricing power.",
-        "riskFactors": [
-          "Litigation risk",
-          "Patent cliffs",
-          "Competition"
-        ],
-        "sector": "healthcare",
-        "entryPrice": 143.62,
-        "targetPrice": 168.53,
-        "marketCap": 1471008620808
-      },
-      {
-        "ticker": "XOM",
-        "companyName": "Exxon Mobil",
-        "currentPrice": 106.49,
-        "priceChange": 0.82,
-        "priceChangePercent": 0.78,
-        "convictionScore": 0.68,
-        "timeframe": "long",
-        "thesis": "Low-cost producer. Pioneer acquisition accretive. Strong capital return program.",
-        "riskFactors": [
-          "Oil price volatility",
-          "Energy transition",
-          "Regulatory pressure"
-        ],
-        "sector": "energy",
-        "entryPrice": 104.36,
-        "targetPrice": 122.46,
-        "marketCap": 536288410092
-      },
-      {
-        "ticker": "PG",
-        "companyName": "Procter & Gamble",
-        "currentPrice": 156.45,
-        "priceChange": 0.55,
-        "priceChangePercent": 0.35,
-        "convictionScore": 0.65,
-        "timeframe": "long",
-        "thesis": "Pricing power demonstrated. Volume recovery in emerging markets. Innovation pipeline strong.",
-        "riskFactors": [
-          "Input costs",
-          "Private label competition",
-          "Currency headwinds"
-        ],
+        "thesis": "TSLA faces headwinds.",
+        "riskFactors": [],
         "sector": "consumer",
-        "entryPrice": 153.32,
-        "targetPrice": 179.92,
-        "marketCap": 1472621745528
+        "entryPrice": 454.43,
+        "targetPrice": null,
+        "stopLoss": null,
+        "marketCap": null
+      },
+      {
+        "ticker": "V",
+        "companyName": "Visa Inc.",
+        "currentPrice": 353.62,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.5,
+        "timeframe": "long",
+        "thesis": "V faces headwinds.",
+        "riskFactors": [],
+        "sector": "finance",
+        "entryPrice": 353.62,
+        "targetPrice": null,
+        "stopLoss": null,
+        "marketCap": null
+      },
+      {
+        "ticker": "META",
+        "companyName": "Meta Platforms Inc.",
+        "currentPrice": 665.95,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.5,
+        "timeframe": "long",
+        "thesis": "META faces headwinds.",
+        "riskFactors": [],
+        "sector": "communications",
+        "entryPrice": 665.95,
+        "targetPrice": null,
+        "stopLoss": null,
+        "marketCap": null
       }
     ]
   },
@@ -296,3748 +103,456 @@
     "AAPL": {
       "ticker": "AAPL",
       "companyName": "Apple Inc.",
-      "currentPrice": 224.01,
-      "priceChange": 1.27,
-      "priceChangePercent": 0.57,
-      "convictionScore": 0.74,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in technology sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
+      "currentPrice": 273.08,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.5,
+      "timeframe": "long",
+      "thesis": "AAPL faces headwinds.",
+      "riskFactors": [],
       "sector": "technology",
-      "entryPrice": 219.53,
-      "targetPrice": 257.61,
-      "marketCap": 1600799922751,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 216.41,
-          "high": 217.81,
-          "low": 214.6,
-          "close": 215.2,
-          "volume": 41995065
-        },
-        {
-          "time": "2025-12-02",
-          "open": 215.2,
-          "high": 215.79,
-          "low": 215.06,
-          "close": 215.58,
-          "volume": 59653589
-        },
-        {
-          "time": "2025-12-03",
-          "open": 215.58,
-          "high": 218.04,
-          "low": 214.41,
-          "close": 216.54,
-          "volume": 30484717
-        },
-        {
-          "time": "2025-12-04",
-          "open": 216.54,
-          "high": 219.52,
-          "low": 215.26,
-          "close": 217.89,
-          "volume": 32733481
-        },
-        {
-          "time": "2025-12-05",
-          "open": 217.89,
-          "high": 221.89,
-          "low": 217.18,
-          "close": 219.94,
-          "volume": 30839952
-        },
-        {
-          "time": "2025-12-08",
-          "open": 219.94,
-          "high": 221.54,
-          "low": 219.57,
-          "close": 219.8,
-          "volume": 39054929
-        },
-        {
-          "time": "2025-12-09",
-          "open": 219.8,
-          "high": 220.72,
-          "low": 218.15,
-          "close": 218.68,
-          "volume": 55312480
-        },
-        {
-          "time": "2025-12-10",
-          "open": 218.68,
-          "high": 220.34,
-          "low": 217.7,
-          "close": 218.74,
-          "volume": 50361052
-        },
-        {
-          "time": "2025-12-11",
-          "open": 218.74,
-          "high": 219.94,
-          "low": 217.92,
-          "close": 218.77,
-          "volume": 31755789
-        },
-        {
-          "time": "2025-12-12",
-          "open": 218.77,
-          "high": 221.91,
-          "low": 217.43,
-          "close": 220.07,
-          "volume": 30271522
-        },
-        {
-          "time": "2025-12-15",
-          "open": 220.07,
-          "high": 222.02,
-          "low": 217.79,
-          "close": 219.04,
-          "volume": 18205958
-        },
-        {
-          "time": "2025-12-16",
-          "open": 219.04,
-          "high": 219.61,
-          "low": 217.31,
-          "close": 219.49,
-          "volume": 20161363
-        },
-        {
-          "time": "2025-12-17",
-          "open": 219.49,
-          "high": 220.28,
-          "low": 218.53,
-          "close": 219.6,
-          "volume": 26936531
-        },
-        {
-          "time": "2025-12-18",
-          "open": 219.6,
-          "high": 221.8,
-          "low": 218.56,
-          "close": 219.64,
-          "volume": 33922663
-        },
-        {
-          "time": "2025-12-19",
-          "open": 219.64,
-          "high": 220.09,
-          "low": 216.63,
-          "close": 218.42,
-          "volume": 53290354
-        },
-        {
-          "time": "2025-12-22",
-          "open": 218.42,
-          "high": 219.06,
-          "low": 216.08,
-          "close": 216.36,
-          "volume": 23052971
-        },
-        {
-          "time": "2025-12-23",
-          "open": 216.36,
-          "high": 218.71,
-          "low": 214.31,
-          "close": 217.59,
-          "volume": 24208228
-        },
-        {
-          "time": "2025-12-24",
-          "open": 217.59,
-          "high": 221.86,
-          "low": 215.91,
-          "close": 219.71,
-          "volume": 54317012
-        },
-        {
-          "time": "2025-12-25",
-          "open": 219.71,
-          "high": 220.94,
-          "low": 219.25,
-          "close": 220.63,
-          "volume": 46703262
-        },
-        {
-          "time": "2025-12-26",
-          "open": 220.63,
-          "high": 222.8,
-          "low": 220.51,
-          "close": 222.63,
-          "volume": 33290690
-        },
-        {
-          "time": "2025-12-29",
-          "open": 222.63,
-          "high": 223.66,
-          "low": 220.93,
-          "close": 222.74,
-          "volume": 35363344
-        },
-        {
-          "time": "2025-12-30",
-          "open": 222.74,
-          "high": 224.11,
-          "low": 221.07,
-          "close": 224.01,
-          "volume": 23217836
-        }
-      ],
-      "relatedNews": [
-        {
-          "id": "c2",
-          "headline": "Apple Vision Pro Sales Exceed Initial Forecasts",
-          "source": "CNBC",
-          "url": "https://cnbc.com/c2",
-          "publishedAt": "2025-12-30T21:30:14.075Z",
-          "category": "company",
-          "relevanceScore": 0.88,
-          "tickersMentioned": [
-            "AAPL"
-          ],
-          "excerpt": "Spatial computing device seeing strong enterprise adoption."
-        }
-      ],
+      "entryPrice": 273.08,
+      "targetPrice": null,
+      "stopLoss": null,
+      "marketCap": null,
+      "priceHistory": [],
+      "relatedNews": [],
       "fundamentals": {
-        "peTrailing": 28.8,
-        "peForward": 29,
-        "pegRatio": 2.89,
-        "priceToBook": 6.83,
-        "revenueGrowth": 0.196,
-        "profitMargin": 0.102,
-        "dividendYield": 0.0222,
-        "beta": 1.32,
-        "fiftyTwoWeekHigh": 268.81,
-        "fiftyTwoWeekLow": 168.01,
-        "avgVolume": 24348024
+        "peTrailing": null,
+        "peForward": null,
+        "pegRatio": null,
+        "priceToBook": null,
+        "revenueGrowth": null,
+        "profitMargin": null,
+        "dividendYield": null,
+        "beta": null,
+        "fiftyTwoWeekHigh": null,
+        "fiftyTwoWeekLow": null,
+        "avgVolume": null
       }
     },
     "MSFT": {
       "ticker": "MSFT",
       "companyName": "Microsoft Corp.",
-      "currentPrice": 416.33,
-      "priceChange": 1.02,
-      "priceChangePercent": 0.25,
-      "convictionScore": 0.81,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in technology sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
+      "currentPrice": 487.48,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.5,
+      "timeframe": "long",
+      "thesis": "MSFT faces headwinds.",
+      "riskFactors": [],
       "sector": "technology",
-      "entryPrice": 408,
-      "targetPrice": 478.78,
-      "marketCap": 3432715846341,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 399.47,
-          "high": 401.88,
-          "low": 396.82,
-          "close": 397.91,
-          "volume": 56741433
-        },
-        {
-          "time": "2025-12-02",
-          "open": 397.91,
-          "high": 401.39,
-          "low": 393,
-          "close": 396.04,
-          "volume": 40836174
-        },
-        {
-          "time": "2025-12-03",
-          "open": 396.04,
-          "high": 400.76,
-          "low": 395.77,
-          "close": 397.95,
-          "volume": 36647634
-        },
-        {
-          "time": "2025-12-04",
-          "open": 397.95,
-          "high": 401.4,
-          "low": 397.59,
-          "close": 400.63,
-          "volume": 38523210
-        },
-        {
-          "time": "2025-12-05",
-          "open": 400.63,
-          "high": 403.3,
-          "low": 398.56,
-          "close": 402.64,
-          "volume": 48909044
-        },
-        {
-          "time": "2025-12-08",
-          "open": 402.64,
-          "high": 408.29,
-          "low": 400.53,
-          "close": 405.67,
-          "volume": 45987124
-        },
-        {
-          "time": "2025-12-09",
-          "open": 405.67,
-          "high": 410.2,
-          "low": 403.7,
-          "close": 407.42,
-          "volume": 16882732
-        },
-        {
-          "time": "2025-12-10",
-          "open": 407.42,
-          "high": 408.38,
-          "low": 404.54,
-          "close": 406.85,
-          "volume": 18713755
-        },
-        {
-          "time": "2025-12-11",
-          "open": 406.85,
-          "high": 410.86,
-          "low": 404.95,
-          "close": 410.14,
-          "volume": 28218654
-        },
-        {
-          "time": "2025-12-12",
-          "open": 410.14,
-          "high": 410.48,
-          "low": 404.96,
-          "close": 408.35,
-          "volume": 49725464
-        },
-        {
-          "time": "2025-12-15",
-          "open": 408.35,
-          "high": 411.77,
-          "low": 404.43,
-          "close": 410.54,
-          "volume": 48627704
-        },
-        {
-          "time": "2025-12-16",
-          "open": 410.54,
-          "high": 416.45,
-          "low": 409.21,
-          "close": 412.46,
-          "volume": 35393433
-        },
-        {
-          "time": "2025-12-17",
-          "open": 412.46,
-          "high": 414.83,
-          "low": 409.98,
-          "close": 410.27,
-          "volume": 38249150
-        },
-        {
-          "time": "2025-12-18",
-          "open": 410.27,
-          "high": 414.88,
-          "low": 407.18,
-          "close": 413.61,
-          "volume": 54285323
-        },
-        {
-          "time": "2025-12-19",
-          "open": 413.61,
-          "high": 417.73,
-          "low": 407.93,
-          "close": 410.58,
-          "volume": 42268375
-        },
-        {
-          "time": "2025-12-22",
-          "open": 410.58,
-          "high": 413.28,
-          "low": 406.15,
-          "close": 409.9,
-          "volume": 22897771
-        },
-        {
-          "time": "2025-12-23",
-          "open": 409.9,
-          "high": 415.29,
-          "low": 406.06,
-          "close": 413.93,
-          "volume": 44280145
-        },
-        {
-          "time": "2025-12-24",
-          "open": 413.93,
-          "high": 419.78,
-          "low": 411.79,
-          "close": 417.8,
-          "volume": 34501839
-        },
-        {
-          "time": "2025-12-25",
-          "open": 417.8,
-          "high": 418.9,
-          "low": 415.73,
-          "close": 418.32,
-          "volume": 38741728
-        },
-        {
-          "time": "2025-12-26",
-          "open": 418.32,
-          "high": 419.31,
-          "low": 417.17,
-          "close": 418.24,
-          "volume": 24147545
-        },
-        {
-          "time": "2025-12-29",
-          "open": 418.24,
-          "high": 419.07,
-          "low": 414.74,
-          "close": 415.31,
-          "volume": 53759274
-        },
-        {
-          "time": "2025-12-30",
-          "open": 415.31,
-          "high": 416.96,
-          "low": 411.16,
-          "close": 416.33,
-          "volume": 57074527
-        }
-      ],
-      "relatedNews": [
-        {
-          "id": "c3",
-          "headline": "Microsoft Azure Revenue Growth Accelerates to 29%",
-          "source": "Bloomberg",
-          "url": "https://bloomberg.com/c3",
-          "publishedAt": "2025-12-30T20:30:14.075Z",
-          "category": "earnings",
-          "relevanceScore": 0.92,
-          "tickersMentioned": [
-            "MSFT"
-          ],
-          "excerpt": "Cloud business shows re-acceleration driven by AI workloads."
-        }
-      ],
+      "entryPrice": 487.48,
+      "targetPrice": null,
+      "stopLoss": null,
+      "marketCap": null,
+      "priceHistory": [],
+      "relatedNews": [],
       "fundamentals": {
-        "peTrailing": 42.5,
-        "peForward": 23.6,
-        "pegRatio": 2.85,
-        "priceToBook": 8.77,
-        "revenueGrowth": 0.082,
-        "profitMargin": 0.121,
-        "dividendYield": 0.0247,
-        "beta": 1.2,
-        "fiftyTwoWeekHigh": 499.6,
-        "fiftyTwoWeekLow": 312.25,
-        "avgVolume": 44585443
-      }
-    },
-    "NVDA": {
-      "ticker": "NVDA",
-      "companyName": "NVIDIA Corp.",
-      "currentPrice": 871.17,
-      "priceChange": -4.84,
-      "priceChangePercent": -0.55,
-      "convictionScore": 0.53,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in technology sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
-      "sector": "technology",
-      "entryPrice": 853.75,
-      "targetPrice": 1001.85,
-      "marketCap": 12372982303682,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 847.88,
-          "high": 852.93,
-          "low": 836.69,
-          "close": 843.04,
-          "volume": 33765642
-        },
-        {
-          "time": "2025-12-02",
-          "open": 843.04,
-          "high": 857.29,
-          "low": 842.32,
-          "close": 850.67,
-          "volume": 46147859
-        },
-        {
-          "time": "2025-12-03",
-          "open": 850.67,
-          "high": 856.97,
-          "low": 847.13,
-          "close": 849.78,
-          "volume": 49704753
-        },
-        {
-          "time": "2025-12-04",
-          "open": 849.78,
-          "high": 859.77,
-          "low": 845.12,
-          "close": 858.1,
-          "volume": 13862188
-        },
-        {
-          "time": "2025-12-05",
-          "open": 858.1,
-          "high": 868.04,
-          "low": 852.11,
-          "close": 866.1,
-          "volume": 42451094
-        },
-        {
-          "time": "2025-12-08",
-          "open": 866.1,
-          "high": 866.75,
-          "low": 859.05,
-          "close": 866.3,
-          "volume": 50340400
-        },
-        {
-          "time": "2025-12-09",
-          "open": 866.3,
-          "high": 871.63,
-          "low": 855.86,
-          "close": 859.19,
-          "volume": 50852035
-        },
-        {
-          "time": "2025-12-10",
-          "open": 859.19,
-          "high": 866.58,
-          "low": 858.48,
-          "close": 860.46,
-          "volume": 57643264
-        },
-        {
-          "time": "2025-12-11",
-          "open": 860.46,
-          "high": 868.45,
-          "low": 854.1,
-          "close": 862.61,
-          "volume": 39612115
-        },
-        {
-          "time": "2025-12-12",
-          "open": 862.61,
-          "high": 879.24,
-          "low": 862.27,
-          "close": 871.37,
-          "volume": 42981874
-        },
-        {
-          "time": "2025-12-15",
-          "open": 871.37,
-          "high": 879.36,
-          "low": 866.35,
-          "close": 875.13,
-          "volume": 20946707
-        },
-        {
-          "time": "2025-12-16",
-          "open": 875.13,
-          "high": 881.62,
-          "low": 866.55,
-          "close": 867.51,
-          "volume": 52038288
-        },
-        {
-          "time": "2025-12-17",
-          "open": 867.51,
-          "high": 871.2,
-          "low": 859.8,
-          "close": 868.52,
-          "volume": 27220961
-        },
-        {
-          "time": "2025-12-18",
-          "open": 868.52,
-          "high": 883.03,
-          "low": 861.79,
-          "close": 875.13,
-          "volume": 23055833
-        },
-        {
-          "time": "2025-12-19",
-          "open": 875.13,
-          "high": 889.73,
-          "low": 867.33,
-          "close": 883.53,
-          "volume": 57284323
-        },
-        {
-          "time": "2025-12-22",
-          "open": 883.53,
-          "high": 887.45,
-          "low": 877.17,
-          "close": 879.76,
-          "volume": 32195305
-        },
-        {
-          "time": "2025-12-23",
-          "open": 879.76,
-          "high": 881,
-          "low": 873.15,
-          "close": 875.74,
-          "volume": 44059958
-        },
-        {
-          "time": "2025-12-24",
-          "open": 875.74,
-          "high": 885.51,
-          "low": 868.6,
-          "close": 880.67,
-          "volume": 57900239
-        },
-        {
-          "time": "2025-12-25",
-          "open": 880.67,
-          "high": 888.93,
-          "low": 871.14,
-          "close": 874.94,
-          "volume": 21240760
-        },
-        {
-          "time": "2025-12-26",
-          "open": 874.94,
-          "high": 875.5,
-          "low": 872.02,
-          "close": 874.13,
-          "volume": 46410758
-        },
-        {
-          "time": "2025-12-29",
-          "open": 874.13,
-          "high": 884.29,
-          "low": 868.61,
-          "close": 876.01,
-          "volume": 15101289
-        },
-        {
-          "time": "2025-12-30",
-          "open": 876.01,
-          "high": 881.54,
-          "low": 864.75,
-          "close": 871.17,
-          "volume": 18413864
-        }
-      ],
-      "relatedNews": [
-        {
-          "id": "c1",
-          "headline": "NVIDIA Unveils Next-Generation Blackwell AI Chips",
-          "source": "TechCrunch",
-          "url": "https://techcrunch.com/1",
-          "publishedAt": "2025-12-30T22:20:14.075Z",
-          "category": "company",
-          "relevanceScore": 0.96,
-          "tickersMentioned": [
-            "NVDA"
-          ],
-          "excerpt": "The new architecture promises 4x improvement in AI training efficiency."
-        }
-      ],
-      "fundamentals": {
-        "peTrailing": 40.5,
-        "peForward": 30.8,
-        "pegRatio": 1.79,
-        "priceToBook": 6.14,
-        "revenueGrowth": 0.142,
-        "profitMargin": 0.256,
-        "dividendYield": 0.0271,
-        "beta": 1.34,
-        "fiftyTwoWeekHigh": 1045.4,
-        "fiftyTwoWeekLow": 653.38,
-        "avgVolume": 41278270
-      }
-    },
-    "GOOGL": {
-      "ticker": "GOOGL",
-      "companyName": "Alphabet Inc.",
-      "currentPrice": 176.64,
-      "priceChange": 1.39,
-      "priceChangePercent": 0.79,
-      "convictionScore": 0.58,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in communications sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
-      "sector": "communications",
-      "entryPrice": 173.11,
-      "targetPrice": 203.14,
-      "marketCap": 2135786232222,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 169.29,
-          "high": 169.78,
-          "low": 167.7,
-          "close": 169.26,
-          "volume": 11545814
-        },
-        {
-          "time": "2025-12-02",
-          "open": 169.26,
-          "high": 170.36,
-          "low": 168.95,
-          "close": 169.73,
-          "volume": 27843092
-        },
-        {
-          "time": "2025-12-03",
-          "open": 169.73,
-          "high": 170.88,
-          "low": 168.57,
-          "close": 170.34,
-          "volume": 58803872
-        },
-        {
-          "time": "2025-12-04",
-          "open": 170.34,
-          "high": 171.26,
-          "low": 169.16,
-          "close": 169.52,
-          "volume": 14302267
-        },
-        {
-          "time": "2025-12-05",
-          "open": 169.52,
-          "high": 169.7,
-          "low": 167.4,
-          "close": 168.32,
-          "volume": 55509955
-        },
-        {
-          "time": "2025-12-08",
-          "open": 168.32,
-          "high": 170.1,
-          "low": 167.33,
-          "close": 168.84,
-          "volume": 49552249
-        },
-        {
-          "time": "2025-12-09",
-          "open": 168.84,
-          "high": 170.08,
-          "low": 168.01,
-          "close": 169.9,
-          "volume": 16326617
-        },
-        {
-          "time": "2025-12-10",
-          "open": 169.9,
-          "high": 171.03,
-          "low": 168.09,
-          "close": 168.72,
-          "volume": 32654972
-        },
-        {
-          "time": "2025-12-11",
-          "open": 168.72,
-          "high": 170.38,
-          "low": 168.58,
-          "close": 170.07,
-          "volume": 20314935
-        },
-        {
-          "time": "2025-12-12",
-          "open": 170.07,
-          "high": 172.97,
-          "low": 168.79,
-          "close": 171.81,
-          "volume": 36152228
-        },
-        {
-          "time": "2025-12-15",
-          "open": 171.81,
-          "high": 174.13,
-          "low": 171.23,
-          "close": 172.87,
-          "volume": 48491178
-        },
-        {
-          "time": "2025-12-16",
-          "open": 172.87,
-          "high": 175.59,
-          "low": 172.66,
-          "close": 174.05,
-          "volume": 56878099
-        },
-        {
-          "time": "2025-12-17",
-          "open": 174.05,
-          "high": 175.59,
-          "low": 173.33,
-          "close": 173.74,
-          "volume": 13745131
-        },
-        {
-          "time": "2025-12-18",
-          "open": 173.74,
-          "high": 175.64,
-          "low": 173.22,
-          "close": 174.71,
-          "volume": 58436631
-        },
-        {
-          "time": "2025-12-19",
-          "open": 174.71,
-          "high": 175.31,
-          "low": 173.14,
-          "close": 174.33,
-          "volume": 48356186
-        },
-        {
-          "time": "2025-12-22",
-          "open": 174.33,
-          "high": 174.42,
-          "low": 173.88,
-          "close": 174.4,
-          "volume": 33995305
-        },
-        {
-          "time": "2025-12-23",
-          "open": 174.4,
-          "high": 175.12,
-          "low": 174.19,
-          "close": 174.97,
-          "volume": 31970185
-        },
-        {
-          "time": "2025-12-24",
-          "open": 174.97,
-          "high": 175.71,
-          "low": 172.59,
-          "close": 174.07,
-          "volume": 55640029
-        },
-        {
-          "time": "2025-12-25",
-          "open": 174.07,
-          "high": 176.6,
-          "low": 173.3,
-          "close": 175.55,
-          "volume": 31662309
-        },
-        {
-          "time": "2025-12-26",
-          "open": 175.55,
-          "high": 178.09,
-          "low": 174.67,
-          "close": 176.63,
-          "volume": 47322079
-        },
-        {
-          "time": "2025-12-29",
-          "open": 176.63,
-          "high": 177.13,
-          "low": 173.5,
-          "close": 175.25,
-          "volume": 57843833
-        },
-        {
-          "time": "2025-12-30",
-          "open": 175.25,
-          "high": 177.11,
-          "low": 175.24,
-          "close": 176.64,
-          "volume": 28040175
-        }
-      ],
-      "relatedNews": [
-        {
-          "id": "c7",
-          "headline": "Alphabets Waymo Expands to Three New Cities",
-          "source": "Reuters",
-          "url": "https://reuters.com/c7",
-          "publishedAt": "2025-12-30T16:30:14.075Z",
-          "category": "company",
-          "relevanceScore": 0.75,
-          "tickersMentioned": [
-            "GOOGL"
-          ],
-          "excerpt": "Autonomous taxi service launching in Austin, Atlanta, and Miami."
-        }
-      ],
-      "fundamentals": {
-        "peTrailing": 36.1,
-        "peForward": 38.5,
-        "pegRatio": 2.8,
-        "priceToBook": 12.49,
-        "revenueGrowth": 0.18,
-        "profitMargin": 0.205,
-        "dividendYield": 0.0299,
-        "beta": 0.84,
-        "fiftyTwoWeekHigh": 211.97,
-        "fiftyTwoWeekLow": 132.48,
-        "avgVolume": 69708968
-      }
-    },
-    "AMZN": {
-      "ticker": "AMZN",
-      "companyName": "Amazon.com Inc.",
-      "currentPrice": 178.12,
-      "priceChange": 0.61,
-      "priceChangePercent": 0.34,
-      "convictionScore": 0.57,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in consumer sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
-      "sector": "consumer",
-      "entryPrice": 174.56,
-      "targetPrice": 204.84,
-      "marketCap": 2174526055225,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 179.07,
-          "high": 180.53,
-          "low": 176.34,
-          "close": 178.02,
-          "volume": 38387926
-        },
-        {
-          "time": "2025-12-02",
-          "open": 178.02,
-          "high": 179.69,
-          "low": 176.54,
-          "close": 177.56,
-          "volume": 11313867
-        },
-        {
-          "time": "2025-12-03",
-          "open": 177.56,
-          "high": 179.11,
-          "low": 176.19,
-          "close": 176.95,
-          "volume": 10666771
-        },
-        {
-          "time": "2025-12-04",
-          "open": 176.95,
-          "high": 178.2,
-          "low": 176.69,
-          "close": 177.82,
-          "volume": 19453535
-        },
-        {
-          "time": "2025-12-05",
-          "open": 177.82,
-          "high": 178.86,
-          "low": 177.15,
-          "close": 178.7,
-          "volume": 28931383
-        },
-        {
-          "time": "2025-12-08",
-          "open": 178.7,
-          "high": 180.11,
-          "low": 176.46,
-          "close": 177.44,
-          "volume": 15339773
-        },
-        {
-          "time": "2025-12-09",
-          "open": 177.44,
-          "high": 178.72,
-          "low": 176.96,
-          "close": 177.35,
-          "volume": 17370279
-        },
-        {
-          "time": "2025-12-10",
-          "open": 177.35,
-          "high": 179.22,
-          "low": 176.91,
-          "close": 178.27,
-          "volume": 47288534
-        },
-        {
-          "time": "2025-12-11",
-          "open": 178.27,
-          "high": 178.35,
-          "low": 177.31,
-          "close": 178.09,
-          "volume": 18533348
-        },
-        {
-          "time": "2025-12-12",
-          "open": 178.09,
-          "high": 179.75,
-          "low": 176.36,
-          "close": 177.83,
-          "volume": 56152238
-        },
-        {
-          "time": "2025-12-15",
-          "open": 177.83,
-          "high": 179,
-          "low": 174.71,
-          "close": 176.23,
-          "volume": 13225698
-        },
-        {
-          "time": "2025-12-16",
-          "open": 176.23,
-          "high": 177.96,
-          "low": 174.81,
-          "close": 177.88,
-          "volume": 51977751
-        },
-        {
-          "time": "2025-12-17",
-          "open": 177.88,
-          "high": 180.09,
-          "low": 176.42,
-          "close": 179.35,
-          "volume": 23860273
-        },
-        {
-          "time": "2025-12-18",
-          "open": 179.35,
-          "high": 180.4,
-          "low": 176.43,
-          "close": 177.99,
-          "volume": 42738171
-        },
-        {
-          "time": "2025-12-19",
-          "open": 177.99,
-          "high": 179.54,
-          "low": 176.65,
-          "close": 176.78,
-          "volume": 14939900
-        },
-        {
-          "time": "2025-12-22",
-          "open": 176.78,
-          "high": 178.6,
-          "low": 175.2,
-          "close": 177.28,
-          "volume": 17513829
-        },
-        {
-          "time": "2025-12-23",
-          "open": 177.28,
-          "high": 177.93,
-          "low": 174.99,
-          "close": 175.92,
-          "volume": 54889964
-        },
-        {
-          "time": "2025-12-24",
-          "open": 175.92,
-          "high": 178.47,
-          "low": 175.89,
-          "close": 177.14,
-          "volume": 25874319
-        },
-        {
-          "time": "2025-12-25",
-          "open": 177.14,
-          "high": 177.32,
-          "low": 176.11,
-          "close": 177.06,
-          "volume": 52353023
-        },
-        {
-          "time": "2025-12-26",
-          "open": 177.06,
-          "high": 178.81,
-          "low": 176.98,
-          "close": 178.74,
-          "volume": 17544023
-        },
-        {
-          "time": "2025-12-29",
-          "open": 178.74,
-          "high": 179.32,
-          "low": 177.14,
-          "close": 177.51,
-          "volume": 58997739
-        },
-        {
-          "time": "2025-12-30",
-          "open": 177.51,
-          "high": 179.35,
-          "low": 176.29,
-          "close": 178.12,
-          "volume": 50200750
-        }
-      ],
-      "relatedNews": [
-        {
-          "id": "c4",
-          "headline": "Amazon AWS Announces New AI Services at re:Invent",
-          "source": "AWS Blog",
-          "url": "https://aws.com/c4",
-          "publishedAt": "2025-12-30T19:30:14.075Z",
-          "category": "company",
-          "relevanceScore": 0.85,
-          "tickersMentioned": [
-            "AMZN"
-          ],
-          "excerpt": "New Bedrock features and custom chip announcements."
-        }
-      ],
-      "fundamentals": {
-        "peTrailing": 29.9,
-        "peForward": 23.2,
-        "pegRatio": 2.35,
-        "priceToBook": 4.2,
-        "revenueGrowth": 0.116,
-        "profitMargin": 0.167,
-        "dividendYield": 0.0056,
-        "beta": 1.22,
-        "fiftyTwoWeekHigh": 213.74,
-        "fiftyTwoWeekLow": 133.59,
-        "avgVolume": 59575626
-      }
-    },
-    "META": {
-      "ticker": "META",
-      "companyName": "Meta Platforms Inc.",
-      "currentPrice": 472.48,
-      "priceChange": -2.93,
-      "priceChangePercent": -0.62,
-      "convictionScore": 0.79,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in communications sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
-      "sector": "communications",
-      "entryPrice": 463.03,
-      "targetPrice": 543.35,
-      "marketCap": 5694902085716,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 470.25,
-          "high": 473.61,
-          "low": 466.35,
-          "close": 471.05,
-          "volume": 52450586
-        },
-        {
-          "time": "2025-12-02",
-          "open": 471.05,
-          "high": 475.06,
-          "low": 469.29,
-          "close": 469.54,
-          "volume": 16115149
-        },
-        {
-          "time": "2025-12-03",
-          "open": 469.54,
-          "high": 470.62,
-          "low": 463.51,
-          "close": 467.93,
-          "volume": 36232226
-        },
-        {
-          "time": "2025-12-04",
-          "open": 467.93,
-          "high": 470.29,
-          "low": 464.5,
-          "close": 469.06,
-          "volume": 58274320
-        },
-        {
-          "time": "2025-12-05",
-          "open": 469.06,
-          "high": 473.49,
-          "low": 467.96,
-          "close": 469.77,
-          "volume": 15873161
-        },
-        {
-          "time": "2025-12-08",
-          "open": 469.77,
-          "high": 470.5,
-          "low": 465.36,
-          "close": 468.47,
-          "volume": 14382810
-        },
-        {
-          "time": "2025-12-09",
-          "open": 468.47,
-          "high": 471.25,
-          "low": 466.22,
-          "close": 466.85,
-          "volume": 18728632
-        },
-        {
-          "time": "2025-12-10",
-          "open": 466.85,
-          "high": 470.81,
-          "low": 462.72,
-          "close": 464.61,
-          "volume": 57142310
-        },
-        {
-          "time": "2025-12-11",
-          "open": 464.61,
-          "high": 469.9,
-          "low": 462.93,
-          "close": 467.85,
-          "volume": 45667941
-        },
-        {
-          "time": "2025-12-12",
-          "open": 467.85,
-          "high": 475.35,
-          "low": 466.72,
-          "close": 471.67,
-          "volume": 40052163
-        },
-        {
-          "time": "2025-12-15",
-          "open": 471.67,
-          "high": 476.23,
-          "low": 469.19,
-          "close": 473.23,
-          "volume": 12160478
-        },
-        {
-          "time": "2025-12-16",
-          "open": 473.23,
-          "high": 476.36,
-          "low": 465.28,
-          "close": 469.47,
-          "volume": 49023682
-        },
-        {
-          "time": "2025-12-17",
-          "open": 469.47,
-          "high": 473.14,
-          "low": 467.11,
-          "close": 470.96,
-          "volume": 52508740
-        },
-        {
-          "time": "2025-12-18",
-          "open": 470.96,
-          "high": 471.5,
-          "low": 469.08,
-          "close": 470.9,
-          "volume": 37336388
-        },
-        {
-          "time": "2025-12-19",
-          "open": 470.9,
-          "high": 477.13,
-          "low": 467.55,
-          "close": 472.78,
-          "volume": 25408140
-        },
-        {
-          "time": "2025-12-22",
-          "open": 472.78,
-          "high": 474.12,
-          "low": 469.55,
-          "close": 470.51,
-          "volume": 49396886
-        },
-        {
-          "time": "2025-12-23",
-          "open": 470.51,
-          "high": 474,
-          "low": 464.62,
-          "close": 468.61,
-          "volume": 29817096
-        },
-        {
-          "time": "2025-12-24",
-          "open": 468.61,
-          "high": 474.34,
-          "low": 467.5,
-          "close": 472.89,
-          "volume": 11705416
-        },
-        {
-          "time": "2025-12-25",
-          "open": 472.89,
-          "high": 478.12,
-          "low": 470.83,
-          "close": 474.6,
-          "volume": 29194255
-        },
-        {
-          "time": "2025-12-26",
-          "open": 474.6,
-          "high": 479.01,
-          "low": 469.73,
-          "close": 471.93,
-          "volume": 33485296
-        },
-        {
-          "time": "2025-12-29",
-          "open": 471.93,
-          "high": 478.7,
-          "low": 469.77,
-          "close": 475.41,
-          "volume": 24439866
-        },
-        {
-          "time": "2025-12-30",
-          "open": 475.41,
-          "high": 479.74,
-          "low": 469.78,
-          "close": 472.48,
-          "volume": 54816795
-        }
-      ],
-      "relatedNews": [
-        {
-          "id": "c5",
-          "headline": "Metas Reality Labs Losses Narrow as Headset Sales Grow",
-          "source": "The Verge",
-          "url": "https://theverge.com/c5",
-          "publishedAt": "2025-12-30T18:30:14.075Z",
-          "category": "earnings",
-          "relevanceScore": 0.78,
-          "tickersMentioned": [
-            "META"
-          ],
-          "excerpt": "Quest 3 sales strong heading into holiday season."
-        }
-      ],
-      "fundamentals": {
-        "peTrailing": 33.3,
-        "peForward": 30,
-        "pegRatio": 2.4,
-        "priceToBook": 8.71,
-        "revenueGrowth": 0.107,
-        "profitMargin": 0.296,
-        "dividendYield": 0.0255,
-        "beta": 0.81,
-        "fiftyTwoWeekHigh": 566.98,
-        "fiftyTwoWeekLow": 354.36,
-        "avgVolume": 62519205
+        "peTrailing": null,
+        "peForward": null,
+        "pegRatio": null,
+        "priceToBook": null,
+        "revenueGrowth": null,
+        "profitMargin": null,
+        "dividendYield": null,
+        "beta": null,
+        "fiftyTwoWeekHigh": null,
+        "fiftyTwoWeekLow": null,
+        "avgVolume": null
       }
     },
     "TSLA": {
       "ticker": "TSLA",
       "companyName": "Tesla Inc.",
-      "currentPrice": 245.41,
-      "priceChange": 0.14,
-      "priceChangePercent": 0.06,
+      "currentPrice": 454.43,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
       "convictionScore": 0.5,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in consumer sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
+      "timeframe": "long",
+      "thesis": "TSLA faces headwinds.",
+      "riskFactors": [],
       "sector": "consumer",
-      "entryPrice": 240.5,
-      "targetPrice": 282.22,
-      "marketCap": 1919777853585,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 236.07,
-          "high": 239.79,
-          "low": 233.87,
-          "close": 237.67,
-          "volume": 28155648
-        },
-        {
-          "time": "2025-12-02",
-          "open": 237.67,
-          "high": 240.39,
-          "low": 237.47,
-          "close": 238.06,
-          "volume": 17396655
-        },
-        {
-          "time": "2025-12-03",
-          "open": 238.06,
-          "high": 240.44,
-          "low": 236.33,
-          "close": 236.9,
-          "volume": 29249741
-        },
-        {
-          "time": "2025-12-04",
-          "open": 236.9,
-          "high": 238.41,
-          "low": 232.91,
-          "close": 234.91,
-          "volume": 33694694
-        },
-        {
-          "time": "2025-12-05",
-          "open": 234.91,
-          "high": 238.28,
-          "low": 233.07,
-          "close": 236.15,
-          "volume": 19679359
-        },
-        {
-          "time": "2025-12-08",
-          "open": 236.15,
-          "high": 237.01,
-          "low": 235.51,
-          "close": 236.27,
-          "volume": 49754037
-        },
-        {
-          "time": "2025-12-09",
-          "open": 236.27,
-          "high": 239.01,
-          "low": 236.23,
-          "close": 236.94,
-          "volume": 57836405
-        },
-        {
-          "time": "2025-12-10",
-          "open": 236.94,
-          "high": 238.49,
-          "low": 235.7,
-          "close": 236.52,
-          "volume": 32947380
-        },
-        {
-          "time": "2025-12-11",
-          "open": 236.52,
-          "high": 237.61,
-          "low": 235.15,
-          "close": 236.33,
-          "volume": 20403846
-        },
-        {
-          "time": "2025-12-12",
-          "open": 236.33,
-          "high": 238.39,
-          "low": 236.15,
-          "close": 236.6,
-          "volume": 21887603
-        },
-        {
-          "time": "2025-12-15",
-          "open": 236.6,
-          "high": 239.8,
-          "low": 235.27,
-          "close": 238.93,
-          "volume": 21430203
-        },
-        {
-          "time": "2025-12-16",
-          "open": 238.93,
-          "high": 240.38,
-          "low": 237.88,
-          "close": 238.74,
-          "volume": 30866136
-        },
-        {
-          "time": "2025-12-17",
-          "open": 238.74,
-          "high": 241.33,
-          "low": 237.82,
-          "close": 240.71,
-          "volume": 57775035
-        },
-        {
-          "time": "2025-12-18",
-          "open": 240.71,
-          "high": 243.6,
-          "low": 238.98,
-          "close": 242.12,
-          "volume": 29489480
-        },
-        {
-          "time": "2025-12-19",
-          "open": 242.12,
-          "high": 243.27,
-          "low": 240.59,
-          "close": 241.85,
-          "volume": 45152407
-        },
-        {
-          "time": "2025-12-22",
-          "open": 241.85,
-          "high": 244.15,
-          "low": 239.87,
-          "close": 241.77,
-          "volume": 34048395
-        },
-        {
-          "time": "2025-12-23",
-          "open": 241.77,
-          "high": 243.11,
-          "low": 237.7,
-          "close": 239.49,
-          "volume": 29196089
-        },
-        {
-          "time": "2025-12-24",
-          "open": 239.49,
-          "high": 243,
-          "low": 239.38,
-          "close": 241.03,
-          "volume": 44300032
-        },
-        {
-          "time": "2025-12-25",
-          "open": 241.03,
-          "high": 243.16,
-          "low": 239.17,
-          "close": 242.03,
-          "volume": 42641870
-        },
-        {
-          "time": "2025-12-26",
-          "open": 242.03,
-          "high": 245.31,
-          "low": 241.78,
-          "close": 244.28,
-          "volume": 28781173
-        },
-        {
-          "time": "2025-12-29",
-          "open": 244.28,
-          "high": 247.55,
-          "low": 242.1,
-          "close": 245.27,
-          "volume": 52668681
-        },
-        {
-          "time": "2025-12-30",
-          "open": 245.27,
-          "high": 246.1,
-          "low": 242.95,
-          "close": 245.41,
-          "volume": 11079086
-        }
-      ],
-      "relatedNews": [
-        {
-          "id": "c6",
-          "headline": "Tesla Cybertruck Deliveries Ramp to 2,500 Per Week",
-          "source": "Electrek",
-          "url": "https://electrek.com/c6",
-          "publishedAt": "2025-12-30T17:30:14.075Z",
-          "category": "company",
-          "relevanceScore": 0.82,
-          "tickersMentioned": [
-            "TSLA"
-          ],
-          "excerpt": "Production improvements at Texas Gigafactory."
-        }
-      ],
+      "entryPrice": 454.43,
+      "targetPrice": null,
+      "stopLoss": null,
+      "marketCap": null,
+      "priceHistory": [],
+      "relatedNews": [],
       "fundamentals": {
-        "peTrailing": 27.5,
-        "peForward": 26.5,
-        "pegRatio": 2.31,
-        "priceToBook": 3.59,
-        "revenueGrowth": 0.09,
-        "profitMargin": 0.217,
-        "dividendYield": 0.0098,
-        "beta": 0.83,
-        "fiftyTwoWeekHigh": 294.49,
-        "fiftyTwoWeekLow": 184.06,
-        "avgVolume": 65929078
-      }
-    },
-    "JPM": {
-      "ticker": "JPM",
-      "companyName": "JPMorgan Chase",
-      "currentPrice": 187.53,
-      "priceChange": 1.2,
-      "priceChangePercent": 0.64,
-      "convictionScore": 0.61,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in finance sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
-      "sector": "finance",
-      "entryPrice": 183.78,
-      "targetPrice": 215.66,
-      "marketCap": 1300935478989,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 188.81,
-          "high": 189.46,
-          "low": 188.27,
-          "close": 188.62,
-          "volume": 40852061
-        },
-        {
-          "time": "2025-12-02",
-          "open": 188.62,
-          "high": 189.94,
-          "low": 187.57,
-          "close": 188.55,
-          "volume": 14371536
-        },
-        {
-          "time": "2025-12-03",
-          "open": 188.55,
-          "high": 189.51,
-          "low": 187.75,
-          "close": 188.51,
-          "volume": 49231714
-        },
-        {
-          "time": "2025-12-04",
-          "open": 188.51,
-          "high": 190.2,
-          "low": 186.51,
-          "close": 187.15,
-          "volume": 20107097
-        },
-        {
-          "time": "2025-12-05",
-          "open": 187.15,
-          "high": 190.17,
-          "low": 186.96,
-          "close": 188.32,
-          "volume": 50545232
-        },
-        {
-          "time": "2025-12-08",
-          "open": 188.32,
-          "high": 188.84,
-          "low": 186.55,
-          "close": 188.64,
-          "volume": 37091088
-        },
-        {
-          "time": "2025-12-09",
-          "open": 188.64,
-          "high": 189.29,
-          "low": 185.38,
-          "close": 186.87,
-          "volume": 51047384
-        },
-        {
-          "time": "2025-12-10",
-          "open": 186.87,
-          "high": 190.08,
-          "low": 186.52,
-          "close": 188.78,
-          "volume": 10622776
-        },
-        {
-          "time": "2025-12-11",
-          "open": 188.78,
-          "high": 189.34,
-          "low": 186.02,
-          "close": 187.77,
-          "volume": 18722940
-        },
-        {
-          "time": "2025-12-12",
-          "open": 187.77,
-          "high": 189.03,
-          "low": 185.13,
-          "close": 186.88,
-          "volume": 55656458
-        },
-        {
-          "time": "2025-12-15",
-          "open": 186.88,
-          "high": 188.13,
-          "low": 184.18,
-          "close": 185.76,
-          "volume": 42533662
-        },
-        {
-          "time": "2025-12-16",
-          "open": 185.76,
-          "high": 189.1,
-          "low": 185.49,
-          "close": 187.34,
-          "volume": 52333269
-        },
-        {
-          "time": "2025-12-17",
-          "open": 187.34,
-          "high": 188.69,
-          "low": 183.76,
-          "close": 185.6,
-          "volume": 56202359
-        },
-        {
-          "time": "2025-12-18",
-          "open": 185.6,
-          "high": 187.15,
-          "low": 184.84,
-          "close": 186.63,
-          "volume": 17473486
-        },
-        {
-          "time": "2025-12-19",
-          "open": 186.63,
-          "high": 188.06,
-          "low": 186.51,
-          "close": 187.97,
-          "volume": 18992851
-        },
-        {
-          "time": "2025-12-22",
-          "open": 187.97,
-          "high": 188.94,
-          "low": 186.18,
-          "close": 188.56,
-          "volume": 41315293
-        },
-        {
-          "time": "2025-12-23",
-          "open": 188.56,
-          "high": 189.67,
-          "low": 185.76,
-          "close": 187.17,
-          "volume": 22034514
-        },
-        {
-          "time": "2025-12-24",
-          "open": 187.17,
-          "high": 187.65,
-          "low": 185.93,
-          "close": 187.1,
-          "volume": 23325849
-        },
-        {
-          "time": "2025-12-25",
-          "open": 187.1,
-          "high": 190.49,
-          "low": 185.25,
-          "close": 188.79,
-          "volume": 42369837
-        },
-        {
-          "time": "2025-12-26",
-          "open": 188.79,
-          "high": 190.53,
-          "low": 187.21,
-          "close": 187.23,
-          "volume": 12034425
-        },
-        {
-          "time": "2025-12-29",
-          "open": 187.23,
-          "high": 187.32,
-          "low": 184.46,
-          "close": 186.33,
-          "volume": 33868075
-        },
-        {
-          "time": "2025-12-30",
-          "open": 186.33,
-          "high": 188.74,
-          "low": 185.41,
-          "close": 187.53,
-          "volume": 47806314
-        }
-      ],
-      "relatedNews": [
-        {
-          "id": "c8",
-          "headline": "JPMorgan Raises Dividend, Announces 30B Buyback",
-          "source": "WSJ",
-          "url": "https://wsj.com/c8",
-          "publishedAt": "2025-12-30T15:30:14.075Z",
-          "category": "company",
-          "relevanceScore": 0.8,
-          "tickersMentioned": [
-            "JPM"
-          ],
-          "excerpt": "Bank passes stress test with flying colors, boosts capital return."
-        }
-      ],
-      "fundamentals": {
-        "peTrailing": 37.3,
-        "peForward": 38.1,
-        "pegRatio": 2.12,
-        "priceToBook": 8.49,
-        "revenueGrowth": 0.193,
-        "profitMargin": 0.245,
-        "dividendYield": 0.0171,
-        "beta": 1.06,
-        "fiftyTwoWeekHigh": 225.04,
-        "fiftyTwoWeekLow": 140.65,
-        "avgVolume": 66984494
+        "peTrailing": null,
+        "peForward": null,
+        "pegRatio": null,
+        "priceToBook": null,
+        "revenueGrowth": null,
+        "profitMargin": null,
+        "dividendYield": null,
+        "beta": null,
+        "fiftyTwoWeekHigh": null,
+        "fiftyTwoWeekLow": null,
+        "avgVolume": null
       }
     },
     "V": {
       "ticker": "V",
       "companyName": "Visa Inc.",
-      "currentPrice": 272.02,
-      "priceChange": 2.8,
-      "priceChangePercent": 1.04,
-      "convictionScore": 0.53,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in finance sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
+      "currentPrice": 353.62,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.5,
+      "timeframe": "long",
+      "thesis": "V faces headwinds.",
+      "riskFactors": [],
       "sector": "finance",
-      "entryPrice": 266.58,
-      "targetPrice": 312.82,
-      "marketCap": 3338674797991,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 271.04,
-          "high": 272.81,
-          "low": 269.81,
-          "close": 272.28,
-          "volume": 59358503
-        },
-        {
-          "time": "2025-12-02",
-          "open": 272.28,
-          "high": 275.22,
-          "low": 270.98,
-          "close": 273.07,
-          "volume": 10034169
-        },
-        {
-          "time": "2025-12-03",
-          "open": 273.07,
-          "high": 275.48,
-          "low": 270.43,
-          "close": 272.48,
-          "volume": 27356315
-        },
-        {
-          "time": "2025-12-04",
-          "open": 272.48,
-          "high": 276.6,
-          "low": 270.97,
-          "close": 274.94,
-          "volume": 45882631
-        },
-        {
-          "time": "2025-12-05",
-          "open": 274.94,
-          "high": 277.33,
-          "low": 272.18,
-          "close": 273.52,
-          "volume": 15778823
-        },
-        {
-          "time": "2025-12-08",
-          "open": 273.52,
-          "high": 275.22,
-          "low": 268.74,
-          "close": 271.44,
-          "volume": 59347022
-        },
-        {
-          "time": "2025-12-09",
-          "open": 271.44,
-          "high": 275.63,
-          "low": 270.11,
-          "close": 274.09,
-          "volume": 45242821
-        },
-        {
-          "time": "2025-12-10",
-          "open": 274.09,
-          "high": 274.28,
-          "low": 272.35,
-          "close": 273.27,
-          "volume": 44612411
-        },
-        {
-          "time": "2025-12-11",
-          "open": 273.27,
-          "high": 274.95,
-          "low": 271.35,
-          "close": 271.51,
-          "volume": 28756317
-        },
-        {
-          "time": "2025-12-12",
-          "open": 271.51,
-          "high": 272.22,
-          "low": 267.56,
-          "close": 269.89,
-          "volume": 39022085
-        },
-        {
-          "time": "2025-12-15",
-          "open": 269.89,
-          "high": 273.24,
-          "low": 267.5,
-          "close": 270.59,
-          "volume": 54369828
-        },
-        {
-          "time": "2025-12-16",
-          "open": 270.59,
-          "high": 272.86,
-          "low": 270.04,
-          "close": 272.62,
-          "volume": 20034144
-        },
-        {
-          "time": "2025-12-17",
-          "open": 272.62,
-          "high": 275.77,
-          "low": 271.03,
-          "close": 274,
-          "volume": 11598073
-        },
-        {
-          "time": "2025-12-18",
-          "open": 274,
-          "high": 276.62,
-          "low": 272.27,
-          "close": 273.27,
-          "volume": 54345213
-        },
-        {
-          "time": "2025-12-19",
-          "open": 273.27,
-          "high": 273.34,
-          "low": 270.37,
-          "close": 271.87,
-          "volume": 36576834
-        },
-        {
-          "time": "2025-12-22",
-          "open": 271.87,
-          "high": 274.19,
-          "low": 268.28,
-          "close": 270.22,
-          "volume": 36058202
-        },
-        {
-          "time": "2025-12-23",
-          "open": 270.22,
-          "high": 270.62,
-          "low": 266.2,
-          "close": 268.11,
-          "volume": 14316631
-        },
-        {
-          "time": "2025-12-24",
-          "open": 268.11,
-          "high": 270.89,
-          "low": 266.15,
-          "close": 268.84,
-          "volume": 36177173
-        },
-        {
-          "time": "2025-12-25",
-          "open": 268.84,
-          "high": 270.17,
-          "low": 267.97,
-          "close": 269.74,
-          "volume": 54399098
-        },
-        {
-          "time": "2025-12-26",
-          "open": 269.74,
-          "high": 271.63,
-          "low": 269.16,
-          "close": 269.95,
-          "volume": 37945364
-        },
-        {
-          "time": "2025-12-29",
-          "open": 269.95,
-          "high": 271.76,
-          "low": 267.42,
-          "close": 269.22,
-          "volume": 10837677
-        },
-        {
-          "time": "2025-12-30",
-          "open": 269.22,
-          "high": 274.71,
-          "low": 269.1,
-          "close": 272.02,
-          "volume": 37061632
-        }
-      ],
-      "relatedNews": [
-        {
-          "id": "c10",
-          "headline": "Visa Reports Record Holiday Transaction Volumes",
-          "source": "PaymentsSource",
-          "url": "https://payments.com/c10",
-          "publishedAt": "2025-12-30T13:30:14.075Z",
-          "category": "company",
-          "relevanceScore": 0.68,
-          "tickersMentioned": [
-            "V"
-          ],
-          "excerpt": "Cross-border volumes up 15% as international travel recovers."
-        }
-      ],
-      "fundamentals": {
-        "peTrailing": 25.8,
-        "peForward": 28,
-        "pegRatio": 2.94,
-        "priceToBook": 5.34,
-        "revenueGrowth": 0.072,
-        "profitMargin": 0.225,
-        "dividendYield": 0.0295,
-        "beta": 1.32,
-        "fiftyTwoWeekHigh": 326.42,
-        "fiftyTwoWeekLow": 204.01,
-        "avgVolume": 55365710
-      }
-    },
-    "JNJ": {
-      "ticker": "JNJ",
-      "companyName": "Johnson & Johnson",
-      "currentPrice": 146.55,
-      "priceChange": 0.56,
-      "priceChangePercent": 0.38,
-      "convictionScore": 0.58,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in healthcare sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
-      "sector": "healthcare",
-      "entryPrice": 143.62,
-      "targetPrice": 168.53,
-      "marketCap": 1471008620808,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 148.96,
-          "high": 149.08,
-          "low": 147.51,
-          "close": 148.92,
-          "volume": 38143968
-        },
-        {
-          "time": "2025-12-02",
-          "open": 148.92,
-          "high": 149.84,
-          "low": 147.6,
-          "close": 148.34,
-          "volume": 33570432
-        },
-        {
-          "time": "2025-12-03",
-          "open": 148.34,
-          "high": 149.54,
-          "low": 147.03,
-          "close": 148.45,
-          "volume": 59487350
-        },
-        {
-          "time": "2025-12-04",
-          "open": 148.45,
-          "high": 148.95,
-          "low": 147.11,
-          "close": 148.83,
-          "volume": 45241915
-        },
-        {
-          "time": "2025-12-05",
-          "open": 148.83,
-          "high": 151.62,
-          "low": 148.44,
-          "close": 150.27,
-          "volume": 18649626
-        },
-        {
-          "time": "2025-12-08",
-          "open": 150.27,
-          "high": 150.63,
-          "low": 148.01,
-          "close": 149.49,
-          "volume": 43357664
-        },
-        {
-          "time": "2025-12-09",
-          "open": 149.49,
-          "high": 150.22,
-          "low": 147.85,
-          "close": 149.3,
-          "volume": 45927678
-        },
-        {
-          "time": "2025-12-10",
-          "open": 149.3,
-          "high": 149.63,
-          "low": 149.08,
-          "close": 149.2,
-          "volume": 38886578
-        },
-        {
-          "time": "2025-12-11",
-          "open": 149.2,
-          "high": 149.41,
-          "low": 147.85,
-          "close": 147.91,
-          "volume": 28087091
-        },
-        {
-          "time": "2025-12-12",
-          "open": 147.91,
-          "high": 149.35,
-          "low": 145.58,
-          "close": 146.84,
-          "volume": 12791817
-        },
-        {
-          "time": "2025-12-15",
-          "open": 146.84,
-          "high": 147.26,
-          "low": 145.24,
-          "close": 145.65,
-          "volume": 23107271
-        },
-        {
-          "time": "2025-12-16",
-          "open": 145.65,
-          "high": 147.5,
-          "low": 144.59,
-          "close": 146.83,
-          "volume": 22090611
-        },
-        {
-          "time": "2025-12-17",
-          "open": 146.83,
-          "high": 148.41,
-          "low": 145.82,
-          "close": 148.14,
-          "volume": 31040045
-        },
-        {
-          "time": "2025-12-18",
-          "open": 148.14,
-          "high": 149.24,
-          "low": 147.97,
-          "close": 148.47,
-          "volume": 20648588
-        },
-        {
-          "time": "2025-12-19",
-          "open": 148.47,
-          "high": 148.99,
-          "low": 145.93,
-          "close": 147.06,
-          "volume": 25480970
-        },
-        {
-          "time": "2025-12-22",
-          "open": 147.06,
-          "high": 148.5,
-          "low": 146.78,
-          "close": 148.26,
-          "volume": 31801718
-        },
-        {
-          "time": "2025-12-23",
-          "open": 148.26,
-          "high": 149.48,
-          "low": 146.46,
-          "close": 147.77,
-          "volume": 35204227
-        },
-        {
-          "time": "2025-12-24",
-          "open": 147.77,
-          "high": 149.02,
-          "low": 146.06,
-          "close": 146.54,
-          "volume": 55501884
-        },
-        {
-          "time": "2025-12-25",
-          "open": 146.54,
-          "high": 148.45,
-          "low": 146.46,
-          "close": 147.31,
-          "volume": 19183632
-        },
-        {
-          "time": "2025-12-26",
-          "open": 147.31,
-          "high": 147.62,
-          "low": 145.63,
-          "close": 146.64,
-          "volume": 49316191
-        },
-        {
-          "time": "2025-12-29",
-          "open": 146.64,
-          "high": 146.92,
-          "low": 145.13,
-          "close": 145.99,
-          "volume": 48769611
-        },
-        {
-          "time": "2025-12-30",
-          "open": 145.99,
-          "high": 147.78,
-          "low": 144.84,
-          "close": 146.55,
-          "volume": 14852271
-        }
-      ],
-      "relatedNews": [
-        {
-          "id": "c11",
-          "headline": "Johnson & Johnson Cancer Drug Shows Strong Phase 3 Results",
-          "source": "FiercePharma",
-          "url": "https://fierce.com/c11",
-          "publishedAt": "2025-12-30T12:30:14.075Z",
-          "category": "company",
-          "relevanceScore": 0.85,
-          "tickersMentioned": [
-            "JNJ"
-          ],
-          "excerpt": "New therapy could become standard of care for lung cancer."
-        }
-      ],
-      "fundamentals": {
-        "peTrailing": 41,
-        "peForward": 29.7,
-        "pegRatio": 2.57,
-        "priceToBook": 8.74,
-        "revenueGrowth": 0.122,
-        "profitMargin": 0.208,
-        "dividendYield": 0.0228,
-        "beta": 0.85,
-        "fiftyTwoWeekHigh": 175.86,
-        "fiftyTwoWeekLow": 109.91,
-        "avgVolume": 64570655
-      }
-    },
-    "UNH": {
-      "ticker": "UNH",
-      "companyName": "UnitedHealth Group",
-      "currentPrice": 516.36,
-      "priceChange": 2.57,
-      "priceChangePercent": 0.5,
-      "convictionScore": 0.56,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in healthcare sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
-      "sector": "healthcare",
-      "entryPrice": 506.03,
-      "targetPrice": 593.81,
-      "marketCap": 7157964566165,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 501.98,
-          "high": 502.45,
-          "low": 496.42,
-          "close": 498.34,
-          "volume": 52548284
-        },
-        {
-          "time": "2025-12-02",
-          "open": 498.34,
-          "high": 501.54,
-          "low": 497.04,
-          "close": 497.37,
-          "volume": 14611036
-        },
-        {
-          "time": "2025-12-03",
-          "open": 497.37,
-          "high": 500.93,
-          "low": 493.11,
-          "close": 498.14,
-          "volume": 52761996
-        },
-        {
-          "time": "2025-12-04",
-          "open": 498.14,
-          "high": 501.79,
-          "low": 495.42,
-          "close": 501.19,
-          "volume": 35542402
-        },
-        {
-          "time": "2025-12-05",
-          "open": 501.19,
-          "high": 507.23,
-          "low": 498.31,
-          "close": 505.52,
-          "volume": 15261998
-        },
-        {
-          "time": "2025-12-08",
-          "open": 505.52,
-          "high": 510.47,
-          "low": 501.99,
-          "close": 505.9,
-          "volume": 29114251
-        },
-        {
-          "time": "2025-12-09",
-          "open": 505.9,
-          "high": 509.67,
-          "low": 503.83,
-          "close": 504.83,
-          "volume": 48587261
-        },
-        {
-          "time": "2025-12-10",
-          "open": 504.83,
-          "high": 508.51,
-          "low": 499.14,
-          "close": 503.94,
-          "volume": 55436797
-        },
-        {
-          "time": "2025-12-11",
-          "open": 503.94,
-          "high": 510.18,
-          "low": 499.54,
-          "close": 506.52,
-          "volume": 13872926
-        },
-        {
-          "time": "2025-12-12",
-          "open": 506.52,
-          "high": 512.33,
-          "low": 502.95,
-          "close": 511.12,
-          "volume": 45628183
-        },
-        {
-          "time": "2025-12-15",
-          "open": 511.12,
-          "high": 515.8,
-          "low": 508.95,
-          "close": 512.42,
-          "volume": 22252145
-        },
-        {
-          "time": "2025-12-16",
-          "open": 512.42,
-          "high": 514.54,
-          "low": 505.67,
-          "close": 508.7,
-          "volume": 38509893
-        },
-        {
-          "time": "2025-12-17",
-          "open": 508.7,
-          "high": 514.97,
-          "low": 507.89,
-          "close": 510.82,
-          "volume": 21526130
-        },
-        {
-          "time": "2025-12-18",
-          "open": 510.82,
-          "high": 511.47,
-          "low": 507.29,
-          "close": 508.97,
-          "volume": 20945143
-        },
-        {
-          "time": "2025-12-19",
-          "open": 508.97,
-          "high": 514.27,
-          "low": 504.99,
-          "close": 509.31,
-          "volume": 33240180
-        },
-        {
-          "time": "2025-12-22",
-          "open": 509.31,
-          "high": 518.35,
-          "low": 507.98,
-          "close": 513.61,
-          "volume": 17869300
-        },
-        {
-          "time": "2025-12-23",
-          "open": 513.61,
-          "high": 517.03,
-          "low": 512.87,
-          "close": 516.94,
-          "volume": 48652186
-        },
-        {
-          "time": "2025-12-24",
-          "open": 516.94,
-          "high": 520.27,
-          "low": 514.32,
-          "close": 518.04,
-          "volume": 41678857
-        },
-        {
-          "time": "2025-12-25",
-          "open": 518.04,
-          "high": 522.35,
-          "low": 512.2,
-          "close": 514.38,
-          "volume": 46536216
-        },
-        {
-          "time": "2025-12-26",
-          "open": 514.38,
-          "high": 519.01,
-          "low": 507.64,
-          "close": 510.63,
-          "volume": 42256655
-        },
-        {
-          "time": "2025-12-29",
-          "open": 510.63,
-          "high": 515.25,
-          "low": 509.81,
-          "close": 513.79,
-          "volume": 26840524
-        },
-        {
-          "time": "2025-12-30",
-          "open": 513.79,
-          "high": 519.96,
-          "low": 511.71,
-          "close": 516.36,
-          "volume": 47150832
-        }
-      ],
-      "relatedNews": [
-        {
-          "id": "c9",
-          "headline": "UnitedHealth Optum Revenue Grows 14% Year-Over-Year",
-          "source": "HealthcareFinance",
-          "url": "https://hf.com/c9",
-          "publishedAt": "2025-12-30T14:30:14.075Z",
-          "category": "earnings",
-          "relevanceScore": 0.72,
-          "tickersMentioned": [
-            "UNH"
-          ],
-          "excerpt": "Healthcare services segment continues to drive growth."
-        }
-      ],
-      "fundamentals": {
-        "peTrailing": 25.8,
-        "peForward": 38.5,
-        "pegRatio": 1.83,
-        "priceToBook": 3.02,
-        "revenueGrowth": 0.112,
-        "profitMargin": 0.192,
-        "dividendYield": 0.0221,
-        "beta": 0.96,
-        "fiftyTwoWeekHigh": 619.63,
-        "fiftyTwoWeekLow": 387.27,
-        "avgVolume": 64964132
-      }
-    },
-    "XOM": {
-      "ticker": "XOM",
-      "companyName": "Exxon Mobil",
-      "currentPrice": 106.49,
-      "priceChange": 0.82,
-      "priceChangePercent": 0.78,
-      "convictionScore": 0.79,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in energy sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
-      "sector": "energy",
-      "entryPrice": 104.36,
-      "targetPrice": 122.46,
-      "marketCap": 536288410092,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 106.88,
-          "high": 107.61,
-          "low": 105.99,
-          "close": 106.61,
-          "volume": 57913234
-        },
-        {
-          "time": "2025-12-02",
-          "open": 106.61,
-          "high": 107.28,
-          "low": 105.87,
-          "close": 106.7,
-          "volume": 55559828
-        },
-        {
-          "time": "2025-12-03",
-          "open": 106.7,
-          "high": 107.52,
-          "low": 105.8,
-          "close": 106.52,
-          "volume": 29631099
-        },
-        {
-          "time": "2025-12-04",
-          "open": 106.52,
-          "high": 107.76,
-          "low": 105.94,
-          "close": 107.37,
-          "volume": 50857285
-        },
-        {
-          "time": "2025-12-05",
-          "open": 107.37,
-          "high": 108.75,
-          "low": 106.88,
-          "close": 107.92,
-          "volume": 51632183
-        },
-        {
-          "time": "2025-12-08",
-          "open": 107.92,
-          "high": 108.32,
-          "low": 106.97,
-          "close": 107.12,
-          "volume": 24345509
-        },
-        {
-          "time": "2025-12-09",
-          "open": 107.12,
-          "high": 108.16,
-          "low": 106.79,
-          "close": 107.73,
-          "volume": 45527828
-        },
-        {
-          "time": "2025-12-10",
-          "open": 107.73,
-          "high": 108.48,
-          "low": 107.02,
-          "close": 107.65,
-          "volume": 15973370
-        },
-        {
-          "time": "2025-12-11",
-          "open": 107.65,
-          "high": 107.75,
-          "low": 106.94,
-          "close": 107.28,
-          "volume": 11698728
-        },
-        {
-          "time": "2025-12-12",
-          "open": 107.28,
-          "high": 107.53,
-          "low": 106.58,
-          "close": 107.2,
-          "volume": 53464353
-        },
-        {
-          "time": "2025-12-15",
-          "open": 107.2,
-          "high": 107.41,
-          "low": 106.1,
-          "close": 106.72,
-          "volume": 29409041
-        },
-        {
-          "time": "2025-12-16",
-          "open": 106.72,
-          "high": 107.74,
-          "low": 104.95,
-          "close": 105.88,
-          "volume": 28639989
-        },
-        {
-          "time": "2025-12-17",
-          "open": 105.88,
-          "high": 106.71,
-          "low": 104.51,
-          "close": 104.9,
-          "volume": 27633044
-        },
-        {
-          "time": "2025-12-18",
-          "open": 104.9,
-          "high": 106.51,
-          "low": 104.65,
-          "close": 105.57,
-          "volume": 19262942
-        },
-        {
-          "time": "2025-12-19",
-          "open": 105.57,
-          "high": 106.56,
-          "low": 104.47,
-          "close": 105.17,
-          "volume": 56704391
-        },
-        {
-          "time": "2025-12-22",
-          "open": 105.17,
-          "high": 105.75,
-          "low": 104.15,
-          "close": 105.67,
-          "volume": 39490981
-        },
-        {
-          "time": "2025-12-23",
-          "open": 105.67,
-          "high": 106.48,
-          "low": 104.04,
-          "close": 105.06,
-          "volume": 37044956
-        },
-        {
-          "time": "2025-12-24",
-          "open": 105.06,
-          "high": 106.27,
-          "low": 104.65,
-          "close": 105.5,
-          "volume": 16056265
-        },
-        {
-          "time": "2025-12-25",
-          "open": 105.5,
-          "high": 106.38,
-          "low": 103.83,
-          "close": 104.76,
-          "volume": 10688417
-        },
-        {
-          "time": "2025-12-26",
-          "open": 104.76,
-          "high": 105.95,
-          "low": 104.43,
-          "close": 105.66,
-          "volume": 34699511
-        },
-        {
-          "time": "2025-12-29",
-          "open": 105.66,
-          "high": 106.46,
-          "low": 105.31,
-          "close": 105.67,
-          "volume": 20214976
-        },
-        {
-          "time": "2025-12-30",
-          "open": 105.67,
-          "high": 107.26,
-          "low": 105.43,
-          "close": 106.49,
-          "volume": 17802681
-        }
-      ],
-      "relatedNews": [
-        {
-          "id": "c12",
-          "headline": "ExxonMobil Pioneer Acquisition Closes, Integration Begins",
-          "source": "OilPrice",
-          "url": "https://oilprice.com/c12",
-          "publishedAt": "2025-12-30T11:30:14.075Z",
-          "category": "company",
-          "relevanceScore": 0.75,
-          "tickersMentioned": [
-            "XOM"
-          ],
-          "excerpt": "Combined entity now largest Permian Basin producer."
-        }
-      ],
-      "fundamentals": {
-        "peTrailing": 36.6,
-        "peForward": 41.6,
-        "pegRatio": 2.62,
-        "priceToBook": 5.86,
-        "revenueGrowth": 0.122,
-        "profitMargin": 0.192,
-        "dividendYield": 0.0089,
-        "beta": 1,
-        "fiftyTwoWeekHigh": 127.79,
-        "fiftyTwoWeekLow": 79.87,
-        "avgVolume": 45172296
-      }
-    },
-    "CVX": {
-      "ticker": "CVX",
-      "companyName": "Chevron Corp.",
-      "currentPrice": 141.45,
-      "priceChange": -0.85,
-      "priceChangePercent": -0.6,
-      "convictionScore": 0.85,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in energy sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
-      "sector": "energy",
-      "entryPrice": 138.62,
-      "targetPrice": 162.67,
-      "marketCap": 1303865953587,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 140.79,
-          "high": 142.12,
-          "low": 138.86,
-          "close": 140.12,
-          "volume": 32071560
-        },
-        {
-          "time": "2025-12-02",
-          "open": 140.12,
-          "high": 142.53,
-          "low": 139.95,
-          "close": 141.28,
-          "volume": 38397503
-        },
-        {
-          "time": "2025-12-03",
-          "open": 141.28,
-          "high": 142.64,
-          "low": 139.79,
-          "close": 140,
-          "volume": 38778846
-        },
-        {
-          "time": "2025-12-04",
-          "open": 140,
-          "high": 141.01,
-          "low": 139.84,
-          "close": 140.19,
-          "volume": 23426100
-        },
-        {
-          "time": "2025-12-05",
-          "open": 140.19,
-          "high": 140.34,
-          "low": 138.64,
-          "close": 140.01,
-          "volume": 52550320
-        },
-        {
-          "time": "2025-12-08",
-          "open": 140.01,
-          "high": 141.34,
-          "low": 139.25,
-          "close": 139.99,
-          "volume": 47572900
-        },
-        {
-          "time": "2025-12-09",
-          "open": 139.99,
-          "high": 141.67,
-          "low": 139.76,
-          "close": 141.23,
-          "volume": 27991359
-        },
-        {
-          "time": "2025-12-10",
-          "open": 141.23,
-          "high": 143.67,
-          "low": 140.93,
-          "close": 142.26,
-          "volume": 56444816
-        },
-        {
-          "time": "2025-12-11",
-          "open": 142.26,
-          "high": 144.56,
-          "low": 141.9,
-          "close": 143.17,
-          "volume": 54063987
-        },
-        {
-          "time": "2025-12-12",
-          "open": 143.17,
-          "high": 144.67,
-          "low": 142.19,
-          "close": 143.56,
-          "volume": 24862550
-        },
-        {
-          "time": "2025-12-15",
-          "open": 143.56,
-          "high": 145.01,
-          "low": 142.61,
-          "close": 144.67,
-          "volume": 25232758
-        },
-        {
-          "time": "2025-12-16",
-          "open": 144.67,
-          "high": 146.13,
-          "low": 143.74,
-          "close": 144.85,
-          "volume": 45315328
-        },
-        {
-          "time": "2025-12-17",
-          "open": 144.85,
-          "high": 145.25,
-          "low": 142.66,
-          "close": 143.81,
-          "volume": 30732455
-        },
-        {
-          "time": "2025-12-18",
-          "open": 143.81,
-          "high": 144.79,
-          "low": 142.71,
-          "close": 144.01,
-          "volume": 46917680
-        },
-        {
-          "time": "2025-12-19",
-          "open": 144.01,
-          "high": 145.15,
-          "low": 142.86,
-          "close": 143.65,
-          "volume": 21565223
-        },
-        {
-          "time": "2025-12-22",
-          "open": 143.65,
-          "high": 143.72,
-          "low": 142.38,
-          "close": 143.03,
-          "volume": 33537212
-        },
-        {
-          "time": "2025-12-23",
-          "open": 143.03,
-          "high": 144.28,
-          "low": 141.81,
-          "close": 144.19,
-          "volume": 23192174
-        },
-        {
-          "time": "2025-12-24",
-          "open": 144.19,
-          "high": 145.44,
-          "low": 144.08,
-          "close": 144.31,
-          "volume": 53856878
-        },
-        {
-          "time": "2025-12-25",
-          "open": 144.31,
-          "high": 145.44,
-          "low": 143.66,
-          "close": 144.2,
-          "volume": 46518443
-        },
-        {
-          "time": "2025-12-26",
-          "open": 144.2,
-          "high": 144.66,
-          "low": 142.75,
-          "close": 143.01,
-          "volume": 54021157
-        },
-        {
-          "time": "2025-12-29",
-          "open": 143.01,
-          "high": 143.27,
-          "low": 141.71,
-          "close": 142.3,
-          "volume": 19234985
-        },
-        {
-          "time": "2025-12-30",
-          "open": 142.3,
-          "high": 142.4,
-          "low": 140.33,
-          "close": 141.45,
-          "volume": 55843304
-        }
-      ],
+      "entryPrice": 353.62,
+      "targetPrice": null,
+      "stopLoss": null,
+      "marketCap": null,
+      "priceHistory": [],
       "relatedNews": [],
       "fundamentals": {
-        "peTrailing": 37.3,
-        "peForward": 34.9,
-        "pegRatio": 2.65,
-        "priceToBook": 10.99,
-        "revenueGrowth": 0.121,
-        "profitMargin": 0.169,
-        "dividendYield": 0.0233,
-        "beta": 0.81,
-        "fiftyTwoWeekHigh": 169.74,
-        "fiftyTwoWeekLow": 106.09,
-        "avgVolume": 32095731
+        "peTrailing": null,
+        "peForward": null,
+        "pegRatio": null,
+        "priceToBook": null,
+        "revenueGrowth": null,
+        "profitMargin": null,
+        "dividendYield": null,
+        "beta": null,
+        "fiftyTwoWeekHigh": null,
+        "fiftyTwoWeekLow": null,
+        "avgVolume": null
       }
     },
-    "PG": {
-      "ticker": "PG",
-      "companyName": "Procter & Gamble",
-      "currentPrice": 156.45,
-      "priceChange": 0.55,
-      "priceChangePercent": 0.35,
-      "convictionScore": 0.66,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in consumer sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
-      "sector": "consumer",
-      "entryPrice": 153.32,
-      "targetPrice": 179.92,
-      "marketCap": 1472621745528,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 157.13,
-          "high": 158.25,
-          "low": 156.41,
-          "close": 157.79,
-          "volume": 31576990
-        },
-        {
-          "time": "2025-12-02",
-          "open": 157.79,
-          "high": 157.79,
-          "low": 155.86,
-          "close": 156.3,
-          "volume": 24355415
-        },
-        {
-          "time": "2025-12-03",
-          "open": 156.3,
-          "high": 156.8,
-          "low": 155.96,
-          "close": 156.23,
-          "volume": 52699299
-        },
-        {
-          "time": "2025-12-04",
-          "open": 156.23,
-          "high": 158.02,
-          "low": 154.72,
-          "close": 156.53,
-          "volume": 32949310
-        },
-        {
-          "time": "2025-12-05",
-          "open": 156.53,
-          "high": 157.72,
-          "low": 156.18,
-          "close": 156.63,
-          "volume": 31356576
-        },
-        {
-          "time": "2025-12-08",
-          "open": 156.63,
-          "high": 157.54,
-          "low": 154.81,
-          "close": 155.48,
-          "volume": 14707341
-        },
-        {
-          "time": "2025-12-09",
-          "open": 155.48,
-          "high": 157.21,
-          "low": 154.35,
-          "close": 156.93,
-          "volume": 30510500
-        },
-        {
-          "time": "2025-12-10",
-          "open": 156.93,
-          "high": 157.01,
-          "low": 155.48,
-          "close": 156.34,
-          "volume": 22698440
-        },
-        {
-          "time": "2025-12-11",
-          "open": 156.34,
-          "high": 157.35,
-          "low": 154.64,
-          "close": 155.82,
-          "volume": 15161109
-        },
-        {
-          "time": "2025-12-12",
-          "open": 155.82,
-          "high": 157.22,
-          "low": 155.66,
-          "close": 155.93,
-          "volume": 37669920
-        },
-        {
-          "time": "2025-12-15",
-          "open": 155.93,
-          "high": 156.21,
-          "low": 154.27,
-          "close": 154.74,
-          "volume": 18435471
-        },
-        {
-          "time": "2025-12-16",
-          "open": 154.74,
-          "high": 155.11,
-          "low": 153.28,
-          "close": 154.42,
-          "volume": 18906136
-        },
-        {
-          "time": "2025-12-17",
-          "open": 154.42,
-          "high": 155.91,
-          "low": 152.69,
-          "close": 153.81,
-          "volume": 10235034
-        },
-        {
-          "time": "2025-12-18",
-          "open": 153.81,
-          "high": 155.32,
-          "low": 152.88,
-          "close": 154.57,
-          "volume": 30222637
-        },
-        {
-          "time": "2025-12-19",
-          "open": 154.57,
-          "high": 156.06,
-          "low": 153.23,
-          "close": 154.18,
-          "volume": 38957360
-        },
-        {
-          "time": "2025-12-22",
-          "open": 154.18,
-          "high": 154.57,
-          "low": 152.17,
-          "close": 152.93,
-          "volume": 34380599
-        },
-        {
-          "time": "2025-12-23",
-          "open": 152.93,
-          "high": 154.72,
-          "low": 152.33,
-          "close": 153.96,
-          "volume": 46615911
-        },
-        {
-          "time": "2025-12-24",
-          "open": 153.96,
-          "high": 155,
-          "low": 152.87,
-          "close": 153.16,
-          "volume": 59325581
-        },
-        {
-          "time": "2025-12-25",
-          "open": 153.16,
-          "high": 154.91,
-          "low": 152.9,
-          "close": 153.67,
-          "volume": 34931762
-        },
-        {
-          "time": "2025-12-26",
-          "open": 153.67,
-          "high": 155.31,
-          "low": 152.9,
-          "close": 154.92,
-          "volume": 12247626
-        },
-        {
-          "time": "2025-12-29",
-          "open": 154.92,
-          "high": 156.92,
-          "low": 153.5,
-          "close": 155.9,
-          "volume": 33096419
-        },
-        {
-          "time": "2025-12-30",
-          "open": 155.9,
-          "high": 156.77,
-          "low": 155.31,
-          "close": 156.45,
-          "volume": 53858776
-        }
-      ],
+    "META": {
+      "ticker": "META",
+      "companyName": "Meta Platforms Inc.",
+      "currentPrice": 665.95,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.5,
+      "timeframe": "long",
+      "thesis": "META faces headwinds.",
+      "riskFactors": [],
+      "sector": "communications",
+      "entryPrice": 665.95,
+      "targetPrice": null,
+      "stopLoss": null,
+      "marketCap": null,
+      "priceHistory": [],
       "relatedNews": [],
       "fundamentals": {
-        "peTrailing": 31.5,
-        "peForward": 27.7,
-        "pegRatio": 1.99,
-        "priceToBook": 12.64,
-        "revenueGrowth": 0.138,
-        "profitMargin": 0.209,
-        "dividendYield": 0.0078,
-        "beta": 0.81,
-        "fiftyTwoWeekHigh": 187.74,
-        "fiftyTwoWeekLow": 117.34,
-        "avgVolume": 30276385
-      }
-    },
-    "HD": {
-      "ticker": "HD",
-      "companyName": "Home Depot",
-      "currentPrice": 353.1,
-      "priceChange": 2.52,
-      "priceChangePercent": 0.72,
-      "convictionScore": 0.76,
-      "timeframe": "medium",
-      "thesis": "Strong fundamentals with growth potential in consumer sector.",
-      "riskFactors": [
-        "Market volatility",
-        "Competition"
-      ],
-      "sector": "consumer",
-      "entryPrice": 346.04,
-      "targetPrice": 406.06,
-      "marketCap": 2903156018634,
-      "priceHistory": [
-        {
-          "time": "2025-12-01",
-          "open": 359.67,
-          "high": 360.44,
-          "low": 357.33,
-          "close": 357.45,
-          "volume": 46780086
-        },
-        {
-          "time": "2025-12-02",
-          "open": 357.45,
-          "high": 360.85,
-          "low": 352.57,
-          "close": 355.41,
-          "volume": 33500313
-        },
-        {
-          "time": "2025-12-03",
-          "open": 355.41,
-          "high": 357.39,
-          "low": 353.48,
-          "close": 353.75,
-          "volume": 12108714
-        },
-        {
-          "time": "2025-12-04",
-          "open": 353.75,
-          "high": 354.85,
-          "low": 351.35,
-          "close": 353.06,
-          "volume": 45367193
-        },
-        {
-          "time": "2025-12-05",
-          "open": 353.06,
-          "high": 356.65,
-          "low": 350.56,
-          "close": 355.95,
-          "volume": 38654253
-        },
-        {
-          "time": "2025-12-08",
-          "open": 355.95,
-          "high": 357.75,
-          "low": 351.62,
-          "close": 354.72,
-          "volume": 59928386
-        },
-        {
-          "time": "2025-12-09",
-          "open": 354.72,
-          "high": 355.68,
-          "low": 350.48,
-          "close": 352.64,
-          "volume": 45205182
-        },
-        {
-          "time": "2025-12-10",
-          "open": 352.64,
-          "high": 355.89,
-          "low": 351.6,
-          "close": 354.63,
-          "volume": 27460288
-        },
-        {
-          "time": "2025-12-11",
-          "open": 354.63,
-          "high": 357.94,
-          "low": 351.53,
-          "close": 356.27,
-          "volume": 45091126
-        },
-        {
-          "time": "2025-12-12",
-          "open": 356.27,
-          "high": 356.32,
-          "low": 353.7,
-          "close": 354.27,
-          "volume": 31325786
-        },
-        {
-          "time": "2025-12-15",
-          "open": 354.27,
-          "high": 355.36,
-          "low": 351.95,
-          "close": 354.08,
-          "volume": 11443098
-        },
-        {
-          "time": "2025-12-16",
-          "open": 354.08,
-          "high": 356.91,
-          "low": 352.51,
-          "close": 353.01,
-          "volume": 43959348
-        },
-        {
-          "time": "2025-12-17",
-          "open": 353.01,
-          "high": 353.25,
-          "low": 350.33,
-          "close": 350.8,
-          "volume": 51430377
-        },
-        {
-          "time": "2025-12-18",
-          "open": 350.8,
-          "high": 353.92,
-          "low": 346.47,
-          "close": 348.84,
-          "volume": 48264689
-        },
-        {
-          "time": "2025-12-19",
-          "open": 348.84,
-          "high": 349.64,
-          "low": 343.47,
-          "close": 345.65,
-          "volume": 27698071
-        },
-        {
-          "time": "2025-12-22",
-          "open": 345.65,
-          "high": 348.68,
-          "low": 341.77,
-          "close": 344.68,
-          "volume": 53826775
-        },
-        {
-          "time": "2025-12-23",
-          "open": 344.68,
-          "high": 348.36,
-          "low": 344.25,
-          "close": 346.08,
-          "volume": 36704753
-        },
-        {
-          "time": "2025-12-24",
-          "open": 346.08,
-          "high": 348.8,
-          "low": 342.07,
-          "close": 344.88,
-          "volume": 45891066
-        },
-        {
-          "time": "2025-12-25",
-          "open": 344.88,
-          "high": 348.07,
-          "low": 342.83,
-          "close": 346.03,
-          "volume": 16454963
-        },
-        {
-          "time": "2025-12-26",
-          "open": 346.03,
-          "high": 348.69,
-          "low": 343.98,
-          "close": 348.06,
-          "volume": 31984492
-        },
-        {
-          "time": "2025-12-29",
-          "open": 348.06,
-          "high": 352.44,
-          "low": 347.08,
-          "close": 350.58,
-          "volume": 48361978
-        },
-        {
-          "time": "2025-12-30",
-          "open": 350.58,
-          "high": 356.58,
-          "low": 348.6,
-          "close": 353.1,
-          "volume": 59550601
-        }
-      ],
-      "relatedNews": [],
-      "fundamentals": {
-        "peTrailing": 20.1,
-        "peForward": 32.1,
-        "pegRatio": 1.55,
-        "priceToBook": 6.89,
-        "revenueGrowth": 0.1,
-        "profitMargin": 0.263,
-        "dividendYield": 0.0115,
-        "beta": 1.02,
-        "fiftyTwoWeekHigh": 423.72,
-        "fiftyTwoWeekLow": 264.83,
-        "avgVolume": 30338437
+        "peTrailing": null,
+        "peForward": null,
+        "pegRatio": null,
+        "priceToBook": null,
+        "revenueGrowth": null,
+        "profitMargin": null,
+        "dividendYield": null,
+        "beta": null,
+        "fiftyTwoWeekHigh": null,
+        "fiftyTwoWeekLow": null,
+        "avgVolume": null
       }
     }
   },
   "macro": {
-    "indicators": [
-      {
-        "id": "gdp",
-        "name": "GDP Growth (QoQ)",
-        "value": 2.8,
-        "previousValue": 2.1,
-        "unit": "%",
-        "trend": "up",
-        "source": "BEA",
-        "updatedAt": "2025-12-30T23:00:14.074Z",
-        "description": "Real GDP growth rate"
-      },
-      {
-        "id": "cpi",
-        "name": "CPI (YoY)",
-        "value": 3.2,
-        "previousValue": 3.4,
-        "unit": "%",
-        "trend": "down",
-        "source": "BLS",
-        "updatedAt": "2025-12-30T23:00:14.074Z",
-        "description": "Consumer Price Index"
-      },
-      {
-        "id": "pce",
-        "name": "Core PCE (YoY)",
-        "value": 2.8,
-        "previousValue": 2.9,
-        "unit": "%",
-        "trend": "down",
-        "source": "BEA",
-        "updatedAt": "2025-12-30T23:00:14.074Z",
-        "description": "Feds preferred inflation measure"
-      },
-      {
-        "id": "unrate",
-        "name": "Unemployment Rate",
-        "value": 4.2,
-        "previousValue": 4.1,
-        "unit": "%",
-        "trend": "up",
-        "source": "BLS",
-        "updatedAt": "2025-12-30T23:00:14.074Z",
-        "description": "U.S. unemployment rate"
-      },
-      {
-        "id": "fedfunds",
-        "name": "Fed Funds Rate",
-        "value": 5.25,
-        "previousValue": 5.25,
-        "unit": "%",
-        "trend": "flat",
-        "source": "Federal Reserve",
-        "updatedAt": "2025-12-30T23:00:14.074Z",
-        "description": "Target federal funds rate"
-      },
-      {
-        "id": "10y",
-        "name": "10Y Treasury Yield",
-        "value": 4.35,
-        "previousValue": 4.28,
-        "unit": "%",
-        "trend": "up",
-        "source": "Treasury",
-        "updatedAt": "2025-12-30T23:00:14.074Z",
-        "description": "10-year Treasury yield"
-      },
-      {
-        "id": "vix",
-        "name": "VIX",
-        "value": 14.5,
-        "previousValue": 15.2,
-        "unit": "",
-        "trend": "down",
-        "source": "CBOE",
-        "updatedAt": "2025-12-30T23:00:14.074Z",
-        "description": "Market volatility index"
-      },
-      {
-        "id": "consumer",
-        "name": "Consumer Confidence",
-        "value": 102.5,
-        "previousValue": 99.8,
-        "unit": "",
-        "trend": "up",
-        "source": "Conference Board",
-        "updatedAt": "2025-12-30T23:00:14.074Z",
-        "description": "Consumer confidence index"
-      }
-    ],
-    "risks": [
-      {
-        "id": "inflation",
-        "name": "Inflation Persistence",
-        "severity": "medium",
-        "description": "Core inflation remains sticky above Feds 2% target, particularly in services and shelter.",
-        "affectedSectors": [
-          "consumer",
-          "real_estate",
-          "utilities"
-        ],
-        "likelihood": 0.65,
-        "potentialImpact": "May delay rate cuts, pressure growth stock multiples"
-      },
-      {
-        "id": "geopolitical",
-        "name": "Geopolitical Tensions",
-        "severity": "high",
-        "description": "Escalating conflicts in multiple regions affecting supply chains and commodity prices.",
-        "affectedSectors": [
-          "energy",
-          "industrials",
-          "materials",
-          "technology"
-        ],
-        "likelihood": 0.75,
-        "potentialImpact": "Oil price spikes, semiconductor supply disruption, defense rotation"
-      },
-      {
-        "id": "china",
-        "name": "China Economic Slowdown",
-        "severity": "medium",
-        "description": "Property sector stress and weak consumer spending in China affecting global growth.",
-        "affectedSectors": [
-          "materials",
-          "consumer",
-          "industrials"
-        ],
-        "likelihood": 0.7,
-        "potentialImpact": "Commodity demand weakness, multinational revenue headwinds"
-      },
-      {
-        "id": "tech_valuation",
-        "name": "Tech Valuation Correction",
-        "severity": "low",
-        "description": "AI enthusiasm has pushed tech valuations to elevated levels relative to history.",
-        "affectedSectors": [
-          "technology",
-          "communications"
-        ],
-        "likelihood": 0.45,
-        "potentialImpact": "Mean reversion if growth disappoints, rotation to value"
-      },
-      {
-        "id": "credit",
-        "name": "Credit Tightening",
-        "severity": "medium",
-        "description": "Banks maintaining tight lending standards, commercial real estate stress ongoing.",
-        "affectedSectors": [
-          "finance",
-          "real_estate"
-        ],
-        "likelihood": 0.55,
-        "potentialImpact": "Higher borrowing costs, CRE defaults, bank stress"
-      }
-    ],
-    "marketSentiment": "up",
-    "lastUpdated": "2025-12-30T23:00:14.074Z"
+    "indicators": [],
+    "risks": [],
+    "marketSentiment": "flat",
+    "lastUpdated": "2025-12-30T16:41:34.485634"
   },
   "news": {
     "market": [
       {
-        "id": "m1",
-        "headline": "Fed Officials Signal Patience on Rate Cuts Amid Sticky Inflation",
-        "source": "Reuters",
-        "url": "https://reuters.com/1",
-        "publishedAt": "2025-12-30T22:30:14.075Z",
-        "category": "macro",
-        "relevanceScore": 0.95,
-        "tickersMentioned": [],
-        "excerpt": "Federal Reserve officials indicated they need more confidence inflation is heading to 2% before cutting rates."
-      },
-      {
-        "id": "m2",
-        "headline": "S&P 500 Hits Record High as Tech Rally Continues",
-        "source": "Bloomberg",
-        "url": "https://bloomberg.com/2",
-        "publishedAt": "2025-12-30T22:00:14.075Z",
+        "id": "market_6340",
+        "headline": "Stock market today: Dow, S&P 500, Nasdaq waver as Fed minutes show division over December rate cut - Yahoo Finance",
+        "source": "Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxQbnVTUTBBNkZuMHV0Wm9CR0hxcDZBZURhOGctd2ttTGZOMmQ0alF5c21RWUV2ejNLNVJBd2thWHNFdlplNGF3WkJDdXdhV0Vac2RTV2pvMV9rT2I5Q0l1dTlWN0loNU42ZWJaM2UyXzhlX1VoTER4MmQ0aml3by1ybXRMN3NTMUltUnQ5YVBqdzl1VWlIWlRGYUkzVUhiTUNHYTY3M0JWOHlubjVCOWdLdG44VmFxWmg1TWpOZHhiWkxEbW03Q0M2RUctanQ5OFc1UXZUSkZsVWt6c0JjcWc?oc=5",
+        "publishedAt": "2025-12-30T20:30:36+00:00",
         "category": "market",
-        "relevanceScore": 0.92,
-        "tickersMentioned": [
-          "AAPL",
-          "MSFT",
-          "NVDA"
-        ],
-        "excerpt": "The benchmark index reached new all-time highs driven by strong earnings from technology giants."
-      },
-      {
-        "id": "m3",
-        "headline": "Treasury Yields Rise After Strong Employment Report",
-        "source": "WSJ",
-        "url": "https://wsj.com/3",
-        "publishedAt": "2025-12-30T21:00:14.075Z",
-        "category": "macro",
-        "relevanceScore": 0.88,
+        "relevanceScore": 0.745,
         "tickersMentioned": [],
-        "excerpt": "Bond yields climbed after data showed the labor market remains resilient."
+        "excerpt": null
       },
       {
-        "id": "m4",
-        "headline": "Oil Prices Surge on Middle East Supply Concerns",
-        "source": "CNBC",
-        "url": "https://cnbc.com/4",
-        "publishedAt": "2025-12-30T20:00:14.075Z",
+        "id": "market_7634",
+        "headline": "\u2018I\u2019m fed up\u2019: My selfish mother-in-law has controlled me for 30 years. How can I regain my power?",
+        "source": "marketwatch",
+        "url": "https://www.marketwatch.com/story/im-completely-fed-up-my-selfish-boomer-mother-in-law-has-controlled-me-for-30-years-how-can-i-regain-my-power-7d6b82e0?mod=mw_rss_topstories",
+        "publishedAt": "2025-12-30T22:00:00+00:00",
         "category": "market",
-        "relevanceScore": 0.85,
-        "tickersMentioned": [
-          "XOM",
-          "CVX"
-        ],
-        "excerpt": "Crude oil jumped 3% as geopolitical tensions raised supply disruption fears."
-      },
-      {
-        "id": "m5",
-        "headline": "Q4 Earnings Season Off to Strong Start",
-        "source": "MarketWatch",
-        "url": "https://marketwatch.com/5",
-        "publishedAt": "2025-12-30T19:00:14.075Z",
-        "category": "earnings",
-        "relevanceScore": 0.82,
+        "relevanceScore": 0.7325,
         "tickersMentioned": [],
-        "excerpt": "Early reporters beating estimates at higher rate than historical average."
+        "excerpt": null
       },
       {
-        "id": "m6",
-        "headline": "Dollar Strengthens as Rate Cut Expectations Moderate",
-        "source": "FT",
-        "url": "https://ft.com/6",
-        "publishedAt": "2025-12-30T18:00:14.075Z",
-        "category": "macro",
-        "relevanceScore": 0.78,
-        "tickersMentioned": [],
-        "excerpt": "The dollar index rose to three-week highs as traders push back rate cut timing."
-      },
-      {
-        "id": "m7",
-        "headline": "China Manufacturing PMI Unexpectedly Contracts",
-        "source": "Reuters",
-        "url": "https://reuters.com/7",
-        "publishedAt": "2025-12-30T17:00:14.075Z",
-        "category": "macro",
-        "relevanceScore": 0.75,
-        "tickersMentioned": [],
-        "excerpt": "Factory activity shrank for the first time in three months, signaling ongoing economic challenges."
-      },
-      {
-        "id": "m8",
-        "headline": "Consumer Spending Remains Resilient Despite High Rates",
-        "source": "Bloomberg",
-        "url": "https://bloomberg.com/8",
-        "publishedAt": "2025-12-30T16:00:14.075Z",
+        "id": "market_3050",
+        "headline": "Stock Market Today: Dow Ends Lower After Fed Minutes; Two Biotech Names Tank (Live Coverage) - Investor's Business Daily",
+        "source": "Investor's Business Daily",
+        "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQR2RUUktGQzMwLVdudzljX1JsRWs1S2tFU1dwOC1XOHh5VlJPUmc2Z0VsLVRmMFhFc0YxOHFTa2EtOFZ3WGl6QVZnTkppZlNDMmlkSkFYOHRnM2c4a2M4RHozNm1Bd1d3ell2YktGbVdVb0t0RG0yVkRvY3Nyc1VzXzNRNncxcThTWXRGaExMaS1LZDR0M1RiSTRkVE9ULU01NXJCUE55NUR2aHZU?oc=5",
+        "publishedAt": "2025-12-30T21:46:00+00:00",
         "category": "market",
-        "relevanceScore": 0.72,
-        "tickersMentioned": [
-          "AMZN",
-          "HD"
-        ],
-        "excerpt": "Retail sales data beat expectations, showing American consumers continue to spend."
+        "relevanceScore": 0.725,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "market_9980",
+        "headline": "The Stock Market Is Flashing a Warning Last Seen Decades Ago, and the Federal Reserve Just Made President Trump's Tariffs Even Riskier. Here Is What History Says Could Happen Next. - The Motley Fool",
+        "source": "The Motley Fool",
+        "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxQSjRjME9oUC1RNHY0bEk2TTE0UUJfeDM2NmpfQnVodndFWnZ1bzk5ZVhldDl1NTNnVHQyUHJtdWZUNWtkNER6SXlxeUtwQXhEYzJCdDdDOFpXNHpjSUhLYTFhU1VNOWhhRi1uekpORlBjemp1azl6V3FPRUpWY09qQ1I3V1NZZ1F0aFhlTF9Xay1sbGc0Y251YQ?oc=5",
+        "publishedAt": "2025-12-30T10:15:00+00:00",
+        "category": "market",
+        "relevanceScore": 0.6591,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "market_468",
+        "headline": "CEO of major bank warns stock market will punish Americans if Federal Reserve isn't independent - CBS News",
+        "source": "CBS News",
+        "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxNdUxCdDYyRlNnNnB0WmNVUkdvQldGWThYZ1Z1eUxTZjM4TXNwYy1CNjZsbGVTMHBHeDhSaS1KY3BYRGlqTjBiWHBMNHFZRjlpaGxoSmdEUGUwUGxjdDBidG9EY2ZhcnNPWC1EYm5FVlEwRVY4b2N5Q0xwVS0tU1NURVRhRjZmQ0dZUzd3eU1HanNkMXBYUzdwYkVrb3E1Zkk5Q0FaWUoxV2hEZnJsU3dtY1M3TVlFMGU1UmRQam9aanAtb3M?oc=5",
+        "publishedAt": "2025-12-29T15:18:00+00:00",
+        "category": "market",
+        "relevanceScore": 0.3725,
+        "tickersMentioned": [],
+        "excerpt": null
       }
     ],
     "company": [
       {
-        "id": "c1",
-        "headline": "NVIDIA Unveils Next-Generation Blackwell AI Chips",
-        "source": "TechCrunch",
-        "url": "https://techcrunch.com/1",
-        "publishedAt": "2025-12-30T22:20:14.075Z",
+        "id": "company_3654",
+        "headline": "Meta\u2019s Manus acquisition is Big Tech\u2019s latest big bet on AI",
+        "source": "marketwatch",
+        "url": "https://www.marketwatch.com/story/meta-acquisition-is-latest-megacap-tech-bet-on-ai-to-finish-the-year-68cdfd8f?mod=mw_rss_topstories",
+        "publishedAt": "2025-12-31T00:39:00+00:00",
         "category": "company",
-        "relevanceScore": 0.96,
-        "tickersMentioned": [
-          "NVDA"
-        ],
-        "excerpt": "The new architecture promises 4x improvement in AI training efficiency."
-      },
-      {
-        "id": "c2",
-        "headline": "Apple Vision Pro Sales Exceed Initial Forecasts",
-        "source": "CNBC",
-        "url": "https://cnbc.com/c2",
-        "publishedAt": "2025-12-30T21:30:14.075Z",
-        "category": "company",
-        "relevanceScore": 0.88,
-        "tickersMentioned": [
-          "AAPL"
-        ],
-        "excerpt": "Spatial computing device seeing strong enterprise adoption."
-      },
-      {
-        "id": "c3",
-        "headline": "Microsoft Azure Revenue Growth Accelerates to 29%",
-        "source": "Bloomberg",
-        "url": "https://bloomberg.com/c3",
-        "publishedAt": "2025-12-30T20:30:14.075Z",
-        "category": "earnings",
-        "relevanceScore": 0.92,
-        "tickersMentioned": [
-          "MSFT"
-        ],
-        "excerpt": "Cloud business shows re-acceleration driven by AI workloads."
-      },
-      {
-        "id": "c4",
-        "headline": "Amazon AWS Announces New AI Services at re:Invent",
-        "source": "AWS Blog",
-        "url": "https://aws.com/c4",
-        "publishedAt": "2025-12-30T19:30:14.075Z",
-        "category": "company",
-        "relevanceScore": 0.85,
-        "tickersMentioned": [
-          "AMZN"
-        ],
-        "excerpt": "New Bedrock features and custom chip announcements."
-      },
-      {
-        "id": "c5",
-        "headline": "Metas Reality Labs Losses Narrow as Headset Sales Grow",
-        "source": "The Verge",
-        "url": "https://theverge.com/c5",
-        "publishedAt": "2025-12-30T18:30:14.075Z",
-        "category": "earnings",
-        "relevanceScore": 0.78,
-        "tickersMentioned": [
-          "META"
-        ],
-        "excerpt": "Quest 3 sales strong heading into holiday season."
-      },
-      {
-        "id": "c6",
-        "headline": "Tesla Cybertruck Deliveries Ramp to 2,500 Per Week",
-        "source": "Electrek",
-        "url": "https://electrek.com/c6",
-        "publishedAt": "2025-12-30T17:30:14.075Z",
-        "category": "company",
-        "relevanceScore": 0.82,
-        "tickersMentioned": [
-          "TSLA"
-        ],
-        "excerpt": "Production improvements at Texas Gigafactory."
-      },
-      {
-        "id": "c7",
-        "headline": "Alphabets Waymo Expands to Three New Cities",
-        "source": "Reuters",
-        "url": "https://reuters.com/c7",
-        "publishedAt": "2025-12-30T16:30:14.075Z",
-        "category": "company",
-        "relevanceScore": 0.75,
-        "tickersMentioned": [
-          "GOOGL"
-        ],
-        "excerpt": "Autonomous taxi service launching in Austin, Atlanta, and Miami."
-      },
-      {
-        "id": "c8",
-        "headline": "JPMorgan Raises Dividend, Announces 30B Buyback",
-        "source": "WSJ",
-        "url": "https://wsj.com/c8",
-        "publishedAt": "2025-12-30T15:30:14.075Z",
-        "category": "company",
-        "relevanceScore": 0.8,
-        "tickersMentioned": [
-          "JPM"
-        ],
-        "excerpt": "Bank passes stress test with flying colors, boosts capital return."
-      },
-      {
-        "id": "c9",
-        "headline": "UnitedHealth Optum Revenue Grows 14% Year-Over-Year",
-        "source": "HealthcareFinance",
-        "url": "https://hf.com/c9",
-        "publishedAt": "2025-12-30T14:30:14.075Z",
-        "category": "earnings",
         "relevanceScore": 0.72,
-        "tickersMentioned": [
-          "UNH"
-        ],
-        "excerpt": "Healthcare services segment continues to drive growth."
+        "tickersMentioned": [],
+        "excerpt": null
       },
       {
-        "id": "c10",
-        "headline": "Visa Reports Record Holiday Transaction Volumes",
-        "source": "PaymentsSource",
-        "url": "https://payments.com/c10",
-        "publishedAt": "2025-12-30T13:30:14.075Z",
+        "id": "company_8855",
+        "headline": "Silver's big swing, another AI acquisition for Meta, GM's banner year and more in Morning Squawk - CNBC",
+        "source": "CNBC",
+        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPS3JTRmFRNEdZQy1SVmV6b3lFd0xYSVVvcjBMQkNmdzBiaG9Nb2hMTGltR0ZHa2pSdE1wN1k3YWRCQ21uSTR1MTY4TTc2ZGRCUnN6VnFneENxTDNYSktCWG9KUFItenpOU0dIZ3U3QnFLU256YllhTXloWWgtcXNPNUQxYll2VlQ3YXVj0gGQAUFVX3lxTE1LS2ljbTUxMkpRc292VWhyQnFZLUhGYVRSSEtBcHdWUktsNTNPRzFZS3hSc0dlYmZ1OGhJaDJEZkhqNDlacVZicl9kNno5ZElqNHg0VzZqeDFFb0MzYkFuNVJQWjhibzljWjFGVGk2N0JtVGFIQTRYRE5DeTJrcFdhWUlCS2ZqZTAzX05qemhTYg?oc=5",
+        "publishedAt": "2025-12-30T13:01:19+00:00",
         "category": "company",
-        "relevanceScore": 0.68,
-        "tickersMentioned": [
-          "V"
-        ],
-        "excerpt": "Cross-border volumes up 15% as international travel recovers."
+        "relevanceScore": 0.6973,
+        "tickersMentioned": [],
+        "excerpt": null
       },
       {
-        "id": "c11",
-        "headline": "Johnson & Johnson Cancer Drug Shows Strong Phase 3 Results",
-        "source": "FiercePharma",
-        "url": "https://fierce.com/c11",
-        "publishedAt": "2025-12-30T12:30:14.075Z",
+        "id": "company_8466",
+        "headline": "Stock Market News, Dec. 30, 2025: Dow, S&P 500 and Nasdaq close lower for three consecutive days, gold and silver continue rally - MarketWatch",
+        "source": "MarketWatch",
+        "url": "https://news.google.com/rss/articles/CBMipANBVV95cUxObG9DOHhOVVJJYUQtS3Jnd3BvUWYwQlZseE42QkJLeDhlRnlfWHBlNmExdUxhR0Qta2NqT1A1VE9ScnZXS2VscWsyODdfYUNjWDljUTRGWkpkWVYwQ0UxRExETkprRjRlLVJKSEJXY0lqNWJJa3o5a0p3TVhtZkNUOGlYbUw4SVA0YUkyeVh2Q1JlNlVzajhXblRmMDIweXhGM3dBNzVpT0ZzX01zTUpNc2thc09LN2dyYlV2dnNTSDVJd1Y4R2pUb2NVd3ByQllyNlI0ZjRta0w4LWFCdkMwWXFpMW5jQnNaaGRjSEd1MzRkMjJ1TDZPcllWMk0ycVM4VWk0VzNMOU5QOEVzQV9fYmNzcmw3el9rQWItXzFBa0dtZFp2eUZXWS1qSmt5aHg2OE10WUtrbFpyOGNyZzlRT25vc2xpRXpqRk1mTWlQQUoyM2xGVlVITjFzM0E0VTFnUm1OX245bkhKMTFPNVhMendycG5ZMjIwYWpSWkViZWloY09UNGFxalQxTDI2ZWdlSDRsXzlWVjh5bE4wdmowZnExWHM?oc=5",
+        "publishedAt": "2025-12-30T21:36:00+00:00",
         "category": "company",
-        "relevanceScore": 0.85,
-        "tickersMentioned": [
-          "JNJ"
-        ],
-        "excerpt": "New therapy could become standard of care for lung cancer."
+        "relevanceScore": 0.695,
+        "tickersMentioned": [],
+        "excerpt": null
       },
       {
-        "id": "c12",
-        "headline": "ExxonMobil Pioneer Acquisition Closes, Integration Begins",
-        "source": "OilPrice",
-        "url": "https://oilprice.com/c12",
-        "publishedAt": "2025-12-30T11:30:14.075Z",
+        "id": "company_3501",
+        "headline": "China launches its silver weapon on Jan. 1. What that means for investors and prices.",
+        "source": "marketwatch",
+        "url": "https://www.marketwatch.com/story/china-launches-its-silver-weapon-on-jan-1-heres-what-that-means-for-prices-5c543123?mod=mw_rss_topstories",
+        "publishedAt": "2025-12-30T20:58:00+00:00",
         "category": "company",
-        "relevanceScore": 0.75,
+        "relevanceScore": 0.695,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_7521",
+        "headline": "What the Buffett Indicator says about the bull market, AI trade",
+        "source": "Yahoo Finance Video",
+        "url": "https://finance.yahoo.com/video/buffett-indicator-says-bull-market-183000965.html",
+        "publishedAt": "2025-12-30T10:30:00",
+        "category": "company",
+        "relevanceScore": 0.6384,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_5766",
+        "headline": "Chris Murphy Says Ban On Nvidia Selling To China Was Costing The Chipmaker Billions, So The Company 'Wrote Huge Checks' To Trump's Vanity Projects",
+        "source": "Benzinga",
+        "url": "https://finance.yahoo.com/news/chris-murphy-says-ban-nvidia-223106267.html",
+        "publishedAt": "2025-12-30T14:31:06",
+        "category": "company",
+        "relevanceScore": 0.6267,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_6073",
+        "headline": "Popular cooking, recipe media brand files Chapter 11 bankruptcy",
+        "source": "TheStreet",
+        "url": "https://finance.yahoo.com/m/cb86f058-093a-3f65-9679-7f4633ef640c/popular-cooking%2C-recipe-media.html",
+        "publishedAt": "2025-12-30T12:47:00",
+        "category": "company",
+        "relevanceScore": 0.6255,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_4844",
+        "headline": "S&P 500, Nasdaq end slightly down in holiday-thin trade, Meta gains on deal - Reuters",
+        "source": "Reuters",
+        "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNelVKblQ5WHBIVjJRQk1odmVQMTd0amhaTEd2dW9aTWF2U21jZzNUcnFmNmE1Y1d2YzNlNW0teXRndkxUOWZlN1VCQ1VaN0ZLc29QTTZ5RDBTdzhIWmZUUkx4Qi1ZbEZWcW51YkxyNmtfTWFFWkZFMVprWEFIS3p1SEtBbzB1d3J6WmVBci01Vjh6aVFaX29KVWNRck02aTVtLWF6QnBPaDNHOWRzVlFMbg?oc=5",
+        "publishedAt": "2025-12-30T23:50:00+00:00",
+        "category": "company",
+        "relevanceScore": 0.5375,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_9655",
+        "headline": "Musk's xAI buys third building to expand AI compute power",
+        "source": "Reuters",
+        "url": "https://finance.yahoo.com/news/musks-xai-buys-third-building-221629820.html",
+        "publishedAt": "2025-12-30T14:16:29",
+        "category": "company",
+        "relevanceScore": 0.5172,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_1968",
+        "headline": "\u2018He has become hostile\u2019: My mom is in her 80s and has dementia. My brother is blocking access.",
+        "source": "marketwatch",
+        "url": "https://www.marketwatch.com/story/he-has-become-hostile-my-mom-is-in-her-80s-and-has-dementia-my-brother-is-blocking-access-b8258d3e?mod=mw_rss_topstories",
+        "publishedAt": "2025-12-30T23:21:00+00:00",
+        "category": "company",
+        "relevanceScore": 0.5125,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_5283",
+        "headline": "Trump Media just launched five \u2018Made in America\u2019 ETFs, testing whether political power is an investable theme",
+        "source": "marketwatch",
+        "url": "https://www.marketwatch.com/story/trump-media-just-launched-5-made-in-america-etfs-testing-whether-political-power-can-function-as-an-investable-theme-a959b3ca?mod=mw_rss_topstories",
+        "publishedAt": "2025-12-30T21:11:00+00:00",
+        "category": "company",
+        "relevanceScore": 0.5125,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_1609",
+        "headline": "Five Trump ETFs Hit The Stock Exchange With 'Made In America Focus' - Investor's Business Daily",
+        "source": "Investor's Business Daily",
+        "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPbFlySFFtYWZNd2JlUk9JUU9DdmY1WUZUdVNzdFdqR0VfN0ZVTzVON2ZGSTBqcG9sbXF4ZFY3bHlOc1lTczlHSzFLajRxZDNzanRFZFJVYUhBY2VtUDB3Uno5aGZwMjhQNHUyZXU1cEN1emJYNUdBM0VXOUdsQXU5cFkzS2k5UmNZR041elkxalZGS0hUNnRlMWxxZy1qU3N1M2JWcS1R?oc=5",
+        "publishedAt": "2025-12-30T21:20:00+00:00",
+        "category": "company",
+        "relevanceScore": 0.505,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_9348",
+        "headline": "Stock market today: Dow, S&P 500, Nasdaq struggle for gains in last stretch of 2025 - Yahoo Finance UK",
+        "source": "Yahoo Finance UK",
+        "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQMXFtNTltQW5Hc3JfRl9YTXhTMEhfdGhmT21uOHhCOUZLWkJNcThsWlJVMlU5dGV1bW4tWERtMmNwNWViMVFDTXNIR1p6MWZDT2J6SWNjT19qeV9hRkRzQmlpS2dMTG1fbWpGN0lQWTdzWjNBeVphRnVmeW5FVzBMNHZ2cnhmUzBUWUk0UWFlNkJwT0JPWVNIdHdfal9KVk9peERTQXkyRy1YMFp0UmtKd3VFaG0xUQ?oc=5",
+        "publishedAt": "2025-12-30T21:01:35+00:00",
+        "category": "company",
+        "relevanceScore": 0.505,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_6891",
+        "headline": "'We're pretty upbeat': Stock market experts expect continued growth, bolstered by AI, in 2026 - CNBC",
+        "source": "CNBC",
+        "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQS2g4U1JPWHVuRnAtQjd4dGtQUGROcjZjNkZlaVE3Vm41dDVWWUdVRDlhU2ZKbi11d2taVnFnc0tLM0VaN2sxTUJOZ2FzSXA5VVRjSHdEUzh0dkpFWDlXWlA0cUFBbEsxcGRTYldlQzNDZDFQbEdLZWFBbnlVOW15Q1FQcVREZmxOZGozZ2NfT0ZiOC1Kb1FHQ3JFa0VHUFFNX3o3WGRuYWp4akFPS01kYlRMQzdEZGhiaXJwX2Z4V3gyZ9IBxwFBVV95cUxNdWRtLVRsbmgzQzNMMlhlb2FQUjFXRkxsTVZmM2cxTkR1aXUtWmVjN3F5Q1FpQU5zVGJzUkk3dDlQanphc1V6M1UwSkd3bnNESi1VWldGQlpoVmJET3NVZWRIQnN3dlRfMlJKU21fNlZEaU0wN0M3Sjkza0ZGRTdRMzZUbkw3OEd3NENpc3hxbzNrVFRZVlVJMzhSdGVuYjRyUXFfNUpfbjliX3RyVm5PNjhXQk1qQ01NeTA3NXFGaF92V3llRGg0?oc=5",
+        "publishedAt": "2025-12-30T14:00:01+00:00",
+        "category": "company",
+        "relevanceScore": 0.4976,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_2400",
+        "headline": "Could 2026 be the year Waymo goes mainstream?",
+        "source": "Yahoo Finance Video",
+        "url": "https://finance.yahoo.com/video/could-2026-waymo-goes-mainstream-214501593.html",
+        "publishedAt": "2025-12-30T13:45:01",
+        "category": "company",
+        "relevanceScore": 0.4805,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_9988",
+        "headline": "Trump Media's ETFs, Nvidia's talks to buy Israeli AI startup",
+        "source": "Yahoo Finance Video",
+        "url": "https://finance.yahoo.com/video/trump-medias-etfs-nvidias-talks-211917075.html",
+        "publishedAt": "2025-12-30T13:19:17",
+        "category": "company",
+        "relevanceScore": 0.4772,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_1692",
+        "headline": "What Are the 2 Top Artificial Intelligence (AI) Stocks to Buy Right Now?",
+        "source": "Motley Fool",
+        "url": "https://finance.yahoo.com/m/a9d99984-4cf6-317a-a05c-b89bdb1f05ab/what-are-the-2-top-artificial.html",
+        "publishedAt": "2025-12-30T10:45:00",
+        "category": "company",
+        "relevanceScore": 0.4752,
         "tickersMentioned": [
-          "XOM"
+          "AI"
         ],
-        "excerpt": "Combined entity now largest Permian Basin producer."
+        "excerpt": null
+      },
+      {
+        "id": "company_3277",
+        "headline": "IBKR recurring investment into VWCE on IBIS2 (no fractional shares)",
+        "source": "r/investing",
+        "url": "https://reddit.com/r/investing/comments/1pzvk0x/ibkr_recurring_investment_into_vwce_on_ibis2_no/",
+        "publishedAt": "2025-12-30T14:19:30",
+        "category": "company",
+        "relevanceScore": 0.4652,
+        "tickersMentioned": [
+          "XETRA"
+        ],
+        "excerpt": null
+      },
+      {
+        "id": "company_9381",
+        "headline": "Stock Market Today, Dec. 30: Rocket Lab Regains Momentum - The Motley Fool",
+        "source": "The Motley Fool",
+        "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxPaGk1bVNoS0VNa29QdmRvd1ZhQmV1NXEwMkctY0MxbzNOd1lpVkFhOEx2c2FpcEpKbkdHdndwRkxKbnJrRWNWNVkwOWkxODdvSWgtSlFKQ3pHbFM3VGRlVEthSERwdkRKeVU3NGJSODNvUnRrenU3ZmZ1NUJJcE9hVGhKYU1MZlRzY1VZRFk2LWtvNkl5bFd2Qk5Td29iM2hyaEs3aXYydU85MHFTNW11cEVqNXA?oc=5",
+        "publishedAt": "2025-12-30T22:49:00+00:00",
+        "category": "company",
+        "relevanceScore": 0.4625,
+        "tickersMentioned": [],
+        "excerpt": null
+      },
+      {
+        "id": "company_2502",
+        "headline": "Stock Market Today, Dec. 30: Boeing Led Industrials as Major Indexes Drift Near Records - The Motley Fool",
+        "source": "The Motley Fool",
+        "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxNd3l3QWFqamFVRHNsWkxtT012bWp0bkxNMnM0d0t0bGliYjRSSHd3OERCVXh6Yk43SXdYMmtIdDNTWS1vLTFMTGUzajA5Q3h6cTcwOE1zTTFyeGJvenQ4cnhHdzJzRU4tdkhlQ1hOcWJIdF9jeTY5ZjY0UzRjcGhCTFdISEJaZGkxYkdiM2pScHo3OURrTzRCWHZWT01ZWUc5cFV5SjVNOWRSM2J5emtJZ19mcF9JZ08xLVp5V05rSVljNFZxVGJhMGM2Y3J0dEd6SnplQWFhNkNmQy0xRnc?oc=5",
+        "publishedAt": "2025-12-30T22:06:00+00:00",
+        "category": "company",
+        "relevanceScore": 0.4625,
+        "tickersMentioned": [],
+        "excerpt": null
       }
     ]
   },
   "summary": {
-    "totalPicks": 14,
-    "avgConviction": 0.74,
+    "totalPicks": 5,
+    "avgConviction": 0.5,
     "topSector": "technology",
-    "highRiskCount": 1,
-    "newsCount": 20,
-    "marketTrend": "up"
+    "highRiskCount": 0,
+    "newsCount": 25,
+    "marketTrend": "flat"
   }
 }
