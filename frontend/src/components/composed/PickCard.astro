@@ -1,15 +1,16 @@
 ---
 import Badge from "../primitives/Badge.astro";
 import ConvictionBar from "../primitives/ConvictionBar.astro";
+import { formatChange } from "../../data/report";
 import type { StockPick } from "../../data/types";
 
 interface Props {
   pick: StockPick;
-  showTimeframe?: boolean;
+  compact?: boolean;
   class?: string;
 }
 
-const { pick, showTimeframe = true, class: className = "" } = Astro.props;
+const { pick, compact = false, class: className = "" } = Astro.props;
 
 const timeframeLabels = {
   short: "Short-term",
@@ -17,64 +18,91 @@ const timeframeLabels = {
   long: "Long-term",
 };
 
+// short=blue (accent), medium=purple (we'll use warning as closest), long=green (success)
 const timeframeColors = {
-  short: "accent",
-  medium: "warning",
-  long: "success",
+  short: "info",
+  medium: "caution",
+  long: "bullish",
 } as const;
 
 function _formatPrice(price: number | undefined): string {
   if (price === undefined) return "-";
   return `$${price.toFixed(2)}`;
 }
+
+const priceChangePositive = pick.priceChange >= 0;
 ---
 
 <a
   href={`/stock/${pick.ticker}`}
   class:list={[
-    "block bg-bg-surface border border-border rounded-lg p-4 hover:border-accent transition-colors",
+    "block bg-bg-surface border border-border rounded-lg hover:border-accent hover:shadow-md transition-all",
+    compact ? "p-3" : "p-4",
     className,
   ]}
 >
-  <div class="flex items-start justify-between mb-3">
+  <!-- Header: Ticker + Timeframe -->
+  <div class="flex items-start justify-between mb-2">
     <div class="flex items-center gap-2">
-      <span class="text-lg font-bold text-text-primary">{pick.ticker}</span>
-      {
-        showTimeframe && (
-          <Badge text={timeframeLabels[pick.timeframe]} variant={timeframeColors[pick.timeframe]} />
-        )
-      }
+      <span class="font-mono text-lg font-bold text-accent hover:underline">
+        {pick.ticker}
+      </span>
+      <Badge text={timeframeLabels[pick.timeframe]} variant={timeframeColors[pick.timeframe]} size="sm" />
     </div>
-    {
-      pick.entryPrice && (
-        <span class="text-sm text-text-secondary">
-          Entry: {_formatPrice(pick.entryPrice)}
-        </span>
-      )
-    }
   </div>
 
-  <p class="text-sm text-text-secondary mb-3 line-clamp-2">
+  <!-- Company name -->
+  <p class="text-sm text-text-secondary mb-2">{pick.companyName}</p>
+
+  <!-- Price with change -->
+  <div class="flex items-baseline gap-2 mb-3">
+    <span class="text-xl font-semibold text-text-primary">
+      {_formatPrice(pick.currentPrice)}
+    </span>
+    <span
+      class:list={[
+        "text-sm font-medium flex items-center gap-0.5",
+        priceChangePositive ? "text-success" : "text-danger",
+      ]}
+    >
+      <span>{priceChangePositive ? "↑" : "↓"}</span>
+      <span>{formatChange(pick.priceChangePercent, true)}</span>
+    </span>
+  </div>
+
+  <!-- Conviction bar -->
+  <div class="mb-3">
+    <ConvictionBar score={pick.convictionScore} size="sm" />
+  </div>
+
+  <!-- Thesis (truncated if compact) -->
+  <p
+    class:list={[
+      "text-sm text-text-secondary",
+      compact ? "line-clamp-1" : "line-clamp-2",
+    ]}
+  >
     {pick.thesis}
   </p>
 
-  <ConvictionBar score={pick.convictionScore} size="sm" />
-
+  <!-- Risk factors (hidden if compact) -->
   {
-    pick.riskFactors.length > 0 && (
+    !compact && pick.riskFactors.length > 0 && (
       <div class="mt-3 flex flex-wrap gap-1">
         {pick.riskFactors.slice(0, 3).map((risk) => (
-          <Badge text={risk} variant="danger" size="sm" />
+          <Badge text={risk} variant="bearish" size="sm" />
         ))}
       </div>
     )
   }
 
+  <!-- Entry/Target/Stop prices -->
   {
-    pick.targetPrice && (
-      <div class="mt-3 flex items-center justify-between text-xs text-text-secondary">
-        <span>Target: {_formatPrice(pick.targetPrice)}</span>
-        {pick.stopLoss && <span>Stop: {_formatPrice(pick.stopLoss)}</span>}
+    !compact && (pick.entryPrice || pick.targetPrice) && (
+      <div class="mt-3 pt-3 border-t border-border flex items-center justify-between text-xs text-text-secondary">
+        {pick.entryPrice && <span>Entry: {_formatPrice(pick.entryPrice)}</span>}
+        {pick.targetPrice && <span class="text-success">Target: {_formatPrice(pick.targetPrice)}</span>}
+        {pick.stopLoss && <span class="text-danger">Stop: {_formatPrice(pick.stopLoss)}</span>}
       </div>
     )
   }

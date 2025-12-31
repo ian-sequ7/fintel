@@ -1,4 +1,5 @@
 ---
+import { formatRelativeTime } from "../../data/report";
 import type { MacroIndicator } from "../../data/types";
 
 interface Props {
@@ -20,7 +21,29 @@ const trendColors = {
   flat: "text-text-secondary",
 };
 
-const trend = indicator.trend ?? "flat";
+// Determine trend from values if not explicitly set
+function _determineTrend(): "up" | "down" | "flat" {
+  if (indicator.trend) return indicator.trend;
+  if (indicator.previousValue === undefined) return "flat";
+  if (indicator.value > indicator.previousValue) return "up";
+  if (indicator.value < indicator.previousValue) return "down";
+  return "flat";
+}
+
+const trend = _determineTrend();
+
+// Format value based on unit
+function _formatValue(value: number): string {
+  if (indicator.unit === "%" || indicator.unit === "") {
+    return value.toFixed(1);
+  }
+  return value.toFixed(2);
+}
+
+// Calculate change from previous
+const change = indicator.previousValue !== undefined
+  ? indicator.value - indicator.previousValue
+  : undefined;
 ---
 
 <div
@@ -29,30 +52,41 @@ const trend = indicator.trend ?? "flat";
     className,
   ]}
 >
+  <!-- Name -->
   <p class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-1">
     {indicator.name}
   </p>
 
-  <div class="flex items-baseline gap-2">
+  <!-- Value with unit and trend arrow -->
+  <div class="flex items-baseline gap-2 mb-2">
     <span class="text-2xl font-bold text-text-primary">
-      {indicator.value.toFixed(indicator.unit === "%" ? 1 : 2)}
+      {_formatValue(indicator.value)}
     </span>
     <span class="text-sm text-text-secondary">{indicator.unit}</span>
     {
-      indicator.previous_value !== undefined && (
-        <span class:list={["text-sm font-medium", trendColors[trend]]}>
-          {trendIcons[trend]}
+      (indicator.previousValue !== undefined || indicator.trend) && (
+        <span class:list={["text-sm font-medium flex items-center gap-0.5", trendColors[trend]]}>
+          <span>{trendIcons[trend]}</span>
+          {change !== undefined && change !== 0 && (
+            <span>{change > 0 ? "+" : ""}{change.toFixed(1)}</span>
+          )}
         </span>
       )
     }
   </div>
 
+  <!-- Previous value comparison -->
   {
-    indicator.previous_value !== undefined && (
-      <p class="text-xs text-text-secondary mt-1">
-        Previous: {indicator.previous_value.toFixed(indicator.unit === "%" ? 1 : 2)}
-        {indicator.unit}
+    indicator.previousValue !== undefined && (
+      <p class="text-xs text-text-secondary mb-2">
+        Previous: {_formatValue(indicator.previousValue)}{indicator.unit}
       </p>
     )
   }
+
+  <!-- Source and updated timestamp -->
+  <div class="flex items-center justify-between text-xs text-text-secondary pt-2 border-t border-border">
+    <span class="font-medium">{indicator.source}</span>
+    <span>{formatRelativeTime(indicator.updatedAt)}</span>
+  </div>
 </div>

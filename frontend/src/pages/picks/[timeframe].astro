@@ -1,0 +1,83 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Card from "../../components/primitives/Card.astro";
+import FilterBar from "../../components/composed/FilterBar.astro";
+import PickCard from "../../components/composed/PickCard.astro";
+import { getPicks } from "../../data/report";
+import type { Timeframe, SortOption } from "../../data/types";
+
+// Static paths for SSG
+export function getStaticPaths() {
+  return [
+    { params: { timeframe: "short" } },
+    { params: { timeframe: "medium" } },
+    { params: { timeframe: "long" } },
+  ];
+}
+
+const { timeframe } = Astro.params as { timeframe: Timeframe };
+const sortParam = (Astro.url.searchParams.get("sort") ?? "conviction") as SortOption;
+const picks = getPicks(timeframe, sortParam, sortParam === "ticker" ? "asc" : "desc");
+
+// Dynamic page title based on filter
+const timeframeTitles: Record<Timeframe, string> = {
+  short: "Short-Term Picks",
+  medium: "Medium-Term Picks",
+  long: "Long-Term Picks",
+};
+const pageTitle = timeframeTitles[timeframe];
+
+const timeframeDescriptions: Record<Timeframe, string> = {
+  short: "Short-term stock picks with high conviction for quick trades and swing positions.",
+  medium: "Medium-term stock picks for multi-week to multi-month investment horizons.",
+  long: "Long-term stock picks for buy-and-hold investors seeking sustained growth.",
+};
+const pageDescription = timeframeDescriptions[timeframe];
+
+const timeframeTabs = [
+  { value: "all", label: "All", href: "/picks" },
+  { value: "short", label: "Short-term", href: "/picks/short" },
+  { value: "medium", label: "Medium-term", href: "/picks/medium" },
+  { value: "long", label: "Long-term", href: "/picks/long" },
+];
+
+const sortOptions = [
+  { value: "conviction", label: "Conviction" },
+  { value: "ticker", label: "A-Z" },
+];
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <!-- Page header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-text-primary">{pageTitle}</h1>
+    <p class="text-text-secondary">
+      {picks.length} picks
+    </p>
+  </div>
+
+  <!-- Filters -->
+  <div class="mb-6">
+    <FilterBar
+      tabs={timeframeTabs}
+      currentValue={timeframe}
+      sortOptions={sortOptions}
+      currentSort={sortParam}
+    />
+  </div>
+
+  <!-- Picks grid -->
+  {picks.length === 0 ? (
+    <Card>
+      <p class="text-text-secondary text-center py-8">
+        No picks found for the selected filter.
+      </p>
+    </Card>
+  ) : (
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {picks.map((pick) => (
+        <PickCard pick={pick} />
+      ))}
+    </div>
+  )}
+</Layout>

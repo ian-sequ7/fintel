@@ -3,18 +3,76 @@ import Layout from "../layouts/Layout.astro";
 import Card from "../components/primitives/Card.astro";
 import IndicatorCard from "../components/composed/IndicatorCard.astro";
 import RiskCard from "../components/composed/RiskCard.astro";
-import { getMacroData, getMacroRisks } from "../data/report";
+import { getMacroData } from "../data/report";
 
 const macro = getMacroData();
 
-// Sort risks by severity
-const sortedRisks = [...macro.risks].sort((a, b) => {
-  const severityOrder = { high: 0, medium: 1, low: 2 };
-  return severityOrder[a.severity] - severityOrder[b.severity];
-});
+// Sort risks by severity (highest first)
+const severityOrder = { high: 0, medium: 1, low: 2 };
+const sortedRisks = [...macro.risks].sort(
+  (a, b) => severityOrder[a.severity] - severityOrder[b.severity]
+);
+
+// Calculate overall risk score (1-10)
+function _calculateRiskScore(): number {
+  if (macro.risks.length === 0) return 1;
+
+  const severityPoints = { high: 10, medium: 6, low: 2 };
+  const totalPoints = macro.risks.reduce(
+    (sum, risk) => sum + severityPoints[risk.severity],
+    0
+  );
+  const maxPossible = macro.risks.length * 10;
+  const normalized = (totalPoints / maxPossible) * 10;
+
+  return Math.max(1, Math.min(10, Math.round(normalized)));
+}
+
+const overallRiskScore = _calculateRiskScore();
+
+// Risk score color and label
+function _getRiskColor(score: number): string {
+  if (score >= 7) return "text-danger";
+  if (score >= 4) return "text-warning";
+  return "text-success";
+}
+
+function _getRiskBgColor(score: number): string {
+  if (score >= 7) return "bg-danger/15 border-danger/30";
+  if (score >= 4) return "bg-warning/15 border-warning/30";
+  return "bg-success/15 border-success/30";
+}
+
+function _getRiskLabel(score: number): string {
+  if (score >= 8) return "Elevated Risk";
+  if (score >= 6) return "Moderate-High Risk";
+  if (score >= 4) return "Moderate Risk";
+  if (score >= 2) return "Low Risk";
+  return "Minimal Risk";
+}
+
+function _getRiskSummary(score: number): string {
+  if (score >= 7) {
+    return "Multiple high-severity headwinds require attention. Consider defensive positioning and monitoring key indicators closely.";
+  }
+  if (score >= 4) {
+    return "Some macro headwinds present but manageable. Stay informed on developing situations that could escalate.";
+  }
+  return "Macro environment is relatively benign. Focus on individual stock fundamentals rather than macro concerns.";
+}
+
+const riskColor = _getRiskColor(overallRiskScore);
+const riskBgColor = _getRiskBgColor(overallRiskScore);
+const riskLabel = _getRiskLabel(overallRiskScore);
+const riskSummary = _getRiskSummary(overallRiskScore);
+
+// Count risks by severity
+const highRiskCount = macro.risks.filter((r) => r.severity === "high").length;
+const mediumRiskCount = macro.risks.filter((r) => r.severity === "medium").length;
+const lowRiskCount = macro.risks.filter((r) => r.severity === "low").length;
 ---
 
-<Layout title="Macro Analysis">
+<Layout title="Macro Analysis" description="Macroeconomic analysis with risk scores, economic indicators, and market headwinds assessment.">
   <!-- Page header -->
   <div class="mb-6">
     <h1 class="text-2xl font-bold text-text-primary">Macro Analysis</h1>
@@ -23,19 +81,66 @@ const sortedRisks = [...macro.risks].sort((a, b) => {
     </p>
   </div>
 
-  <!-- Indicators grid -->
+  <!-- 1. Risk overview header -->
   <section class="mb-8">
-    <h2 class="text-lg font-semibold text-text-primary mb-4">Economic Indicators</h2>
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class:list={["rounded-lg border p-6", riskBgColor]}>
+      <div class="flex flex-col md:flex-row md:items-center gap-6">
+        <!-- Large risk score -->
+        <div class="flex-shrink-0 text-center">
+          <div class:list={["text-6xl font-bold", riskColor]}>
+            {overallRiskScore}
+          </div>
+          <div class="text-sm text-text-secondary mt-1">out of 10</div>
+        </div>
+
+        <!-- Risk details -->
+        <div class="flex-1">
+          <h2 class:list={["text-xl font-semibold mb-2", riskColor]}>
+            {riskLabel}
+          </h2>
+          <p class="text-text-secondary mb-4">
+            {riskSummary}
+          </p>
+
+          <!-- Risk breakdown -->
+          <div class="flex flex-wrap gap-4 text-sm">
+            {highRiskCount > 0 && (
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-danger"></span>
+                <span class="text-text-secondary">{highRiskCount} high</span>
+              </div>
+            )}
+            {mediumRiskCount > 0 && (
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-warning"></span>
+                <span class="text-text-secondary">{mediumRiskCount} medium</span>
+              </div>
+            )}
+            {lowRiskCount > 0 && (
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-success"></span>
+                <span class="text-text-secondary">{lowRiskCount} low</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Indicators grid -->
+  <section class="mb-8">
+    <h2 class="text-xl font-semibold text-text-primary mb-4">Economic Indicators</h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {macro.indicators.map((indicator) => (
         <IndicatorCard indicator={indicator} />
       ))}
     </div>
   </section>
 
-  <!-- Macro risks -->
+  <!-- 3. Risks list -->
   <section>
-    <h2 class="text-lg font-semibold text-text-primary mb-4">Market Headwinds</h2>
+    <h2 class="text-xl font-semibold text-text-primary mb-4">Headwinds & Risks</h2>
     {sortedRisks.length === 0 ? (
       <Card>
         <p class="text-text-secondary text-center py-8">
@@ -43,31 +148,11 @@ const sortedRisks = [...macro.risks].sort((a, b) => {
         </p>
       </Card>
     ) : (
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="space-y-4">
         {sortedRisks.map((risk) => (
           <RiskCard risk={risk} />
         ))}
       </div>
     )}
-  </section>
-
-  <!-- Context section -->
-  <section class="mt-8">
-    <Card title="Market Context">
-      <div class="prose prose-sm text-text-secondary max-w-none">
-        <p>
-          The macro environment is analyzed using key Federal Reserve Economic Data (FRED)
-          indicators including unemployment rate, federal funds rate, CPI inflation, and GDP growth.
-        </p>
-        <p class="mt-2">
-          Risks are classified by severity:
-        </p>
-        <ul class="mt-2 space-y-1">
-          <li><strong class="text-danger">High:</strong> Immediate attention required, may significantly impact positions</li>
-          <li><strong class="text-warning">Medium:</strong> Monitor closely, potential for escalation</li>
-          <li><strong class="text-success">Low:</strong> Awareness level, minimal near-term impact expected</li>
-        </ul>
-      </div>
-    </Card>
   </section>
 </Layout>

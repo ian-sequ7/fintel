@@ -1,49 +1,91 @@
 ---
-interface FilterOption {
-  value: string;
+interface Tab {
   label: string;
+  value: string;
+  href: string;
+}
+
+interface SortOption {
+  label: string;
+  value: string;
 }
 
 interface Props {
-  filters: FilterOption[];
-  activeFilter: string;
-  paramName?: string;
+  tabs: Tab[];
+  currentValue: string;
+  sortOptions?: SortOption[];
+  currentSort?: string;
   class?: string;
 }
 
 const {
-  filters,
-  activeFilter,
-  paramName = "filter",
+  tabs,
+  currentValue,
+  sortOptions,
+  currentSort,
   class: className = "",
 } = Astro.props;
 
-// Build URLs for each filter option
-function _buildUrl(value: string): string {
+// Generate sort URL
+function _buildSortUrl(sortValue: string): string {
   const url = new URL(Astro.url);
-  if (value === "all") {
-    url.searchParams.delete(paramName);
-  } else {
-    url.searchParams.set(paramName, value);
-  }
+  url.searchParams.set("sort", sortValue);
   return url.pathname + url.search;
 }
 ---
 
-<div class:list={["flex items-center gap-2", className]}>
+<div class:list={["flex flex-col sm:flex-row items-start sm:items-center gap-4", className]}>
+  <!-- Tab-style filter links -->
+  <div class="flex items-center gap-1 bg-bg-surface rounded-lg p-1 border border-border">
+    {
+      tabs.map((tab) => (
+        <a
+          href={tab.href}
+          class:list={[
+            "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+            currentValue === tab.value
+              ? "bg-accent text-white shadow-sm"
+              : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated",
+          ]}
+        >
+          {tab.label}
+        </a>
+      ))
+    }
+  </div>
+
+  <!-- Optional sort dropdown -->
   {
-    filters.map((filter) => (
-      <a
-        href={_buildUrl(filter.value)}
-        class:list={[
-          "px-3 py-1.5 text-sm font-medium rounded-lg transition-colors",
-          activeFilter === filter.value
-            ? "bg-accent text-white"
-            : "bg-bg-surface text-text-secondary hover:bg-bg-elevated hover:text-text-primary",
-        ]}
-      >
-        {filter.label}
-      </a>
-    ))
+    sortOptions && sortOptions.length > 0 && (
+      <div class="flex items-center gap-2 ml-auto">
+        <span class="text-sm text-text-secondary">Sort by:</span>
+        <select
+          class="bg-bg-surface border border-border rounded-lg px-3 py-1.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent cursor-pointer"
+          id="sort-select"
+        >
+          {sortOptions.map((option) => (
+            <option
+              value={option.value}
+              selected={currentSort === option.value}
+            >
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    )
   }
 </div>
+
+{
+  sortOptions && sortOptions.length > 0 && (
+    <script is:inline>
+      document.getElementById("sort-select")?.addEventListener("change", (e) => {
+        const select = e.target;
+        const url = new URL(window.location.href);
+        url.searchParams.set("sort", select.value);
+        window.location.href = url.toString();
+      });
+    </script>
+  )
+}

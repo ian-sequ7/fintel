@@ -4,7 +4,7 @@ interface Props {
   value: string | number;
   change?: number;
   unit?: string;
-  trend?: "up" | "down" | "flat";
+  trend?: "up" | "down" | "stable" | "flat";
   class?: string;
 }
 
@@ -17,19 +17,23 @@ const {
   class: className = "",
 } = Astro.props;
 
-const trendColors = {
+// Normalize 'flat' to 'stable' for consistency
+const normalizedTrend = trend === "flat" ? "stable" : trend;
+
+const trendColors: Record<string, string> = {
   up: "text-success",
   down: "text-danger",
-  flat: "text-text-secondary",
+  stable: "text-text-secondary",
 };
 
-const trendIcons = {
+const trendIcons: Record<string, string> = {
   up: "↑",
   down: "↓",
-  flat: "→",
+  stable: "→",
 };
 
-const displayTrend = trend ?? (change !== undefined ? (change > 0 ? "up" : change < 0 ? "down" : "flat") : undefined);
+// Determine trend from change if not explicitly provided
+const displayTrend = normalizedTrend ?? (change !== undefined ? (change > 0 ? "up" : change < 0 ? "down" : "stable") : undefined);
 ---
 
 <div
@@ -46,9 +50,10 @@ const displayTrend = trend ?? (change !== undefined ? (change > 0 ? "up" : chang
       {value}{unit && <span class="text-lg text-text-secondary">{unit}</span>}
     </span>
     {
-      displayTrend && change !== undefined && (
-        <span class:list={["text-sm font-medium", trendColors[displayTrend]]}>
-          {trendIcons[displayTrend]} {Math.abs(change).toFixed(2)}
+      displayTrend && (
+        <span class:list={["text-sm font-medium flex items-center gap-0.5", trendColors[displayTrend]]}>
+          <span>{trendIcons[displayTrend]}</span>
+          {change !== undefined && <span>{Math.abs(change).toFixed(2)}</span>}
         </span>
       )
     }

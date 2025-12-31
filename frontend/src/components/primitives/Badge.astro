@@ -1,18 +1,25 @@
 ---
 interface Props {
-  text: string;
-  variant?: "success" | "warning" | "danger" | "neutral" | "accent";
+  text?: string;
+  variant?: "bullish" | "bearish" | "neutral" | "caution" | "info" | "success" | "warning" | "danger" | "accent";
   size?: "sm" | "md";
   class?: string;
 }
 
 const { text, variant = "neutral", size = "sm", class: className = "" } = Astro.props;
 
-const variantClasses = {
+// Map variant names to CSS classes using CSS variables
+const variantClasses: Record<string, string> = {
+  // New semantic variants
+  bullish: "bg-success/15 text-success border-success/30",
+  bearish: "bg-danger/15 text-danger border-danger/30",
+  neutral: "bg-bg-elevated text-text-secondary border-border",
+  caution: "bg-warning/15 text-warning border-warning/30",
+  info: "bg-accent/15 text-accent border-accent/30",
+  // Legacy variants (for backward compatibility)
   success: "bg-success/15 text-success border-success/30",
   warning: "bg-warning/15 text-warning border-warning/30",
   danger: "bg-danger/15 text-danger border-danger/30",
-  neutral: "bg-bg-elevated text-text-secondary border-border",
   accent: "bg-accent/15 text-accent border-accent/30",
 };
 
@@ -30,5 +37,5 @@ const sizeClasses = {
     className,
   ]}
 >
-  {text}
+  {text}<slot />
 </span>

@@ -1,39 +1,54 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import MetricCard from "../components/primitives/MetricCard.astro";
-import Badge from "../components/primitives/Badge.astro";
 import Card from "../components/primitives/Card.astro";
 import PickCard from "../components/composed/PickCard.astro";
+import RiskCard from "../components/composed/RiskCard.astro";
 import NewsCard from "../components/composed/NewsCard.astro";
 import {
-  getTopPicks,
   getPicks,
   getMacroRisks,
-  getMacroIndicators,
+  getMacroData,
   getNews,
   getGeneratedAt,
-  getWatchlist,
   formatRelativeTime,
+  getSummary,
 } from "../data/report";
 
-const topPicks = getTopPicks();
+// Load data
+const summary = getSummary();
+const macroData = getMacroData();
 const allPicks = getPicks("all");
 const macroRisks = getMacroRisks();
-const macroIndicators = getMacroIndicators();
 const latestNews = getNews("all");
-const watchlist = getWatchlist();
 const generatedAt = getGeneratedAt();
 
-// Calculate summary metrics
+// Get top pick from each timeframe
+const shortPicks = getPicks("short", "conviction", "desc");
+const mediumPicks = getPicks("medium", "conviction", "desc");
+const longPicks = getPicks("long", "conviction", "desc");
+
+const topShort = shortPicks[0];
+const topMedium = mediumPicks[0];
+const topLong = longPicks[0];
+
+// Calculate metrics
 const avgConviction = allPicks.length > 0
   ? allPicks.reduce((sum, p) => sum + p.convictionScore, 0) / allPicks.length
   : 0;
 
-const highRisks = macroRisks.filter((r) => r.severity === "high");
-const totalNews = latestNews.length;
+const highRiskCount = macroRisks.filter((r) => r.severity === "high").length;
+const newsCount = latestNews.length;
+
+// Market sentiment display
+const sentimentLabels = {
+  up: "Bullish",
+  down: "Bearish",
+  flat: "Neutral",
+};
 ---
 
-<Layout title="Overview">
+<Layout title="Overview" description="Dashboard overview with market metrics, top stock picks, macro risks, and latest financial news.">
   <!-- Page header -->
   <div class="mb-6">
     <h1 class="text-2xl font-bold text-text-primary">Dashboard Overview</h1>
@@ -42,127 +57,118 @@ const totalNews = latestNews.length;
     </p>
   </div>
 
-  <!-- Metrics strip -->
+  <!-- 1. Metrics strip -->
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
     <MetricCard
-      label="Watchlist"
-      value={watchlist.length}
-      unit=" stocks"
+      label="Market Sentiment"
+      value={sentimentLabels[macroData.marketSentiment]}
+      trend={macroData.marketSentiment === "up" ? "up" : macroData.marketSentiment === "down" ? "down" : "stable"}
     />
     <MetricCard
       label="Avg Conviction"
-      value={Math.round(avgConviction * 100)}
-      unit="%"
+      value={Math.round(avgConviction * 10)}
+      unit="/10"
     />
     <MetricCard
       label="High Risks"
-      value={highRisks.length}
-      trend={highRisks.length > 0 ? "down" : "flat"}
+      value={highRiskCount}
+      trend={highRiskCount > 1 ? "down" : highRiskCount === 0 ? "up" : "stable"}
     />
     <MetricCard
-      label="News Items"
-      value={totalNews}
+      label="News Today"
+      value={newsCount}
     />
   </div>
 
-  <div class="grid lg:grid-cols-3 gap-6">
-    <!-- Main content (2 cols) -->
-    <div class="lg:col-span-2 space-y-6">
-      <!-- Top picks by timeframe -->
-      <Card title="Top Picks">
-        <div class="grid md:grid-cols-3 gap-4">
-          {topPicks.map((pick) => (
-            <PickCard pick={pick} />
-          ))}
-        </div>
-        <a
-          href="/picks"
-          class="block text-center text-sm text-accent hover:underline mt-4"
-        >
-          View all picks →
-        </a>
-      </Card>
+  <!-- 2. Top Picks section -->
+  <section class="mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold text-text-primary">Top Picks by Timeframe</h2>
+      <a href="/picks" class="text-sm text-accent hover:underline">
+        View all →
+      </a>
+    </div>
 
-      <!-- Macro risks summary -->
-      <Card title="Macro Headwinds">
-        {macroRisks.length === 0 ? (
-          <p class="text-text-secondary">No significant risks identified.</p>
+    <div class="grid md:grid-cols-3 gap-4">
+      <!-- Short-term -->
+      <div>
+        <p class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">Short-term</p>
+        {topShort ? (
+          <PickCard pick={topShort} compact />
         ) : (
-          <div class="space-y-3">
-            {macroRisks.slice(0, 3).map((risk) => (
-              <div class="flex items-start gap-3 p-3 bg-bg-elevated rounded-lg">
-                <Badge
-                  text={risk.severity.toUpperCase()}
-                  variant={
-                    risk.severity === "high"
-                      ? "danger"
-                      : risk.severity === "medium"
-                        ? "warning"
-                        : "success"
-                  }
-                />
-                <div>
-                  <h4 class="font-medium text-text-primary">{risk.name}</h4>
-                  <p class="text-sm text-text-secondary">{risk.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <Card>
+            <p class="text-text-secondary text-sm text-center py-4">No short-term picks</p>
+          </Card>
         )}
-        <a
-          href="/macro"
-          class="block text-center text-sm text-accent hover:underline mt-4"
-        >
-          View macro analysis →
-        </a>
-      </Card>
+      </div>
+
+      <!-- Medium-term -->
+      <div>
+        <p class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">Medium-term</p>
+        {topMedium ? (
+          <PickCard pick={topMedium} compact />
+        ) : (
+          <Card>
+            <p class="text-text-secondary text-sm text-center py-4">No medium-term picks</p>
+          </Card>
+        )}
+      </div>
+
+      <!-- Long-term -->
+      <div>
+        <p class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">Long-term</p>
+        {topLong ? (
+          <PickCard pick={topLong} compact />
+        ) : (
+          <Card>
+            <p class="text-text-secondary text-sm text-center py-4">No long-term picks</p>
+          </Card>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Macro Risks section -->
+  <section class="mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold text-text-primary">Key Headwinds</h2>
+      <a href="/macro" class="text-sm text-accent hover:underline">
+        Full analysis →
+      </a>
     </div>
 
-    <!-- Sidebar (1 col) -->
-    <div class="space-y-6">
-      <!-- Macro indicators -->
-      <Card title="Key Indicators">
-        <div class="space-y-3">
-          {macroIndicators.slice(0, 4).map((indicator) => (
-            <div class="flex items-center justify-between py-2 border-b border-border last:border-0">
-              <span class="text-sm text-text-secondary">{indicator.name}</span>
-              <div class="flex items-center gap-2">
-                <span class="font-medium text-text-primary">
-                  {indicator.value.toFixed(1)}{indicator.unit}
-                </span>
-                {indicator.trend && (
-                  <span
-                    class:list={[
-                      "text-xs",
-                      indicator.trend === "up" ? "text-success" : indicator.trend === "down" ? "text-danger" : "text-text-secondary",
-                    ]}
-                  >
-                    {indicator.trend === "up" ? "↑" : indicator.trend === "down" ? "↓" : "→"}
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+    {macroRisks.length === 0 ? (
+      <Card>
+        <p class="text-text-secondary text-center py-4">No significant risks identified.</p>
       </Card>
+    ) : (
+      <div class="grid md:grid-cols-3 gap-4">
+        {macroRisks.slice(0, 3).map((risk) => (
+          <RiskCard risk={risk} />
+        ))}
+      </div>
+    )}
+  </section>
 
-      <!-- Latest news -->
-      <Card title="Latest News">
-        <div class="space-y-3">
-          {latestNews
-            .slice(0, 5)
-            .map((news) => (
-              <NewsCard news={news} compact />
-            ))
-          }
-        </div>
-        <a
-          href="/news"
-          class="block text-center text-sm text-accent hover:underline mt-4"
-        >
-          View all news →
-        </a>
-      </Card>
+  <!-- 4. Recent News section -->
+  <section>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold text-text-primary">Latest News</h2>
+      <a href="/news" class="text-sm text-accent hover:underline">
+        All news →
+      </a>
     </div>
-  </div>
+
+    {latestNews.length === 0 ? (
+      <Card>
+        <p class="text-text-secondary text-center py-4">No news articles available.</p>
+      </Card>
+    ) : (
+      <div class="space-y-3">
+        {latestNews.slice(0, 5).map((news) => (
+          <NewsCard news={news} compact />
+        ))}
+      </div>
+    )}
+  </section>
 </Layout>

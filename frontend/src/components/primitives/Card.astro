@@ -1,37 +1,27 @@
 ---
 interface Props {
   title?: string;
-  variant?: "default" | "highlight" | "danger";
-  padding?: "none" | "sm" | "md" | "lg";
+  variant?: "default" | "highlighted" | "warning";
   class?: string;
 }
 
 const {
   title,
   variant = "default",
-  padding = "md",
   class: className = "",
 } = Astro.props;
 
 const variantClasses = {
   default: "bg-bg-surface border-border",
-  highlight: "bg-bg-elevated border-accent",
-  danger: "bg-bg-surface border-danger",
-};
-
-const paddingClasses = {
-  none: "",
-  sm: "p-3",
-  md: "p-4",
-  lg: "p-6",
+  highlighted: "bg-bg-surface border-l-4 border-l-accent border-y-border border-r-border",
+  warning: "bg-bg-surface border-l-4 border-l-danger border-y-border border-r-border",
 };
 ---
 
 <div
   class:list={[
-    "rounded-lg border",
+    "rounded-lg border p-4",
     variantClasses[variant],
-    paddingClasses[padding],
     className,
   ]}
 >

@@ -1,0 +1,62 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Card from "../../components/primitives/Card.astro";
+import FilterBar from "../../components/composed/FilterBar.astro";
+import PickCard from "../../components/composed/PickCard.astro";
+import { getPicks } from "../../data/report";
+import type { SortOption } from "../../data/types";
+
+// All picks (no timeframe filter)
+const activeTimeframe = "all";
+const sortParam = (Astro.url.searchParams.get("sort") ?? "conviction") as SortOption;
+const picks = getPicks("all", sortParam, sortParam === "ticker" ? "asc" : "desc");
+
+const pageTitle = "Stock Picks";
+
+const timeframeTabs = [
+  { value: "all", label: "All", href: "/picks" },
+  { value: "short", label: "Short-term", href: "/picks/short" },
+  { value: "medium", label: "Medium-term", href: "/picks/medium" },
+  { value: "long", label: "Long-term", href: "/picks/long" },
+];
+
+const sortOptions = [
+  { value: "conviction", label: "Conviction" },
+  { value: "ticker", label: "A-Z" },
+];
+---
+
+<Layout title={pageTitle} description="Browse stock picks sorted by conviction score across short, medium, and long-term timeframes.">
+  <!-- Page header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-text-primary">{pageTitle}</h1>
+    <p class="text-text-secondary">
+      {picks.length} picks across your watchlist
+    </p>
+  </div>
+
+  <!-- Filters -->
+  <div class="mb-6">
+    <FilterBar
+      tabs={timeframeTabs}
+      currentValue={activeTimeframe}
+      sortOptions={sortOptions}
+      currentSort={sortParam}
+    />
+  </div>
+
+  <!-- Picks grid -->
+  {picks.length === 0 ? (
+    <Card>
+      <p class="text-text-secondary text-center py-8">
+        No picks found for the selected filter.
+      </p>
+    </Card>
+  ) : (
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {picks.map((pick) => (
+        <PickCard pick={pick} />
+      ))}
+    </div>
+  )}
+</Layout>

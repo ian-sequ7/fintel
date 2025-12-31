@@ -1,8 +1,7 @@
 ---
-import { loadReport } from "../../data/report";
+import { getGeneratedAt } from "../../data/report";
 
-const report = loadReport();
-const generatedAt = new Date(report.generated_at);
+const generatedAt = getGeneratedAt();
 ---
 
 <footer class="bg-bg-surface border-t border-border mt-auto">

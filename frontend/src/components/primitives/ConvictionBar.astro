@@ -1,6 +1,6 @@
 ---
 interface Props {
-  score: number; // 0-1
+  score: number; // Accepts 0-1 (normalized) or 1-10 scale
   showLabel?: boolean;
   size?: "sm" | "md";
   class?: string;
@@ -8,21 +8,24 @@ interface Props {
 
 const { score, showLabel = true, size = "md", class: className = "" } = Astro.props;
 
-// Calculate color based on score (green for high, yellow for medium, red for low)
-const percentage = Math.round(score * 100);
+// Normalize score to 1-10 scale
+// If score <= 1, assume it's 0-1 scale and convert to 1-10
+const score10 = score <= 1 ? Math.round(score * 10) : Math.round(score);
+const clampedScore = Math.max(1, Math.min(10, score10));
+const percentage = clampedScore * 10;
 
-// Color stops: red (0%) -> yellow (50%) -> green (100%)
+// Color based on 1-10 scale: 1-4 danger, 5-6 warning, 7-10 success
 function _getColor(s: number): string {
-  if (s >= 0.7) return "bg-success";
-  if (s >= 0.4) return "bg-warning";
+  if (s >= 7) return "bg-success";
+  if (s >= 5) return "bg-warning";
   return "bg-danger";
 }
 
-const barColor = _getColor(score);
+const barColor = _getColor(clampedScore);
 
 const sizeClasses = {
   sm: "h-1.5",
-  md: "h-2",
+  md: "h-2.5",
 };
 
 const labelSizes = {
@@ -39,7 +42,7 @@ const labelSizes = {
           Conviction
         </span>
         <span class:list={["font-semibold text-text-primary", labelSizes[size]]}>
-          {percentage}%
+          {clampedScore}/10
         </span>
       </div>
     )

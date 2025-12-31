@@ -16,11 +16,36 @@ interface Props {
   height?: number;
 }
 
+// Theme colors for light and dark modes
+const LIGHT_THEME = {
+  background: "#ffffff",
+  text: "#64748b",
+  grid: "#e2e8f0",
+  border: "#e2e8f0",
+  crosshair: "#94a3b8",
+  upColor: "#22c55e",
+  downColor: "#ef4444",
+};
+
+const DARK_THEME = {
+  background: "#1e293b",
+  text: "#94a3b8",
+  grid: "#334155",
+  border: "#334155",
+  crosshair: "#64748b",
+  upColor: "#22c55e",
+  downColor: "#ef4444",
+};
+
 // Generate mock price data for demonstration
 function _generateMockData(ticker: string): PricePoint[] {
   const data: PricePoint[] = [];
-  const basePrice = ticker === "AAPL" ? 225 : ticker === "NVDA" ? 875 : ticker === "MSFT" ? 415 : 150;
-  let price = basePrice;
+  const basePrices: Record<string, number> = {
+    AAPL: 225, NVDA: 875, MSFT: 415, GOOGL: 175, META: 490,
+    AMZN: 185, TSLA: 245, JPM: 195, V: 280, JNJ: 155,
+  };
+  const basePrice = basePrices[ticker] ?? 150;
+  let price = basePrice * 0.95;
 
   const today = new Date();
   for (let i = 90; i >= 0; i--) {
@@ -31,7 +56,8 @@ function _generateMockData(ticker: string): PricePoint[] {
     if (date.getDay() === 0 || date.getDay() === 6) continue;
 
     const volatility = 0.02;
-    const change = (Math.random() - 0.48) * volatility * price;
+    const drift = 0.001;
+    const change = (Math.random() - 0.48 + drift) * volatility * price;
     const open = price;
     const close = price + change;
     const high = Math.max(open, close) * (1 + Math.random() * 0.01);
@@ -52,39 +78,18 @@ function _generateMockData(ticker: string): PricePoint[] {
   return data;
 }
 
-export default function PriceChart({ ticker, data, height = 300 }: Props) {
+// Detect current theme from document
+function _getTheme(): typeof LIGHT_THEME {
+  if (typeof document === "undefined") return LIGHT_THEME;
+  const theme = document.documentElement.dataset.theme;
+  return theme === "dark" ? DARK_THEME : LIGHT_THEME;
+}
+
+export default function PriceChart({ ticker, data, height = 350 }: Props) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const [mounted, setMounted] = useState(false);
-
-  // Get theme colors from CSS variables
-  const getThemeColors = () => {
-    if (typeof window === "undefined") {
-      return {
-        bgBase: "#ffffff",
-        bgSurface: "#f8fafc",
-        textPrimary: "#0f172a",
-        textSecondary: "#64748b",
-        border: "#e2e8f0",
-        chartUp: "#22c55e",
-        chartDown: "#ef4444",
-        chartGrid: "#e2e8f0",
-      };
-    }
-
-    const style = getComputedStyle(document.documentElement);
-    return {
-      bgBase: style.getPropertyValue("--bg-base").trim() || "#ffffff",
-      bgSurface: style.getPropertyValue("--bg-surface").trim() || "#f8fafc",
-      textPrimary: style.getPropertyValue("--text-primary").trim() || "#0f172a",
-      textSecondary: style.getPropertyValue("--text-secondary").trim() || "#64748b",
-      border: style.getPropertyValue("--border").trim() || "#e2e8f0",
-      chartUp: style.getPropertyValue("--chart-up").trim() || "#22c55e",
-      chartDown: style.getPropertyValue("--chart-down").trim() || "#ef4444",
-      chartGrid: style.getPropertyValue("--chart-grid").trim() || "#e2e8f0",
-    };
-  };
 
   useEffect(() => {
     setMounted(true);
@@ -93,36 +98,49 @@ export default function PriceChart({ ticker, data, height = 300 }: Props) {
   useEffect(() => {
     if (!mounted || !chartContainerRef.current) return;
 
-    const colors = getThemeColors();
+    const container = chartContainerRef.current;
+    const theme = _getTheme();
 
     // Create chart
-    const chart = createChart(chartContainerRef.current, {
+    const chart = createChart(container, {
       layout: {
-        background: { type: ColorType.Solid, color: colors.bgSurface },
-        textColor: colors.textSecondary,
+        background: { type: ColorType.Solid, color: theme.background },
+        textColor: theme.text,
       },
       grid: {
-        vertLines: { color: colors.chartGrid },
-        horzLines: { color: colors.chartGrid },
+        vertLines: { color: theme.grid },
+        horzLines: { color: theme.grid },
       },
-      width: chartContainerRef.current.clientWidth,
+      width: container.clientWidth,
       height,
       rightPriceScale: {
-        borderColor: colors.border,
+        borderColor: theme.border,
       },
       timeScale: {
-        borderColor: colors.border,
-        timeVisible: true,
+        borderColor: theme.border,
+        timeVisible: false,
       },
       crosshair: {
         vertLine: {
-          color: colors.textSecondary,
-          labelBackgroundColor: colors.bgSurface,
+          color: theme.crosshair,
+          width: 1,
+          style: 3,
+          labelBackgroundColor: theme.background,
         },
         horzLine: {
-          color: colors.textSecondary,
-          labelBackgroundColor: colors.bgSurface,
+          color: theme.crosshair,
+          width: 1,
+          style: 3,
+          labelBackgroundColor: theme.background,
         },
+      },
+      handleScroll: {
+        mouseWheel: true,
+        pressedMouseMove: true,
+      },
+      handleScale: {
+        mouseWheel: true,
+        pinch: true,
       },
     });
 
@@ -130,12 +148,12 @@ export default function PriceChart({ ticker, data, height = 300 }: Props) {
 
     // Add candlestick series
     const candlestickSeries = chart.addCandlestickSeries({
-      upColor: colors.chartUp,
-      downColor: colors.chartDown,
-      borderUpColor: colors.chartUp,
-      borderDownColor: colors.chartDown,
-      wickUpColor: colors.chartUp,
-      wickDownColor: colors.chartDown,
+      upColor: theme.upColor,
+      downColor: theme.downColor,
+      borderUpColor: theme.upColor,
+      borderDownColor: theme.downColor,
+      wickUpColor: theme.upColor,
+      wickDownColor: theme.downColor,
     });
 
     seriesRef.current = candlestickSeries;
@@ -147,70 +165,89 @@ export default function PriceChart({ ticker, data, height = 300 }: Props) {
     // Fit content
     chart.timeScale().fitContent();
 
-    // Handle resize
-    const handleResize = () => {
-      if (chartContainerRef.current) {
-        chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+    // Handle resize with ResizeObserver
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width } = entry.contentRect;
+        if (width > 0) {
+          chart.applyOptions({ width });
+        }
       }
-    };
+    });
 
-    window.addEventListener("resize", handleResize);
+    resizeObserver.observe(container);
 
-    // Listen for theme changes
-    const observer = new MutationObserver(() => {
-      const newColors = getThemeColors();
+    // Watch for theme changes with MutationObserver
+    const themeObserver = new MutationObserver(() => {
+      const newTheme = _getTheme();
+
       chart.applyOptions({
         layout: {
-          background: { type: ColorType.Solid, color: newColors.bgSurface },
-          textColor: newColors.textSecondary,
+          background: { type: ColorType.Solid, color: newTheme.background },
+          textColor: newTheme.text,
         },
         grid: {
-          vertLines: { color: newColors.chartGrid },
-          horzLines: { color: newColors.chartGrid },
+          vertLines: { color: newTheme.grid },
+          horzLines: { color: newTheme.grid },
         },
         rightPriceScale: {
-          borderColor: newColors.border,
+          borderColor: newTheme.border,
         },
         timeScale: {
-          borderColor: newColors.border,
+          borderColor: newTheme.border,
+        },
+        crosshair: {
+          vertLine: {
+            color: newTheme.crosshair,
+            labelBackgroundColor: newTheme.background,
+          },
+          horzLine: {
+            color: newTheme.crosshair,
+            labelBackgroundColor: newTheme.background,
+          },
         },
       });
 
       candlestickSeries.applyOptions({
-        upColor: newColors.chartUp,
-        downColor: newColors.chartDown,
-        borderUpColor: newColors.chartUp,
-        borderDownColor: newColors.chartDown,
-        wickUpColor: newColors.chartUp,
-        wickDownColor: newColors.chartDown,
+        upColor: newTheme.upColor,
+        downColor: newTheme.downColor,
+        borderUpColor: newTheme.upColor,
+        borderDownColor: newTheme.downColor,
+        wickUpColor: newTheme.upColor,
+        wickDownColor: newTheme.downColor,
       });
     });
 
-    observer.observe(document.documentElement, {
+    themeObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["data-theme"],
     });
 
+    // Cleanup on unmount
     return () => {
-      window.removeEventListener("resize", handleResize);
-      observer.disconnect();
+      resizeObserver.disconnect();
+      themeObserver.disconnect();
       chart.remove();
     };
   }, [mounted, ticker, data, height]);
 
+  // Loading placeholder
   if (!mounted) {
     return (
       <div
-        className="bg-bg-surface border border-border rounded-lg animate-pulse"
+        className="bg-bg-surface rounded-lg animate-pulse flex items-center justify-center"
         style={{ height }}
-      />
+      >
+        <span className="text-text-secondary text-sm">Loading chart...</span>
+      </div>
     );
   }
 
   return (
     <div
       ref={chartContainerRef}
-      className="bg-bg-surface border border-border rounded-lg overflow-hidden"
+      className="w-full"
+      style={{ height }}
     />
   );
 }
