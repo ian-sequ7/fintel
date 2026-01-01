@@ -1,632 +1,1394 @@
 {
-  "generatedAt": "2025-12-30T17:07:16.445920",
+  "generatedAt": "2025-12-31T21:55:03.646846",
   "version": "1.0.0",
   "watchlist": [
-    "AAPL",
-    "MSFT",
-    "NVDA",
-    "GOOGL",
+    "AMAT",
+    "AOS",
+    "APTV",
+    "ADBE",
+    "APP",
     "AMZN",
-    "META",
-    "TSLA"
+    "AWK",
+    "AKAM",
+    "AJG",
+    "AEP",
+    "ACN",
+    "APD",
+    "APH",
+    "AIZ",
+    "ABT",
+    "AMD",
+    "MMM",
+    "AEE",
+    "AIG",
+    "LNT"
   ],
   "picks": {
-    "short": [
-      {
-        "ticker": "AMZN",
-        "companyName": "Amazon.com Inc.",
-        "currentPrice": 232.53,
-        "priceChange": 0.0,
-        "priceChangePercent": 0.0,
-        "convictionScore": 0.5433,
-        "timeframe": "short",
-        "thesis": "AMZN shows moderate potential trading at PE of 32.8 with strong growth (13% revenue growth, 36% earnings growth) backed by solid fundamentals (11.1% profit margin, 24.3% ROE) . Analysts see 27% upside to $295.60 target.",
-        "riskFactors": [],
-        "sector": "consumer",
-        "entryPrice": 232.53,
-        "targetPrice": 270.4300647,
-        "stopLoss": null,
-        "marketCap": null
-      },
-      {
-        "ticker": "TSLA",
-        "companyName": "Tesla Inc.",
-        "currentPrice": 454.43,
-        "priceChange": 0.0,
-        "priceChangePercent": 0.0,
-        "convictionScore": 0.1864,
-        "timeframe": "short",
-        "thesis": "TSLA faces headwinds despite rich valuation (PE of 309.1) but limited growth (12% revenue growth) . Trading 12% above $399.15 analyst target . Key risk: extreme valuation.",
-        "riskFactors": [
-          "Extreme Valuation"
-        ],
-        "sector": "consumer",
-        "entryPrice": 454.43,
-        "targetPrice": null,
-        "stopLoss": null,
-        "marketCap": null
-      }
-    ],
+    "short": [],
     "medium": [
       {
-        "ticker": "NVDA",
-        "companyName": "NVIDIA Corp.",
-        "currentPrice": 187.54,
+        "ticker": "APP",
+        "companyName": "APP",
+        "currentPrice": 673.82,
         "priceChange": 0.0,
         "priceChangePercent": 0.0,
-        "convictionScore": 0.6157,
+        "convictionScore": 0.7,
         "timeframe": "medium",
-        "thesis": "NVDA shows moderate potential trading at PE of 46.3 with strong growth (62% revenue growth, 67% earnings growth) backed by solid fundamentals (53.0% profit margin, 107.4% ROE) . Analysts see 35% upside to $253.02 target . Key risk: extreme valuation.",
+        "thesis": "APP (communication services): Solid medium-term opportunity. Strong revenue growth of 68.2%. Strong profit margin of 44.9%. ",
         "riskFactors": [
-          "Extreme Valuation"
+          "P/E Ratio: Premium P/E of 79.4x vs sector 18.0x",
+          "P/B Ratio: High P/B of 154.76x"
         ],
         "sector": "technology",
-        "entryPrice": 187.54,
-        "targetPrice": 222.18051339999997,
-        "stopLoss": null,
-        "marketCap": null
+        "entryPrice": 673.82,
+        "targetPrice": 815.32,
+        "marketCap": 227919560704.0,
+        "peRatio": 79.36632,
+        "volume": null
+      },
+      {
+        "ticker": "APH",
+        "companyName": "APH",
+        "currentPrice": 135.14,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.7,
+        "timeframe": "medium",
+        "thesis": "APH (technology): Solid medium-term opportunity. Strong revenue growth of 53.4%. Strong profit margin of 18.2%. Unfavorable macro alignment.",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 45.0x vs sector 28.0x",
+          "P/B Ratio: High P/B of 13.21x"
+        ],
+        "sector": "technology",
+        "entryPrice": 135.14,
+        "targetPrice": 163.52,
+        "marketCap": 165418860544.0,
+        "peRatio": 45.046665,
+        "volume": null
+      },
+      {
+        "ticker": "APO",
+        "companyName": "APO",
+        "currentPrice": 144.76,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.7,
+        "timeframe": "medium",
+        "thesis": "APO (financial services): Solid medium-term opportunity. Strong revenue growth of 26.4%. Strong profit margin of 15.8%. ",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 21.1x vs sector 12.0x",
+          "P/B Ratio: Reasonable P/B of 3.86x"
+        ],
+        "sector": "technology",
+        "entryPrice": 144.76,
+        "targetPrice": 175.16,
+        "marketCap": 84021968896.0,
+        "peRatio": 21.10204,
+        "volume": null
+      },
+      {
+        "ticker": "GOOG",
+        "companyName": "GOOG",
+        "currentPrice": 313.8,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.7,
+        "timeframe": "medium",
+        "thesis": "GOOG (communication services): Solid medium-term opportunity. Strong Buy consensus (1.5). Strong profit margin of 32.2%. ",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 30.9x vs sector 18.0x",
+          "P/B Ratio: High P/B of 9.80x"
+        ],
+        "sector": "technology",
+        "entryPrice": 313.8,
+        "targetPrice": 379.7,
+        "marketCap": 3788141232128.0,
+        "peRatio": 30.946743,
+        "volume": null
       },
       {
         "ticker": "GOOGL",
-        "companyName": "Alphabet Inc.",
-        "currentPrice": 313.85,
+        "companyName": "GOOGL",
+        "currentPrice": 313.0,
         "priceChange": 0.0,
         "priceChangePercent": 0.0,
-        "convictionScore": 0.5179,
+        "convictionScore": 0.7,
         "timeframe": "medium",
-        "thesis": "GOOGL shows moderate potential despite rich valuation (PE of 31.0) with strong growth (16% revenue growth, 35% earnings growth) backed by solid fundamentals (32.2% profit margin, 35.4% ROE) . Offers 27.0% dividend yield.",
-        "riskFactors": [],
-        "sector": "communications",
-        "entryPrice": 313.85,
-        "targetPrice": 362.61287450000003,
-        "stopLoss": null,
-        "marketCap": null
+        "thesis": "GOOGL (communication services): Solid medium-term opportunity. Strong Buy consensus (1.5). Strong profit margin of 32.2%. ",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 30.9x vs sector 18.0x",
+          "P/B Ratio: High P/B of 9.77x"
+        ],
+        "sector": "technology",
+        "entryPrice": 313.0,
+        "targetPrice": 378.73,
+        "marketCap": 3791094022144.0,
+        "peRatio": 30.86785,
+        "volume": null
+      },
+      {
+        "ticker": "AMZN",
+        "companyName": "AMZN",
+        "currentPrice": 230.82,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "medium",
+        "thesis": "AMZN (consumer cyclical): Solid medium-term opportunity. Strong Buy consensus (1.3). Excellent ROE of 24.3%. ",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 32.6x vs sector 20.0x",
+          "P/B Ratio: High P/B of 6.67x"
+        ],
+        "sector": "technology",
+        "entryPrice": 230.82,
+        "targetPrice": 272.37,
+        "marketCap": 2467515596800.0,
+        "peRatio": 32.555714,
+        "volume": null
+      },
+      {
+        "ticker": "AJG",
+        "companyName": "AJG",
+        "currentPrice": 258.79,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "medium",
+        "thesis": "AJG (financial services): Solid medium-term opportunity. Strong revenue growth of 20.0%. Buy consensus (2.0). ",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 41.3x vs sector 12.0x",
+          "Earnings Growth: Negative earnings growth of -25.2%"
+        ],
+        "sector": "technology",
+        "entryPrice": 258.79,
+        "targetPrice": 305.37,
+        "marketCap": 66458566656.0,
+        "peRatio": 41.340256,
+        "volume": null
+      },
+      {
+        "ticker": "AMD",
+        "companyName": "AMD",
+        "currentPrice": 214.16,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "medium",
+        "thesis": "AMD (technology): Solid medium-term opportunity. Strong revenue growth of 35.6%. Buy consensus (1.5). Unfavorable macro alignment.",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 112.1x vs sector 28.0x",
+          "P/B Ratio: High P/B of 5.74x",
+          "ROE: Adequate ROE of 5.3%"
+        ],
+        "sector": "technology",
+        "entryPrice": 214.16,
+        "targetPrice": 252.71,
+        "marketCap": 348661383168.0,
+        "peRatio": 112.125656,
+        "volume": null
+      },
+      {
+        "ticker": "ALLE",
+        "companyName": "ALLE",
+        "currentPrice": 159.22,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "medium",
+        "thesis": "ALLE (industrials): Solid medium-term opportunity. Strong profit margin of 16.1%. Excellent ROE of 36.4%. ",
+        "riskFactors": [
+          "P/B Ratio: High P/B of 7.04x",
+          "Revenue Growth: Moderate revenue growth of 10.7%",
+          "Earnings Growth: Positive earnings growth of 9.5%"
+        ],
+        "sector": "technology",
+        "entryPrice": 159.22,
+        "targetPrice": 187.88,
+        "marketCap": 13698007040.0,
+        "peRatio": 21.545332,
+        "volume": null
+      },
+      {
+        "ticker": "AON",
+        "companyName": "AON",
+        "currentPrice": 352.88,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "medium",
+        "thesis": "AON (financial services): Solid medium-term opportunity. Strong profit margin of 16.0%. Excellent ROE of 37.7%. ",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 28.3x vs sector 12.0x",
+          "P/B Ratio: High P/B of 9.57x",
+          "Revenue Growth: Moderate revenue growth of 7.4%"
+        ],
+        "sector": "technology",
+        "entryPrice": 352.88,
+        "targetPrice": 416.4,
+        "marketCap": 76090310656.0,
+        "peRatio": 28.253004,
+        "volume": null
+      },
+      {
+        "ticker": "ADI",
+        "companyName": "ADI",
+        "currentPrice": 271.2,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "medium",
+        "thesis": "ADI (technology): Solid medium-term opportunity. Strong revenue growth of 25.9%. Strong profit margin of 20.6%. Unfavorable macro alignment.",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 59.5x vs sector 28.0x",
+          "P/B Ratio: Reasonable P/B of 3.93x"
+        ],
+        "sector": "technology",
+        "entryPrice": 271.2,
+        "targetPrice": 320.02,
+        "marketCap": 132794204160.0,
+        "peRatio": 59.473686,
+        "volume": null
+      },
+      {
+        "ticker": "ARES",
+        "companyName": "ARES",
+        "currentPrice": 161.63,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "medium",
+        "thesis": "ARES (financial services): Solid medium-term opportunity. Strong revenue growth of 46.7%. Excellent ROE of 17.1%. ",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 67.9x vs sector 12.0x",
+          "P/B Ratio: High P/B of 11.82x"
+        ],
+        "sector": "technology",
+        "entryPrice": 161.63,
+        "targetPrice": 190.72,
+        "marketCap": 52953968640.0,
+        "peRatio": 67.911766,
+        "volume": null
+      },
+      {
+        "ticker": "AAPL",
+        "companyName": "AAPL",
+        "currentPrice": 271.86,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "medium",
+        "thesis": "AAPL (technology): Solid medium-term opportunity. Strong profit margin of 26.9%. Excellent ROE of 171.4%. Unfavorable macro alignment.",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 36.5x vs sector 28.0x",
+          "P/B Ratio: High P/B of 54.47x",
+          "Revenue Growth: Moderate revenue growth of 7.9%"
+        ],
+        "sector": "technology",
+        "entryPrice": 271.86,
+        "targetPrice": 320.79,
+        "marketCap": 4034508095488.0,
+        "peRatio": 36.491276,
+        "volume": null
+      },
+      {
+        "ticker": "AMT",
+        "companyName": "AMT",
+        "currentPrice": 175.57,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "medium",
+        "thesis": "AMT (real estate): Solid medium-term opportunity. Strong profit margin of 28.1%. Excellent ROE of 28.8%. ",
+        "riskFactors": [
+          "P/E Ratio: Fair P/E of 28.0x near sector average",
+          "P/B Ratio: High P/B of 20.80x",
+          "Revenue Growth: Moderate revenue growth of 7.7%"
+        ],
+        "sector": "technology",
+        "entryPrice": 175.57,
+        "targetPrice": 207.17,
+        "marketCap": 82210873344.0,
+        "peRatio": 28.001596,
+        "volume": null
+      },
+      {
+        "ticker": "ANET",
+        "companyName": "ANET",
+        "currentPrice": 131.03,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "medium",
+        "thesis": "ANET (technology): Solid medium-term opportunity. Strong revenue growth of 27.5%. Strong Buy consensus (1.5). Unfavorable macro alignment.",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 49.8x vs sector 28.0x",
+          "P/B Ratio: High P/B of 13.86x"
+        ],
+        "sector": "technology",
+        "entryPrice": 131.03,
+        "targetPrice": 154.62,
+        "marketCap": 165004132352.0,
+        "peRatio": 49.82129,
+        "volume": null
       }
     ],
     "long": [
       {
-        "ticker": "MSFT",
-        "companyName": "Microsoft Corp.",
-        "currentPrice": 487.48,
+        "ticker": "AEE",
+        "companyName": "AEE",
+        "currentPrice": 99.86,
         "priceChange": 0.0,
         "priceChangePercent": 0.0,
-        "convictionScore": 0.5308,
+        "convictionScore": 0.7,
         "timeframe": "long",
-        "thesis": "MSFT shows moderate potential trading at PE of 34.6 with strong growth (18% revenue growth, 13% earnings growth) backed by solid fundamentals (35.7% profit margin, 32.2% ROE) . Analysts see 28% upside to $622.51 target . Offers 75.0% dividend yield.",
+        "thesis": "AEE (utilities): Solid long-term opportunity. Strong revenue growth of 24.8%. Strong profit margin of 16.3%. Unfavorable macro alignment.",
         "riskFactors": [],
         "sector": "technology",
-        "entryPrice": 487.48,
-        "targetPrice": 565.1063152,
-        "stopLoss": null,
-        "marketCap": null
+        "entryPrice": 99.86,
+        "targetPrice": 120.83,
+        "marketCap": 27011622912.0,
+        "peRatio": 19.203848,
+        "volume": null
       },
       {
-        "ticker": "META",
-        "companyName": "Meta Platforms Inc.",
-        "currentPrice": 665.95,
+        "ticker": "ACGL",
+        "companyName": "ACGL",
+        "currentPrice": 95.92,
         "priceChange": 0.0,
         "priceChangePercent": 0.0,
-        "convictionScore": 0.472,
+        "convictionScore": 0.7,
         "timeframe": "long",
-        "thesis": "META faces headwinds trading at PE of 29.5 showing 26% revenue growth backed by solid fundamentals (30.9% profit margin, 32.6% ROE) . Analysts see 26% upside to $837.15 target . Offers 32.0% dividend yield.",
-        "riskFactors": [],
-        "sector": "communications",
-        "entryPrice": 665.95,
-        "targetPrice": null,
-        "stopLoss": null,
-        "marketCap": null
+        "thesis": "ACGL (financial services): Solid long-term opportunity. Strong profit margin of 21.0%. Excellent ROE of 17.8%. ",
+        "riskFactors": [
+          "Revenue Growth: Moderate revenue growth of 8.2%"
+        ],
+        "sector": "technology",
+        "entryPrice": 95.92,
+        "targetPrice": 116.06,
+        "marketCap": 35799289856.0,
+        "peRatio": 8.989691,
+        "volume": null
       },
       {
-        "ticker": "AAPL",
-        "companyName": "Apple Inc.",
-        "currentPrice": 273.08,
+        "ticker": "AFL",
+        "companyName": "AFL",
+        "currentPrice": 110.27,
         "priceChange": 0.0,
         "priceChangePercent": 0.0,
-        "convictionScore": 0.4578,
+        "convictionScore": 0.7,
         "timeframe": "long",
-        "thesis": "AAPL faces headwinds despite rich valuation (PE of 36.6) showing 8% revenue growth, 91% earnings growth backed by solid fundamentals (26.9% profit margin, 171.4% ROE) . Analysts see 5% upside to $287.71 target . Offers 38.0% dividend yield.",
+        "thesis": "AFL (financial services): Solid long-term opportunity. Strong revenue growth of 60.7%. Strong profit margin of 23.6%. ",
         "riskFactors": [],
         "sector": "technology",
-        "entryPrice": 273.08,
+        "entryPrice": 110.27,
+        "targetPrice": 133.43,
+        "marketCap": 58975866880.0,
+        "peRatio": 14.490144,
+        "volume": null
+      },
+      {
+        "ticker": "ALL",
+        "companyName": "ALL",
+        "currentPrice": 208.15,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.7,
+        "timeframe": "long",
+        "thesis": "ALL (financial services): Solid long-term opportunity. Excellent ROE of 34.5%. Buy consensus (2.0). ",
+        "riskFactors": [
+          "Revenue Growth: Weak revenue growth of 3.8%"
+        ],
+        "sector": "technology",
+        "entryPrice": 208.15,
+        "targetPrice": 251.86,
+        "marketCap": 54848630784.0,
+        "peRatio": 6.7471633,
+        "volume": null
+      },
+      {
+        "ticker": "APA",
+        "companyName": "APA",
+        "currentPrice": 24.46,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.7,
+        "timeframe": "long",
+        "thesis": "APA (energy): Solid long-term opportunity. Strong profit margin of 16.1%. Excellent ROE of 27.4%. Favorable macro alignment.",
+        "riskFactors": [
+          "Revenue Growth: Weak revenue growth of -16.4%"
+        ],
+        "sector": "technology",
+        "entryPrice": 24.46,
+        "targetPrice": 29.6,
+        "marketCap": 8751456256.0,
+        "peRatio": 5.8516746,
+        "volume": null
+      },
+      {
+        "ticker": "ADBE",
+        "companyName": "ADBE",
+        "currentPrice": 349.99,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "long",
+        "thesis": "ADBE (technology): Solid long-term opportunity. Strong profit margin of 30.0%. Excellent ROE of 55.4%. Unfavorable macro alignment.",
+        "riskFactors": [
+          "P/B Ratio: High P/B of 12.56x",
+          "Revenue Growth: Moderate revenue growth of 10.5%"
+        ],
+        "sector": "technology",
+        "entryPrice": 349.99,
+        "targetPrice": 412.99,
+        "marketCap": 148465745920.0,
+        "peRatio": 20.970041,
+        "volume": null
+      },
+      {
+        "ticker": "AEP",
+        "companyName": "AEP",
+        "currentPrice": 115.31,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "long",
+        "thesis": "AEP (utilities): Solid long-term opportunity. Strong profit margin of 17.2%. Adequate ROE of 12.9%. Unfavorable macro alignment.",
+        "riskFactors": [
+          "Revenue Growth: Moderate revenue growth of 10.9%",
+          "Earnings Growth: Positive earnings growth of 0.6%"
+        ],
+        "sector": "technology",
+        "entryPrice": 115.31,
+        "targetPrice": 136.07,
+        "marketCap": 61721473024.0,
+        "peRatio": 16.88287,
+        "volume": null
+      },
+      {
+        "ticker": "AIZ",
+        "companyName": "AIZ",
+        "currentPrice": 240.85,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "long",
+        "thesis": "AIZ (financial services): Solid long-term opportunity. Buy consensus (1.6). Excellent ROE of 15.4%. ",
+        "riskFactors": [
+          "Revenue Growth: Moderate revenue growth of 8.9%"
+        ],
+        "sector": "technology",
+        "entryPrice": 240.85,
+        "targetPrice": 284.2,
+        "marketCap": 12153101312.0,
+        "peRatio": 14.685976,
+        "volume": null
+      },
+      {
+        "ticker": "ABT",
+        "companyName": "ABT",
+        "currentPrice": 125.29,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "long",
+        "thesis": "ABT (healthcare): Solid long-term opportunity. Strong profit margin of 31.9%. Excellent ROE of 30.6%. ",
+        "riskFactors": [
+          "P/B Ratio: Reasonable P/B of 4.28x",
+          "Revenue Growth: Moderate revenue growth of 6.9%",
+          "Earnings Growth: Negative earnings growth of 0.0%"
+        ],
+        "sector": "technology",
+        "entryPrice": 125.29,
+        "targetPrice": 147.84,
+        "marketCap": 218062110720.0,
+        "peRatio": 15.73995,
+        "volume": null
+      },
+      {
+        "ticker": "AIG",
+        "companyName": "AIG",
+        "currentPrice": 85.55,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "long",
+        "thesis": "AIG (financial services): Solid long-term opportunity. Excellent earnings growth of 32.3%. Positive momentum of +7.5% monthly. ",
+        "riskFactors": [
+          "Revenue Growth: Weak revenue growth of -4.1%"
+        ],
+        "sector": "technology",
+        "entryPrice": 85.55,
+        "targetPrice": 100.95,
+        "marketCap": 47395028992.0,
+        "peRatio": 15.386691,
+        "volume": null
+      },
+      {
+        "ticker": "LNT",
+        "companyName": "LNT",
+        "currentPrice": 65.01,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "long",
+        "thesis": "LNT (utilities): Solid long-term opportunity. Strong profit margin of 19.1%. Buy consensus (1.9). Unfavorable macro alignment.",
+        "riskFactors": [
+          "Earnings Growth: Negative earnings growth of -5.2%"
+        ],
+        "sector": "technology",
+        "entryPrice": 65.01,
+        "targetPrice": 76.71,
+        "marketCap": 16711061504.0,
+        "peRatio": 20.443396,
+        "volume": null
+      },
+      {
+        "ticker": "AMP",
+        "companyName": "AMP",
+        "currentPrice": 490.34,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "long",
+        "thesis": "AMP (financial services): Solid long-term opportunity. Strong profit margin of 19.6%. Excellent ROE of 59.6%. ",
+        "riskFactors": [
+          "P/B Ratio: High P/B of 7.07x",
+          "Revenue Growth: Moderate revenue growth of 7.3%"
+        ],
+        "sector": "technology",
+        "entryPrice": 490.34,
+        "targetPrice": 578.6,
+        "marketCap": 46225121280.0,
+        "peRatio": 13.496834,
+        "volume": null
+      },
+      {
+        "ticker": "T",
+        "companyName": "T",
+        "currentPrice": 24.84,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "long",
+        "thesis": "T (communication services): Solid long-term opportunity. Strong profit margin of 17.9%. Excellent ROE of 19.1%. ",
+        "riskFactors": [
+          "Revenue Growth: Weak revenue growth of 1.6%"
+        ],
+        "sector": "technology",
+        "entryPrice": 24.84,
+        "targetPrice": 29.31,
+        "marketCap": 177615585280.0,
+        "peRatio": 8.091206,
+        "volume": null
+      },
+      {
+        "ticker": "ATO",
+        "companyName": "ATO",
+        "currentPrice": 167.63,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.6,
+        "timeframe": "long",
+        "thesis": "ATO (utilities): Solid long-term opportunity. Strong profit margin of 25.5%. Excellent earnings growth of 25.6%. Unfavorable macro alignment.",
+        "riskFactors": [],
+        "sector": "technology",
+        "entryPrice": 167.63,
+        "targetPrice": 197.8,
+        "marketCap": 27113818112.0,
+        "peRatio": 22.47051,
+        "volume": null
+      },
+      {
+        "ticker": "AOS",
+        "companyName": "AOS",
+        "currentPrice": 66.88,
+        "priceChange": 0.0,
+        "priceChangePercent": 0.0,
+        "convictionScore": 0.5,
+        "timeframe": "long",
+        "thesis": "AOS (industrials): Moderate long-term opportunity. Excellent ROE of 28.2%. Modest profit margin of 13.9%. ",
+        "riskFactors": [
+          "P/B Ratio: High P/B of 5.05x",
+          "Revenue Growth: Weak revenue growth of 4.4%"
+        ],
+        "sector": "technology",
+        "entryPrice": 66.88,
         "targetPrice": null,
-        "stopLoss": null,
-        "marketCap": null
+        "marketCap": 9371866112.0,
+        "peRatio": 18.026953,
+        "volume": null
       }
     ]
   },
   "stockDetails": {
-    "AMZN": {
-      "ticker": "AMZN",
-      "companyName": "Amazon.com Inc.",
-      "currentPrice": 232.53,
+    "APP": {
+      "ticker": "APP",
+      "companyName": "APP",
+      "currentPrice": 673.82,
       "priceChange": 0.0,
       "priceChangePercent": 0.0,
-      "convictionScore": 0.5433,
-      "timeframe": "short",
-      "thesis": "AMZN shows moderate potential trading at PE of 32.8 with strong growth (13% revenue growth, 36% earnings growth) backed by solid fundamentals (11.1% profit margin, 24.3% ROE) . Analysts see 27% upside to $295.60 target.",
-      "riskFactors": [],
-      "sector": "consumer",
-      "entryPrice": 232.53,
-      "targetPrice": 270.4300647,
-      "stopLoss": null,
-      "marketCap": null,
-      "priceHistory": [],
-      "relatedNews": [],
-      "fundamentals": {
-        "peTrailing": 32.84322,
-        "peForward": 29.640308,
-        "pegRatio": null,
-        "priceToBook": 6.723046,
-        "priceToSales": null,
-        "revenueGrowth": 0.134,
-        "earningsGrowth": 0.364,
-        "profitMargin": 0.11063,
-        "roe": 0.24327,
-        "roa": null,
-        "priceChange1d": null,
-        "priceChange1w": null,
-        "priceChange1m": null,
-        "priceChange3m": null,
-        "volumeAvg": null,
-        "volumeCurrent": 20779526.0,
-        "volumeRatio": null,
-        "dividendYield": null,
-        "payoutRatio": null,
-        "analystRating": 1.32836,
-        "priceTarget": 295.59784,
-        "upsidePotential": 27.12245301681504,
-        "beta": null,
-        "fiftyTwoWeekHigh": null,
-        "fiftyTwoWeekLow": null
-      },
-      "convictionBreakdown": {
-        "valuationScore": 0.33,
-        "growthScore": 0.82,
-        "qualityScore": 0.91,
-        "momentumScore": 0.5,
-        "macroAdjustment": -0.1,
-        "confidence": 0.69,
-        "factorsUsed": [
-          "pe_trailing",
-          "price_to_book",
-          "upside_potential",
-          "revenue_growth",
-          "earnings_growth",
-          "profit_margin",
-          "roe",
-          "analyst_rating",
-          "macro_context"
-        ],
-        "factorsMissing": [
-          "peg_ratio",
-          "price_change_1m",
-          "price_change_3m",
-          "volume_ratio"
-        ]
-      }
-    },
-    "TSLA": {
-      "ticker": "TSLA",
-      "companyName": "Tesla Inc.",
-      "currentPrice": 454.43,
-      "priceChange": 0.0,
-      "priceChangePercent": 0.0,
-      "convictionScore": 0.1864,
-      "timeframe": "short",
-      "thesis": "TSLA faces headwinds despite rich valuation (PE of 309.1) but limited growth (12% revenue growth) . Trading 12% above $399.15 analyst target . Key risk: extreme valuation.",
-      "riskFactors": [
-        "Extreme Valuation"
-      ],
-      "sector": "consumer",
-      "entryPrice": 454.43,
-      "targetPrice": null,
-      "stopLoss": null,
-      "marketCap": null,
-      "priceHistory": [],
-      "relatedNews": [],
-      "fundamentals": {
-        "peTrailing": 309.13605,
-        "peForward": 204.96318,
-        "pegRatio": null,
-        "priceToBook": 18.888935,
-        "priceToSales": null,
-        "revenueGrowth": 0.116,
-        "earningsGrowth": -0.371,
-        "profitMargin": 0.05314,
-        "roe": 0.06791,
-        "roa": null,
-        "priceChange1d": null,
-        "priceChange1w": null,
-        "priceChange1m": null,
-        "priceChange3m": null,
-        "volumeAvg": null,
-        "volumeCurrent": 58670435.0,
-        "volumeRatio": null,
-        "dividendYield": null,
-        "payoutRatio": null,
-        "analystRating": 2.63043,
-        "priceTarget": 399.151,
-        "upsidePotential": -12.164469775322932,
-        "beta": null,
-        "fiftyTwoWeekHigh": null,
-        "fiftyTwoWeekLow": null
-      },
-      "convictionBreakdown": {
-        "valuationScore": 0.0,
-        "growthScore": 0.28,
-        "qualityScore": 0.5,
-        "momentumScore": 0.5,
-        "macroAdjustment": -0.1,
-        "confidence": 0.69,
-        "factorsUsed": [
-          "pe_trailing",
-          "price_to_book",
-          "upside_potential",
-          "revenue_growth",
-          "earnings_growth",
-          "profit_margin",
-          "roe",
-          "analyst_rating",
-          "macro_context"
-        ],
-        "factorsMissing": [
-          "peg_ratio",
-          "price_change_1m",
-          "price_change_3m",
-          "volume_ratio"
-        ]
-      }
-    },
-    "NVDA": {
-      "ticker": "NVDA",
-      "companyName": "NVIDIA Corp.",
-      "currentPrice": 187.54,
-      "priceChange": 0.0,
-      "priceChangePercent": 0.0,
-      "convictionScore": 0.6157,
+      "convictionScore": 0.7,
       "timeframe": "medium",
-      "thesis": "NVDA shows moderate potential trading at PE of 46.3 with strong growth (62% revenue growth, 67% earnings growth) backed by solid fundamentals (53.0% profit margin, 107.4% ROE) . Analysts see 35% upside to $253.02 target . Key risk: extreme valuation.",
+      "thesis": "APP (communication services): Solid medium-term opportunity. Strong revenue growth of 68.2%. Strong profit margin of 44.9%. ",
       "riskFactors": [
-        "Extreme Valuation"
+        "P/E Ratio: Premium P/E of 79.4x vs sector 18.0x",
+        "P/B Ratio: High P/B of 154.76x"
       ],
       "sector": "technology",
-      "entryPrice": 187.54,
-      "targetPrice": 222.18051339999997,
-      "stopLoss": null,
-      "marketCap": null,
+      "entryPrice": 673.82,
+      "targetPrice": 815.32,
+      "marketCap": 227919560704.0,
+      "peRatio": 79.36632,
+      "volume": null,
       "priceHistory": [],
       "relatedNews": [],
       "fundamentals": {
-        "peTrailing": 46.306168,
-        "peForward": 24.786026,
-        "pegRatio": null,
-        "priceToBook": 38.336056,
-        "priceToSales": null,
-        "revenueGrowth": 0.625,
-        "earningsGrowth": 0.667,
-        "profitMargin": 0.53007,
-        "roe": 1.07359,
-        "roa": null,
-        "priceChange1d": null,
-        "priceChange1w": null,
-        "priceChange1m": null,
-        "priceChange3m": null,
-        "volumeAvg": null,
-        "volumeCurrent": 96825641.0,
-        "volumeRatio": null,
-        "dividendYield": 0.02,
-        "payoutRatio": null,
-        "analystRating": 1.32812,
-        "priceTarget": 253.01825,
-        "upsidePotential": 34.91428495254346,
-        "beta": null,
-        "fiftyTwoWeekHigh": null,
-        "fiftyTwoWeekLow": null
-      },
-      "convictionBreakdown": {
-        "valuationScore": 0.33,
-        "growthScore": 1.0,
-        "qualityScore": 1.0,
-        "momentumScore": 0.5,
-        "macroAdjustment": -0.1,
-        "confidence": 0.69,
-        "factorsUsed": [
-          "pe_trailing",
-          "price_to_book",
-          "upside_potential",
-          "revenue_growth",
-          "earnings_growth",
-          "profit_margin",
-          "roe",
-          "analyst_rating",
-          "macro_context"
-        ],
-        "factorsMissing": [
-          "peg_ratio",
-          "price_change_1m",
-          "price_change_3m",
-          "volume_ratio"
-        ]
+        "peTrailing": 79.36632,
+        "avgVolume": null
+      }
+    },
+    "APH": {
+      "ticker": "APH",
+      "companyName": "APH",
+      "currentPrice": 135.14,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.7,
+      "timeframe": "medium",
+      "thesis": "APH (technology): Solid medium-term opportunity. Strong revenue growth of 53.4%. Strong profit margin of 18.2%. Unfavorable macro alignment.",
+      "riskFactors": [
+        "P/E Ratio: Premium P/E of 45.0x vs sector 28.0x",
+        "P/B Ratio: High P/B of 13.21x"
+      ],
+      "sector": "technology",
+      "entryPrice": 135.14,
+      "targetPrice": 163.52,
+      "marketCap": 165418860544.0,
+      "peRatio": 45.046665,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 45.046665,
+        "avgVolume": null
+      }
+    },
+    "APO": {
+      "ticker": "APO",
+      "companyName": "APO",
+      "currentPrice": 144.76,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.7,
+      "timeframe": "medium",
+      "thesis": "APO (financial services): Solid medium-term opportunity. Strong revenue growth of 26.4%. Strong profit margin of 15.8%. ",
+      "riskFactors": [
+        "P/E Ratio: Premium P/E of 21.1x vs sector 12.0x",
+        "P/B Ratio: Reasonable P/B of 3.86x"
+      ],
+      "sector": "technology",
+      "entryPrice": 144.76,
+      "targetPrice": 175.16,
+      "marketCap": 84021968896.0,
+      "peRatio": 21.10204,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 21.10204,
+        "avgVolume": null
+      }
+    },
+    "GOOG": {
+      "ticker": "GOOG",
+      "companyName": "GOOG",
+      "currentPrice": 313.8,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.7,
+      "timeframe": "medium",
+      "thesis": "GOOG (communication services): Solid medium-term opportunity. Strong Buy consensus (1.5). Strong profit margin of 32.2%. ",
+      "riskFactors": [
+        "P/E Ratio: Premium P/E of 30.9x vs sector 18.0x",
+        "P/B Ratio: High P/B of 9.80x"
+      ],
+      "sector": "technology",
+      "entryPrice": 313.8,
+      "targetPrice": 379.7,
+      "marketCap": 3788141232128.0,
+      "peRatio": 30.946743,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 30.946743,
+        "avgVolume": null
       }
     },
     "GOOGL": {
       "ticker": "GOOGL",
-      "companyName": "Alphabet Inc.",
-      "currentPrice": 313.85,
+      "companyName": "GOOGL",
+      "currentPrice": 313.0,
       "priceChange": 0.0,
       "priceChangePercent": 0.0,
-      "convictionScore": 0.5179,
+      "convictionScore": 0.7,
       "timeframe": "medium",
-      "thesis": "GOOGL shows moderate potential despite rich valuation (PE of 31.0) with strong growth (16% revenue growth, 35% earnings growth) backed by solid fundamentals (32.2% profit margin, 35.4% ROE) . Offers 27.0% dividend yield.",
-      "riskFactors": [],
-      "sector": "communications",
-      "entryPrice": 313.85,
-      "targetPrice": 362.61287450000003,
-      "stopLoss": null,
-      "marketCap": null,
-      "priceHistory": [],
-      "relatedNews": [],
-      "fundamentals": {
-        "peTrailing": 30.982231,
-        "peForward": 28.043707,
-        "pegRatio": null,
-        "priceToBook": 9.7977085,
-        "priceToSales": null,
-        "revenueGrowth": 0.159,
-        "earningsGrowth": 0.353,
-        "profitMargin": 0.32233003,
-        "roe": 0.3545,
-        "roa": null,
-        "priceChange1d": null,
-        "priceChange1w": null,
-        "priceChange1m": null,
-        "priceChange3m": null,
-        "volumeAvg": null,
-        "volumeCurrent": 17129365.0,
-        "volumeRatio": null,
-        "dividendYield": 0.27,
-        "payoutRatio": null,
-        "analystRating": 1.46269,
-        "priceTarget": 329.41037,
-        "upsidePotential": 4.957900270830007,
-        "beta": null,
-        "fiftyTwoWeekHigh": null,
-        "fiftyTwoWeekLow": null
-      },
-      "convictionBreakdown": {
-        "valuationScore": 0.11,
-        "growthScore": 0.89,
-        "qualityScore": 1.0,
-        "momentumScore": 0.5,
-        "macroAdjustment": -0.1,
-        "confidence": 0.69,
-        "factorsUsed": [
-          "pe_trailing",
-          "price_to_book",
-          "upside_potential",
-          "revenue_growth",
-          "earnings_growth",
-          "profit_margin",
-          "roe",
-          "analyst_rating",
-          "macro_context"
-        ],
-        "factorsMissing": [
-          "peg_ratio",
-          "price_change_1m",
-          "price_change_3m",
-          "volume_ratio"
-        ]
-      }
-    },
-    "MSFT": {
-      "ticker": "MSFT",
-      "companyName": "Microsoft Corp.",
-      "currentPrice": 487.48,
-      "priceChange": 0.0,
-      "priceChangePercent": 0.0,
-      "convictionScore": 0.5308,
-      "timeframe": "long",
-      "thesis": "MSFT shows moderate potential trading at PE of 34.6 with strong growth (18% revenue growth, 13% earnings growth) backed by solid fundamentals (35.7% profit margin, 32.2% ROE) . Analysts see 28% upside to $622.51 target . Offers 75.0% dividend yield.",
-      "riskFactors": [],
+      "thesis": "GOOGL (communication services): Solid medium-term opportunity. Strong Buy consensus (1.5). Strong profit margin of 32.2%. ",
+      "riskFactors": [
+        "P/E Ratio: Premium P/E of 30.9x vs sector 18.0x",
+        "P/B Ratio: High P/B of 9.77x"
+      ],
       "sector": "technology",
-      "entryPrice": 487.48,
-      "targetPrice": 565.1063152,
-      "stopLoss": null,
-      "marketCap": null,
+      "entryPrice": 313.0,
+      "targetPrice": 378.73,
+      "marketCap": 3791094022144.0,
+      "peRatio": 30.86785,
+      "volume": null,
       "priceHistory": [],
       "relatedNews": [],
       "fundamentals": {
-        "peTrailing": 34.62216,
-        "peForward": 26.009504,
-        "pegRatio": null,
-        "priceToBook": 9.981163,
-        "priceToSales": null,
-        "revenueGrowth": 0.184,
-        "earningsGrowth": 0.127,
-        "profitMargin": 0.35707,
-        "roe": 0.32241002,
-        "roa": null,
-        "priceChange1d": null,
-        "priceChange1w": null,
-        "priceChange1m": null,
-        "priceChange3m": null,
-        "volumeAvg": null,
-        "volumeCurrent": 12903172.0,
-        "volumeRatio": null,
-        "dividendYield": 0.75,
-        "payoutRatio": null,
-        "analystRating": 1.2807,
-        "priceTarget": 622.51416,
-        "upsidePotential": 27.700451300566158,
-        "beta": null,
-        "fiftyTwoWeekHigh": null,
-        "fiftyTwoWeekLow": null
-      },
-      "convictionBreakdown": {
-        "valuationScore": 0.33,
-        "growthScore": 0.71,
-        "qualityScore": 1.0,
-        "momentumScore": 0.5,
-        "macroAdjustment": -0.1,
-        "confidence": 0.69,
-        "factorsUsed": [
-          "pe_trailing",
-          "price_to_book",
-          "upside_potential",
-          "revenue_growth",
-          "earnings_growth",
-          "profit_margin",
-          "roe",
-          "analyst_rating",
-          "macro_context"
-        ],
-        "factorsMissing": [
-          "peg_ratio",
-          "price_change_1m",
-          "price_change_3m",
-          "volume_ratio"
-        ]
+        "peTrailing": 30.86785,
+        "avgVolume": null
       }
     },
-    "META": {
-      "ticker": "META",
-      "companyName": "Meta Platforms Inc.",
-      "currentPrice": 665.95,
+    "AMZN": {
+      "ticker": "AMZN",
+      "companyName": "AMZN",
+      "currentPrice": 230.82,
       "priceChange": 0.0,
       "priceChangePercent": 0.0,
-      "convictionScore": 0.472,
-      "timeframe": "long",
-      "thesis": "META faces headwinds trading at PE of 29.5 showing 26% revenue growth backed by solid fundamentals (30.9% profit margin, 32.6% ROE) . Analysts see 26% upside to $837.15 target . Offers 32.0% dividend yield.",
-      "riskFactors": [],
-      "sector": "communications",
-      "entryPrice": 665.95,
-      "targetPrice": null,
-      "stopLoss": null,
-      "marketCap": null,
+      "convictionScore": 0.6,
+      "timeframe": "medium",
+      "thesis": "AMZN (consumer cyclical): Solid medium-term opportunity. Strong Buy consensus (1.3). Excellent ROE of 24.3%. ",
+      "riskFactors": [
+        "P/E Ratio: Premium P/E of 32.6x vs sector 20.0x",
+        "P/B Ratio: High P/B of 6.67x"
+      ],
+      "sector": "technology",
+      "entryPrice": 230.82,
+      "targetPrice": 272.37,
+      "marketCap": 2467515596800.0,
+      "peRatio": 32.555714,
+      "volume": null,
       "priceHistory": [],
       "relatedNews": [],
       "fundamentals": {
-        "peTrailing": 29.479858,
-        "peForward": 21.892906,
-        "pegRatio": null,
-        "priceToBook": 8.650949,
-        "priceToSales": null,
-        "revenueGrowth": 0.262,
-        "earningsGrowth": -0.826,
-        "profitMargin": 0.30892,
-        "roe": 0.32643002,
-        "roa": null,
-        "priceChange1d": null,
-        "priceChange1w": null,
-        "priceChange1m": null,
-        "priceChange3m": null,
-        "volumeAvg": null,
-        "volumeCurrent": 9020749.0,
-        "volumeRatio": null,
-        "dividendYield": 0.32,
-        "payoutRatio": null,
-        "analystRating": 1.35821,
-        "priceTarget": 837.1525,
-        "upsidePotential": 25.70801111194534,
-        "beta": null,
-        "fiftyTwoWeekHigh": null,
-        "fiftyTwoWeekLow": null
-      },
-      "convictionBreakdown": {
-        "valuationScore": 0.34,
-        "growthScore": 0.5,
-        "qualityScore": 1.0,
-        "momentumScore": 0.5,
-        "macroAdjustment": -0.1,
-        "confidence": 0.69,
-        "factorsUsed": [
-          "pe_trailing",
-          "price_to_book",
-          "upside_potential",
-          "revenue_growth",
-          "earnings_growth",
-          "profit_margin",
-          "roe",
-          "analyst_rating",
-          "macro_context"
-        ],
-        "factorsMissing": [
-          "peg_ratio",
-          "price_change_1m",
-          "price_change_3m",
-          "volume_ratio"
-        ]
+        "peTrailing": 32.555714,
+        "avgVolume": null
+      }
+    },
+    "AJG": {
+      "ticker": "AJG",
+      "companyName": "AJG",
+      "currentPrice": 258.79,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "medium",
+      "thesis": "AJG (financial services): Solid medium-term opportunity. Strong revenue growth of 20.0%. Buy consensus (2.0). ",
+      "riskFactors": [
+        "P/E Ratio: Premium P/E of 41.3x vs sector 12.0x",
+        "Earnings Growth: Negative earnings growth of -25.2%"
+      ],
+      "sector": "technology",
+      "entryPrice": 258.79,
+      "targetPrice": 305.37,
+      "marketCap": 66458566656.0,
+      "peRatio": 41.340256,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 41.340256,
+        "avgVolume": null
+      }
+    },
+    "AMD": {
+      "ticker": "AMD",
+      "companyName": "AMD",
+      "currentPrice": 214.16,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "medium",
+      "thesis": "AMD (technology): Solid medium-term opportunity. Strong revenue growth of 35.6%. Buy consensus (1.5). Unfavorable macro alignment.",
+      "riskFactors": [
+        "P/E Ratio: Premium P/E of 112.1x vs sector 28.0x",
+        "P/B Ratio: High P/B of 5.74x",
+        "ROE: Adequate ROE of 5.3%"
+      ],
+      "sector": "technology",
+      "entryPrice": 214.16,
+      "targetPrice": 252.71,
+      "marketCap": 348661383168.0,
+      "peRatio": 112.125656,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 112.125656,
+        "avgVolume": null
+      }
+    },
+    "ALLE": {
+      "ticker": "ALLE",
+      "companyName": "ALLE",
+      "currentPrice": 159.22,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "medium",
+      "thesis": "ALLE (industrials): Solid medium-term opportunity. Strong profit margin of 16.1%. Excellent ROE of 36.4%. ",
+      "riskFactors": [
+        "P/B Ratio: High P/B of 7.04x",
+        "Revenue Growth: Moderate revenue growth of 10.7%",
+        "Earnings Growth: Positive earnings growth of 9.5%"
+      ],
+      "sector": "technology",
+      "entryPrice": 159.22,
+      "targetPrice": 187.88,
+      "marketCap": 13698007040.0,
+      "peRatio": 21.545332,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 21.545332,
+        "avgVolume": null
+      }
+    },
+    "AON": {
+      "ticker": "AON",
+      "companyName": "AON",
+      "currentPrice": 352.88,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "medium",
+      "thesis": "AON (financial services): Solid medium-term opportunity. Strong profit margin of 16.0%. Excellent ROE of 37.7%. ",
+      "riskFactors": [
+        "P/E Ratio: Premium P/E of 28.3x vs sector 12.0x",
+        "P/B Ratio: High P/B of 9.57x",
+        "Revenue Growth: Moderate revenue growth of 7.4%"
+      ],
+      "sector": "technology",
+      "entryPrice": 352.88,
+      "targetPrice": 416.4,
+      "marketCap": 76090310656.0,
+      "peRatio": 28.253004,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 28.253004,
+        "avgVolume": null
+      }
+    },
+    "ADI": {
+      "ticker": "ADI",
+      "companyName": "ADI",
+      "currentPrice": 271.2,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "medium",
+      "thesis": "ADI (technology): Solid medium-term opportunity. Strong revenue growth of 25.9%. Strong profit margin of 20.6%. Unfavorable macro alignment.",
+      "riskFactors": [
+        "P/E Ratio: Premium P/E of 59.5x vs sector 28.0x",
+        "P/B Ratio: Reasonable P/B of 3.93x"
+      ],
+      "sector": "technology",
+      "entryPrice": 271.2,
+      "targetPrice": 320.02,
+      "marketCap": 132794204160.0,
+      "peRatio": 59.473686,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 59.473686,
+        "avgVolume": null
+      }
+    },
+    "ARES": {
+      "ticker": "ARES",
+      "companyName": "ARES",
+      "currentPrice": 161.63,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "medium",
+      "thesis": "ARES (financial services): Solid medium-term opportunity. Strong revenue growth of 46.7%. Excellent ROE of 17.1%. ",
+      "riskFactors": [
+        "P/E Ratio: Premium P/E of 67.9x vs sector 12.0x",
+        "P/B Ratio: High P/B of 11.82x"
+      ],
+      "sector": "technology",
+      "entryPrice": 161.63,
+      "targetPrice": 190.72,
+      "marketCap": 52953968640.0,
+      "peRatio": 67.911766,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 67.911766,
+        "avgVolume": null
       }
     },
     "AAPL": {
       "ticker": "AAPL",
-      "companyName": "Apple Inc.",
-      "currentPrice": 273.08,
+      "companyName": "AAPL",
+      "currentPrice": 271.86,
       "priceChange": 0.0,
       "priceChangePercent": 0.0,
-      "convictionScore": 0.4578,
-      "timeframe": "long",
-      "thesis": "AAPL faces headwinds despite rich valuation (PE of 36.6) showing 8% revenue growth, 91% earnings growth backed by solid fundamentals (26.9% profit margin, 171.4% ROE) . Analysts see 5% upside to $287.71 target . Offers 38.0% dividend yield.",
-      "riskFactors": [],
+      "convictionScore": 0.6,
+      "timeframe": "medium",
+      "thesis": "AAPL (technology): Solid medium-term opportunity. Strong profit margin of 26.9%. Excellent ROE of 171.4%. Unfavorable macro alignment.",
+      "riskFactors": [
+        "P/E Ratio: Premium P/E of 36.5x vs sector 28.0x",
+        "P/B Ratio: High P/B of 54.47x",
+        "Revenue Growth: Moderate revenue growth of 7.9%"
+      ],
       "sector": "technology",
-      "entryPrice": 273.08,
-      "targetPrice": null,
-      "stopLoss": null,
-      "marketCap": null,
+      "entryPrice": 271.86,
+      "targetPrice": 320.79,
+      "marketCap": 4034508095488.0,
+      "peRatio": 36.491276,
+      "volume": null,
       "priceHistory": [],
       "relatedNews": [],
       "fundamentals": {
-        "peTrailing": 36.556892,
-        "peForward": 29.828247,
-        "pegRatio": null,
-        "priceToBook": 54.71448,
-        "priceToSales": null,
-        "revenueGrowth": 0.079,
-        "earningsGrowth": 0.912,
-        "profitMargin": 0.26915002,
-        "roe": 1.7142199,
-        "roa": null,
-        "priceChange1d": null,
-        "priceChange1w": null,
-        "priceChange1m": null,
-        "priceChange3m": null,
-        "volumeAvg": null,
-        "volumeCurrent": 22090083.0,
-        "volumeRatio": null,
-        "dividendYield": 0.38,
-        "payoutRatio": null,
-        "analystRating": 2.0,
-        "priceTarget": 287.70682,
-        "upsidePotential": 5.356239929690937,
-        "beta": null,
-        "fiftyTwoWeekHigh": null,
-        "fiftyTwoWeekLow": null
-      },
-      "convictionBreakdown": {
-        "valuationScore": 0.12,
-        "growthScore": 0.68,
-        "qualityScore": 1.0,
-        "momentumScore": 0.5,
-        "macroAdjustment": -0.1,
-        "confidence": 0.69,
-        "factorsUsed": [
-          "pe_trailing",
-          "price_to_book",
-          "upside_potential",
-          "revenue_growth",
-          "earnings_growth",
-          "profit_margin",
-          "roe",
-          "analyst_rating",
-          "macro_context"
-        ],
-        "factorsMissing": [
-          "peg_ratio",
-          "price_change_1m",
-          "price_change_3m",
-          "volume_ratio"
-        ]
+        "peTrailing": 36.491276,
+        "avgVolume": null
+      }
+    },
+    "AMT": {
+      "ticker": "AMT",
+      "companyName": "AMT",
+      "currentPrice": 175.57,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "medium",
+      "thesis": "AMT (real estate): Solid medium-term opportunity. Strong profit margin of 28.1%. Excellent ROE of 28.8%. ",
+      "riskFactors": [
+        "P/E Ratio: Fair P/E of 28.0x near sector average",
+        "P/B Ratio: High P/B of 20.80x",
+        "Revenue Growth: Moderate revenue growth of 7.7%"
+      ],
+      "sector": "technology",
+      "entryPrice": 175.57,
+      "targetPrice": 207.17,
+      "marketCap": 82210873344.0,
+      "peRatio": 28.001596,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 28.001596,
+        "avgVolume": null
+      }
+    },
+    "ANET": {
+      "ticker": "ANET",
+      "companyName": "ANET",
+      "currentPrice": 131.03,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "medium",
+      "thesis": "ANET (technology): Solid medium-term opportunity. Strong revenue growth of 27.5%. Strong Buy consensus (1.5). Unfavorable macro alignment.",
+      "riskFactors": [
+        "P/E Ratio: Premium P/E of 49.8x vs sector 28.0x",
+        "P/B Ratio: High P/B of 13.86x"
+      ],
+      "sector": "technology",
+      "entryPrice": 131.03,
+      "targetPrice": 154.62,
+      "marketCap": 165004132352.0,
+      "peRatio": 49.82129,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 49.82129,
+        "avgVolume": null
+      }
+    },
+    "AEE": {
+      "ticker": "AEE",
+      "companyName": "AEE",
+      "currentPrice": 99.86,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.7,
+      "timeframe": "long",
+      "thesis": "AEE (utilities): Solid long-term opportunity. Strong revenue growth of 24.8%. Strong profit margin of 16.3%. Unfavorable macro alignment.",
+      "riskFactors": [],
+      "sector": "technology",
+      "entryPrice": 99.86,
+      "targetPrice": 120.83,
+      "marketCap": 27011622912.0,
+      "peRatio": 19.203848,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 19.203848,
+        "avgVolume": null
+      }
+    },
+    "ACGL": {
+      "ticker": "ACGL",
+      "companyName": "ACGL",
+      "currentPrice": 95.92,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.7,
+      "timeframe": "long",
+      "thesis": "ACGL (financial services): Solid long-term opportunity. Strong profit margin of 21.0%. Excellent ROE of 17.8%. ",
+      "riskFactors": [
+        "Revenue Growth: Moderate revenue growth of 8.2%"
+      ],
+      "sector": "technology",
+      "entryPrice": 95.92,
+      "targetPrice": 116.06,
+      "marketCap": 35799289856.0,
+      "peRatio": 8.989691,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 8.989691,
+        "avgVolume": null
+      }
+    },
+    "AFL": {
+      "ticker": "AFL",
+      "companyName": "AFL",
+      "currentPrice": 110.27,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.7,
+      "timeframe": "long",
+      "thesis": "AFL (financial services): Solid long-term opportunity. Strong revenue growth of 60.7%. Strong profit margin of 23.6%. ",
+      "riskFactors": [],
+      "sector": "technology",
+      "entryPrice": 110.27,
+      "targetPrice": 133.43,
+      "marketCap": 58975866880.0,
+      "peRatio": 14.490144,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 14.490144,
+        "avgVolume": null
+      }
+    },
+    "ALL": {
+      "ticker": "ALL",
+      "companyName": "ALL",
+      "currentPrice": 208.15,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.7,
+      "timeframe": "long",
+      "thesis": "ALL (financial services): Solid long-term opportunity. Excellent ROE of 34.5%. Buy consensus (2.0). ",
+      "riskFactors": [
+        "Revenue Growth: Weak revenue growth of 3.8%"
+      ],
+      "sector": "technology",
+      "entryPrice": 208.15,
+      "targetPrice": 251.86,
+      "marketCap": 54848630784.0,
+      "peRatio": 6.7471633,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 6.7471633,
+        "avgVolume": null
+      }
+    },
+    "APA": {
+      "ticker": "APA",
+      "companyName": "APA",
+      "currentPrice": 24.46,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.7,
+      "timeframe": "long",
+      "thesis": "APA (energy): Solid long-term opportunity. Strong profit margin of 16.1%. Excellent ROE of 27.4%. Favorable macro alignment.",
+      "riskFactors": [
+        "Revenue Growth: Weak revenue growth of -16.4%"
+      ],
+      "sector": "technology",
+      "entryPrice": 24.46,
+      "targetPrice": 29.6,
+      "marketCap": 8751456256.0,
+      "peRatio": 5.8516746,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 5.8516746,
+        "avgVolume": null
+      }
+    },
+    "ADBE": {
+      "ticker": "ADBE",
+      "companyName": "ADBE",
+      "currentPrice": 349.99,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "long",
+      "thesis": "ADBE (technology): Solid long-term opportunity. Strong profit margin of 30.0%. Excellent ROE of 55.4%. Unfavorable macro alignment.",
+      "riskFactors": [
+        "P/B Ratio: High P/B of 12.56x",
+        "Revenue Growth: Moderate revenue growth of 10.5%"
+      ],
+      "sector": "technology",
+      "entryPrice": 349.99,
+      "targetPrice": 412.99,
+      "marketCap": 148465745920.0,
+      "peRatio": 20.970041,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 20.970041,
+        "avgVolume": null
+      }
+    },
+    "AEP": {
+      "ticker": "AEP",
+      "companyName": "AEP",
+      "currentPrice": 115.31,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "long",
+      "thesis": "AEP (utilities): Solid long-term opportunity. Strong profit margin of 17.2%. Adequate ROE of 12.9%. Unfavorable macro alignment.",
+      "riskFactors": [
+        "Revenue Growth: Moderate revenue growth of 10.9%",
+        "Earnings Growth: Positive earnings growth of 0.6%"
+      ],
+      "sector": "technology",
+      "entryPrice": 115.31,
+      "targetPrice": 136.07,
+      "marketCap": 61721473024.0,
+      "peRatio": 16.88287,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 16.88287,
+        "avgVolume": null
+      }
+    },
+    "AIZ": {
+      "ticker": "AIZ",
+      "companyName": "AIZ",
+      "currentPrice": 240.85,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "long",
+      "thesis": "AIZ (financial services): Solid long-term opportunity. Buy consensus (1.6). Excellent ROE of 15.4%. ",
+      "riskFactors": [
+        "Revenue Growth: Moderate revenue growth of 8.9%"
+      ],
+      "sector": "technology",
+      "entryPrice": 240.85,
+      "targetPrice": 284.2,
+      "marketCap": 12153101312.0,
+      "peRatio": 14.685976,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 14.685976,
+        "avgVolume": null
+      }
+    },
+    "ABT": {
+      "ticker": "ABT",
+      "companyName": "ABT",
+      "currentPrice": 125.29,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "long",
+      "thesis": "ABT (healthcare): Solid long-term opportunity. Strong profit margin of 31.9%. Excellent ROE of 30.6%. ",
+      "riskFactors": [
+        "P/B Ratio: Reasonable P/B of 4.28x",
+        "Revenue Growth: Moderate revenue growth of 6.9%",
+        "Earnings Growth: Negative earnings growth of 0.0%"
+      ],
+      "sector": "technology",
+      "entryPrice": 125.29,
+      "targetPrice": 147.84,
+      "marketCap": 218062110720.0,
+      "peRatio": 15.73995,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 15.73995,
+        "avgVolume": null
+      }
+    },
+    "AIG": {
+      "ticker": "AIG",
+      "companyName": "AIG",
+      "currentPrice": 85.55,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "long",
+      "thesis": "AIG (financial services): Solid long-term opportunity. Excellent earnings growth of 32.3%. Positive momentum of +7.5% monthly. ",
+      "riskFactors": [
+        "Revenue Growth: Weak revenue growth of -4.1%"
+      ],
+      "sector": "technology",
+      "entryPrice": 85.55,
+      "targetPrice": 100.95,
+      "marketCap": 47395028992.0,
+      "peRatio": 15.386691,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 15.386691,
+        "avgVolume": null
+      }
+    },
+    "LNT": {
+      "ticker": "LNT",
+      "companyName": "LNT",
+      "currentPrice": 65.01,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "long",
+      "thesis": "LNT (utilities): Solid long-term opportunity. Strong profit margin of 19.1%. Buy consensus (1.9). Unfavorable macro alignment.",
+      "riskFactors": [
+        "Earnings Growth: Negative earnings growth of -5.2%"
+      ],
+      "sector": "technology",
+      "entryPrice": 65.01,
+      "targetPrice": 76.71,
+      "marketCap": 16711061504.0,
+      "peRatio": 20.443396,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 20.443396,
+        "avgVolume": null
+      }
+    },
+    "AMP": {
+      "ticker": "AMP",
+      "companyName": "AMP",
+      "currentPrice": 490.34,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "long",
+      "thesis": "AMP (financial services): Solid long-term opportunity. Strong profit margin of 19.6%. Excellent ROE of 59.6%. ",
+      "riskFactors": [
+        "P/B Ratio: High P/B of 7.07x",
+        "Revenue Growth: Moderate revenue growth of 7.3%"
+      ],
+      "sector": "technology",
+      "entryPrice": 490.34,
+      "targetPrice": 578.6,
+      "marketCap": 46225121280.0,
+      "peRatio": 13.496834,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 13.496834,
+        "avgVolume": null
+      }
+    },
+    "T": {
+      "ticker": "T",
+      "companyName": "T",
+      "currentPrice": 24.84,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "long",
+      "thesis": "T (communication services): Solid long-term opportunity. Strong profit margin of 17.9%. Excellent ROE of 19.1%. ",
+      "riskFactors": [
+        "Revenue Growth: Weak revenue growth of 1.6%"
+      ],
+      "sector": "technology",
+      "entryPrice": 24.84,
+      "targetPrice": 29.31,
+      "marketCap": 177615585280.0,
+      "peRatio": 8.091206,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 8.091206,
+        "avgVolume": null
+      }
+    },
+    "ATO": {
+      "ticker": "ATO",
+      "companyName": "ATO",
+      "currentPrice": 167.63,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.6,
+      "timeframe": "long",
+      "thesis": "ATO (utilities): Solid long-term opportunity. Strong profit margin of 25.5%. Excellent earnings growth of 25.6%. Unfavorable macro alignment.",
+      "riskFactors": [],
+      "sector": "technology",
+      "entryPrice": 167.63,
+      "targetPrice": 197.8,
+      "marketCap": 27113818112.0,
+      "peRatio": 22.47051,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 22.47051,
+        "avgVolume": null
+      }
+    },
+    "AOS": {
+      "ticker": "AOS",
+      "companyName": "AOS",
+      "currentPrice": 66.88,
+      "priceChange": 0.0,
+      "priceChangePercent": 0.0,
+      "convictionScore": 0.5,
+      "timeframe": "long",
+      "thesis": "AOS (industrials): Moderate long-term opportunity. Excellent ROE of 28.2%. Modest profit margin of 13.9%. ",
+      "riskFactors": [
+        "P/B Ratio: High P/B of 5.05x",
+        "Revenue Growth: Weak revenue growth of 4.4%"
+      ],
+      "sector": "technology",
+      "entryPrice": 66.88,
+      "targetPrice": null,
+      "marketCap": 9371866112.0,
+      "peRatio": 18.026953,
+      "volume": null,
+      "priceHistory": [],
+      "relatedNews": [],
+      "fundamentals": {
+        "peTrailing": 18.026953,
+        "avgVolume": null
       }
     }
   },
@@ -640,30 +1402,74 @@
         "unit": "%",
         "trend": "flat",
         "source": "FRED",
-        "updatedAt": "2025-12-30T17:07:16.372202",
-        "description": null
+        "updatedAt": "2025-12-31T21:55:03.647049",
+        "description": "Unemployment Rate indicator"
+      },
+      {
+        "id": "PAYEMS",
+        "name": "Nonfarm Payrolls",
+        "value": 159552.0,
+        "previousValue": null,
+        "unit": "Thousands",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2025-12-31T21:55:03.647052",
+        "description": "Nonfarm Payrolls indicator"
+      },
+      {
+        "id": "ICSA",
+        "name": "Initial Jobless Claims",
+        "value": 199000.0,
+        "previousValue": null,
+        "unit": "Thousands",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2025-12-31T21:55:03.647054",
+        "description": "Initial Jobless Claims indicator"
       },
       {
         "id": "CPIAUCSL",
         "name": "CPI (Inflation)",
-        "value": 325.031,
+        "value": 325.03,
         "previousValue": null,
         "unit": "Index",
         "trend": "flat",
         "source": "FRED",
-        "updatedAt": "2025-12-30T17:07:16.372220",
-        "description": null
+        "updatedAt": "2025-12-31T21:55:03.647056",
+        "description": "CPI (Inflation) indicator"
+      },
+      {
+        "id": "PCEPI",
+        "name": "PCE Price Index",
+        "value": 127.63,
+        "previousValue": null,
+        "unit": "Index",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2025-12-31T21:55:03.647058",
+        "description": "PCE Price Index indicator"
       },
       {
         "id": "GDP",
         "name": "Gross Domestic Product",
-        "value": 31095.089,
+        "value": 31095.09,
         "previousValue": null,
         "unit": "Billions USD",
         "trend": "flat",
         "source": "FRED",
-        "updatedAt": "2025-12-30T17:07:16.372230",
-        "description": null
+        "updatedAt": "2025-12-31T21:55:03.647059",
+        "description": "Gross Domestic Product indicator"
+      },
+      {
+        "id": "INDPRO",
+        "name": "Industrial Production",
+        "value": 101.79,
+        "previousValue": null,
+        "unit": "Index",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2025-12-31T21:55:03.647061",
+        "description": "Industrial Production indicator"
       },
       {
         "id": "FEDFUNDS",
@@ -673,19 +1479,63 @@
         "unit": "%",
         "trend": "flat",
         "source": "FRED",
-        "updatedAt": "2025-12-30T17:07:16.372240",
-        "description": null
+        "updatedAt": "2025-12-31T21:55:03.647062",
+        "description": "Federal Funds Rate indicator"
       },
       {
-        "id": "T10Y2Y",
-        "name": "10Y-2Y Treasury Spread",
-        "value": 0.69,
+        "id": "DGS10",
+        "name": "10-Year Treasury Yield",
+        "value": 4.14,
         "previousValue": null,
         "unit": "%",
         "trend": "flat",
         "source": "FRED",
-        "updatedAt": "2025-12-30T17:07:16.372250",
-        "description": null
+        "updatedAt": "2025-12-31T21:55:03.647063",
+        "description": "10-Year Treasury Yield indicator"
+      },
+      {
+        "id": "DGS2",
+        "name": "2-Year Treasury Yield",
+        "value": 3.45,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2025-12-31T21:55:03.647065",
+        "description": "2-Year Treasury Yield indicator"
+      },
+      {
+        "id": "T10Y2Y",
+        "name": "10Y-2Y Treasury Spread",
+        "value": 0.71,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2025-12-31T21:55:03.647066",
+        "description": "10Y-2Y Treasury Spread indicator"
+      },
+      {
+        "id": "BAMLH0A0HYM2",
+        "name": "High Yield Spread",
+        "value": 2.84,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2025-12-31T21:55:03.647067",
+        "description": "High Yield Spread indicator"
+      },
+      {
+        "id": "VIXCLS",
+        "name": "VIX Volatility Index",
+        "value": 14.33,
+        "previousValue": null,
+        "unit": "Index",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2025-12-31T21:55:03.647068",
+        "description": "VIX Volatility Index indicator"
       },
       {
         "id": "UMCSENT",
@@ -695,19 +1545,19 @@
         "unit": "Index",
         "trend": "flat",
         "source": "FRED",
-        "updatedAt": "2025-12-30T17:07:16.372263",
-        "description": null
+        "updatedAt": "2025-12-31T21:55:03.647070",
+        "description": "Consumer Sentiment indicator"
       },
       {
-        "id": "INDPRO",
-        "name": "Industrial Production",
-        "value": 101.7935,
+        "id": "RSXFS",
+        "name": "Retail Sales",
+        "value": 633232.0,
         "previousValue": null,
-        "unit": "Index",
+        "unit": "Millions USD",
         "trend": "flat",
         "source": "FRED",
-        "updatedAt": "2025-12-30T17:07:16.372270",
-        "description": null
+        "updatedAt": "2025-12-31T21:55:03.647071",
+        "description": "Retail Sales indicator"
       },
       {
         "id": "HOUST",
@@ -717,8 +1567,41 @@
         "unit": "Thousands",
         "trend": "flat",
         "source": "FRED",
-        "updatedAt": "2025-12-30T17:07:16.372279",
-        "description": null
+        "updatedAt": "2025-12-31T21:55:03.647073",
+        "description": "Housing Starts indicator"
+      },
+      {
+        "id": "MORTGAGE30US",
+        "name": "30-Year Mortgage Rate",
+        "value": 6.15,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2025-12-31T21:55:03.647074",
+        "description": "30-Year Mortgage Rate indicator"
+      },
+      {
+        "id": "DCOILWTICO",
+        "name": "WTI Crude Oil Price",
+        "value": 57.89,
+        "previousValue": null,
+        "unit": "USD/Barrel",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2025-12-31T21:55:03.647075",
+        "description": "WTI Crude Oil Price indicator"
+      },
+      {
+        "id": "WALCL",
+        "name": "Fed Balance Sheet",
+        "value": 6581231.0,
+        "previousValue": null,
+        "unit": "Millions USD",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2025-12-31T21:55:03.647076",
+        "description": "Fed Balance Sheet indicator"
       }
     ],
     "risks": [
@@ -727,314 +1610,622 @@
         "name": "Elevated Inflation",
         "severity": "high",
         "description": "Inflation at 325.031% above Fed target - policy may stay restrictive",
-        "affectedSectors": [],
+        "affectedSectors": [
+          "technology",
+          "finance"
+        ],
         "likelihood": 0.75,
-        "potentialImpact": null
+        "potentialImpact": "Risk score: 52%"
       },
       {
         "id": "weak_consumer_sentiment",
         "name": "Weak Consumer Sentiment",
         "severity": "medium",
         "description": "Low consumer confidence may reduce spending",
-        "affectedSectors": [],
+        "affectedSectors": [
+          "technology",
+          "finance"
+        ],
         "likelihood": 0.65,
-        "potentialImpact": null
+        "potentialImpact": "Risk score: 32%"
       }
     ],
-    "marketSentiment": "flat",
-    "lastUpdated": "2025-12-30T17:07:16.445920"
+    "marketSentiment": "up",
+    "lastUpdated": "2025-12-31T21:55:03.646846"
   },
   "news": {
     "market": [
       {
-        "id": "market_6986",
+        "id": "m0",
+        "headline": "\u2018I\u2019m fed up\u2019: My selfish mother-in-law has controlled me for 30 years. How can I regain my power?",
+        "source": "marketwatch",
+        "url": "https://www.marketwatch.com/story/im-completely-fed-up-my-selfish-boomer-mother-in-law-has-controlled-me-for-30-years-how-can-i-regain-my-power-7d6b82e0?mod=mw_rss_topstories",
+        "publishedAt": "2026-01-01T00:21:00+00:00",
+        "category": "market",
+        "relevanceScore": 0.73,
+        "tickersMentioned": [],
+        "excerpt": "\u2018I\u2019m fed up\u2019: My selfish mother-in-law has controlled me for 30 years. How can I regain my power?"
+      },
+      {
+        "id": "m1",
         "headline": "Stock market today: Dow, S&P 500, Nasdaq waver as Fed minutes show division over December rate cut - Yahoo Finance",
         "source": "Yahoo Finance",
         "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxQbnVTUTBBNkZuMHV0Wm9CR0hxcDZBZURhOGctd2ttTGZOMmQ0alF5c21RWUV2ejNLNVJBd2thWHNFdlplNGF3WkJDdXdhV0Vac2RTV2pvMV9rT2I5Q0l1dTlWN0loNU42ZWJaM2UyXzhlX1VoTER4MmQ0aml3by1ybXRMN3NTMUltUnQ5YVBqdzl1VWlIWlRGYUkzVUhiTUNHYTY3M0JWOHlubjVCOWdLdG44VmFxWmg1TWpOZHhiWkxEbW03Q0M2RUctanQ5OFc1UXZUSkZsVWt6c0JjcWc?oc=5",
         "publishedAt": "2025-12-30T20:30:36+00:00",
         "category": "market",
-        "relevanceScore": 0.745,
+        "relevanceScore": 0.45,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "Stock market today: Dow, S&P 500, Nasdaq waver as Fed minutes show division over December rate cut - Yahoo Finance"
       },
       {
-        "id": "market_2129",
-        "headline": "\u2018I\u2019m fed up\u2019: My selfish mother-in-law has controlled me for 30 years. How can I regain my power?",
-        "source": "marketwatch",
-        "url": "https://www.marketwatch.com/story/im-completely-fed-up-my-selfish-boomer-mother-in-law-has-controlled-me-for-30-years-how-can-i-regain-my-power-7d6b82e0?mod=mw_rss_topstories",
-        "publishedAt": "2025-12-30T22:00:00+00:00",
-        "category": "market",
-        "relevanceScore": 0.7325,
-        "tickersMentioned": [],
-        "excerpt": null
-      },
-      {
-        "id": "market_6427",
+        "id": "m2",
         "headline": "Stock Market Today: Dow Ends Lower After Fed Minutes; Two Biotech Names Tank (Live Coverage) - Investor's Business Daily",
         "source": "Investor's Business Daily",
         "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQR2RUUktGQzMwLVdudzljX1JsRWs1S2tFU1dwOC1XOHh5VlJPUmc2Z0VsLVRmMFhFc0YxOHFTa2EtOFZ3WGl6QVZnTkppZlNDMmlkSkFYOHRnM2c4a2M4RHozNm1Bd1d3ell2YktGbVdVb0t0RG0yVkRvY3Nyc1VzXzNRNncxcThTWXRGaExMaS1LZDR0M1RiSTRkVE9ULU01NXJCUE55NUR2aHZU?oc=5",
         "publishedAt": "2025-12-30T21:46:00+00:00",
         "category": "market",
-        "relevanceScore": 0.725,
+        "relevanceScore": 0.42,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "Stock Market Today: Dow Ends Lower After Fed Minutes; Two Biotech Names Tank (Live Coverage) - Investor's Business Daily"
       },
       {
-        "id": "market_5132",
-        "headline": "The Stock Market Is Flashing a Warning Last Seen Decades Ago, and the Federal Reserve Just Made President Trump's Tariffs Even Riskier. Here Is What History Says Could Happen Next. - The Motley Fool",
-        "source": "The Motley Fool",
-        "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxQSjRjME9oUC1RNHY0bEk2TTE0UUJfeDM2NmpfQnVodndFWnZ1bzk5ZVhldDl1NTNnVHQyUHJtdWZUNWtkNER6SXlxeUtwQXhEYzJCdDdDOFpXNHpjSUhLYTFhU1VNOWhhRi1uekpORlBjemp1azl6V3FPRUpWY09qQ1I3V1NZZ1F0aFhlTF9Xay1sbGc0Y251YQ?oc=5",
-        "publishedAt": "2025-12-30T10:15:00+00:00",
+        "id": "m3",
+        "headline": "S&P 500 and Nasdaq Trades Near Flat As Investors Awaiting Fed Guidance",
+        "source": "GuruFocus.com",
+        "url": "https://finance.yahoo.com/news/p-500-nasdaq-trades-near-171024974.html",
+        "publishedAt": "2025-12-30T09:10:24",
         "category": "market",
-        "relevanceScore": 0.656,
+        "relevanceScore": 0.35,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "S&P 500 and Nasdaq Trades Near Flat As Investors Awaiting Fed Guidance"
       },
       {
-        "id": "market_8781",
-        "headline": "CEO of major bank warns stock market will punish Americans if Federal Reserve isn't independent - CBS News",
-        "source": "CBS News",
-        "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxNdUxCdDYyRlNnNnB0WmNVUkdvQldGWThYZ1Z1eUxTZjM4TXNwYy1CNjZsbGVTMHBHeDhSaS1KY3BYRGlqTjBiWHBMNHFZRjlpaGxoSmdEUGUwUGxjdDBidG9EY2ZhcnNPWC1EYm5FVlEwRVY4b2N5Q0xwVS0tU1NURVRhRjZmQ0dZUzd3eU1HanNkMXBYUzdwYkVrb3E1Zkk5Q0FaWUoxV2hEZnJsU3dtY1M3TVlFMGU1UmRQam9aanAtb3M?oc=5",
-        "publishedAt": "2025-12-29T15:18:00+00:00",
+        "id": "m4",
+        "headline": "FedEx Empowers Global Workforce With AI Education and Literacy Program",
+        "source": "ACCESS Newswire",
+        "url": "https://finance.yahoo.com/news/fedex-empowers-global-workforce-ai-163000419.html",
+        "publishedAt": "2025-12-29T08:30:00",
         "category": "market",
-        "relevanceScore": 0.3725,
+        "relevanceScore": 0.34,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "FedEx Empowers Global Workforce With AI Education and Literacy Program"
       }
     ],
     "company": [
       {
-        "id": "company_9455",
-        "headline": "Meta\u2019s Manus acquisition is Big Tech\u2019s latest big bet on AI",
+        "id": "c0",
+        "headline": "China made the world\u2019s biggest movie this year, and \u2014 in a sea change \u2014 it didn\u2019t need America\u2019s help",
         "source": "marketwatch",
-        "url": "https://www.marketwatch.com/story/meta-acquisition-is-latest-megacap-tech-bet-on-ai-to-finish-the-year-68cdfd8f?mod=mw_rss_topstories",
-        "publishedAt": "2025-12-31T00:39:00+00:00",
+        "url": "https://www.marketwatch.com/story/china-made-the-worlds-biggest-movie-this-year-and-in-a-sea-change-it-didnt-need-america-to-do-it-45c509b3?mod=mw_rss_topstories",
+        "publishedAt": "2025-12-31T21:00:00+00:00",
         "category": "company",
-        "relevanceScore": 0.72,
+        "relevanceScore": 0.69,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "China made the world\u2019s biggest movie this year, and \u2014 in a sea change \u2014 it didn\u2019t need America\u2019s help"
       },
       {
-        "id": "company_1714",
-        "headline": "Stock Market News, Dec. 30, 2025: Dow, S&P 500 and Nasdaq close lower for three consecutive days, gold and silver continue rally - MarketWatch",
-        "source": "MarketWatch",
-        "url": "https://news.google.com/rss/articles/CBMipANBVV95cUxQaEJtYjBOblgxTTc0UUY4eFZ5WTVqVEFqcE81bHBVWkJ3bHhIVnRkTzM0a2dlRHdpTHlzNjJjN01rZDctRVo1a29ES0hfakdscWt5djd6WU1tSGl2NVpZYUc1RnZQSmVUQVdXc2IwblBsaGpZblJCSGUwYXpaUURiTnJhUGxMYU92WDBfVVN2MUJObjREWkM2dElZcUxzcGhUbk1PdU4xRXpGNXp5a1loSTMzeDhSSDh6cGNoWU94OU9pY2lGdEplNW81Q09WaGFnMmg5dlpUeklCeXkxVDdneDRUS3ZJUXAxYjM1cDJvdnFRVVNFMUdhc20xNHFEZjV0VWRfRC1mVHdrVVZGQlJKTEgzb0NzUTBEb21XamFDOUlESENfT2JLSUJPaVBfdWFlUkhOYzBYXzY2S2h5LWdIUnNvMnZrUE5JVTZ4VmVTaG8xN2RrelFMdWNmak5kZkkyckoyZXFvT3dTTWpIbWY2RzY0YlFpM1BwMWllYzY0WUppdVp5MjI5QmhLa2JIbE9VMTUzdzhESURkWldkTGtQOXI5Ykw?oc=5",
-        "publishedAt": "2025-12-30T21:36:00+00:00",
-        "category": "company",
-        "relevanceScore": 0.695,
-        "tickersMentioned": [],
-        "excerpt": null
-      },
-      {
-        "id": "company_3669",
-        "headline": "China launches its silver weapon on Jan. 1. What that means for investors and prices.",
+        "id": "c1",
+        "headline": "\u2018I\u2019m on a fixed budget\u2019: Silver and gold are now too expensive for me. What else can I gift my infant grandchildren?",
         "source": "marketwatch",
-        "url": "https://www.marketwatch.com/story/china-launches-its-silver-weapon-on-jan-1-heres-what-that-means-for-prices-5c543123?mod=mw_rss_topstories",
-        "publishedAt": "2025-12-30T20:58:00+00:00",
+        "url": "https://www.marketwatch.com/story/im-on-a-fixed-budget-silver-and-gold-are-too-expensive-what-else-can-i-gift-my-infant-grandchildren-e12fa551?mod=mw_rss_topstories",
+        "publishedAt": "2025-12-31T21:42:00+00:00",
         "category": "company",
-        "relevanceScore": 0.695,
-        "tickersMentioned": [],
-        "excerpt": null
+        "relevanceScore": 0.57,
+        "tickersMentioned": [
+          "K"
+        ],
+        "excerpt": "\u2018I\u2019m on a fixed budget\u2019: Silver and gold are now too expensive for me. What else can I gift my infant grandchildren?"
       },
       {
-        "id": "company_9278",
-        "headline": "Silver's big swing, another AI acquisition for Meta, GM's banner year and more in Morning Squawk - CNBC",
+        "id": "c2",
+        "headline": "Wall Street ends year's final session lower but posts big annual gains for 2025 - Reuters",
+        "source": "Reuters",
+        "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxOSm1OdnJoUWEtSHN4SDRhMjlRRUxpTTZHSldCVFBwVktLbndEYUI2UWdZMFI3MjQ3SHZMOG9aVTRYYlphakt0VkpteWRiU0M0U3ZyNW90OFJvNzR0eE9Db1VJSW5MYUcxRlZFcl9fZ0xOTy1Pa0tmMkxfeExTdWlKWVN1Q2J4RS1WNnZZV0NnRUtFUHVBUjhHMjRTNkpUTnFyQnFrTW43YzlJczltOEtlQTJacF8?oc=5",
+        "publishedAt": "2025-12-31T23:58:13+00:00",
+        "category": "company",
+        "relevanceScore": 0.54,
+        "tickersMentioned": [],
+        "excerpt": "Wall Street ends year's final session lower but posts big annual gains for 2025 - Reuters"
+      },
+      {
+        "id": "c3",
+        "headline": "S&P 500 closes lower Wednesday, but wraps 2025 with a 16% gain: Live updates - CNBC",
         "source": "CNBC",
-        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPS3JTRmFRNEdZQy1SVmV6b3lFd0xYSVVvcjBMQkNmdzBiaG9Nb2hMTGltR0ZHa2pSdE1wN1k3YWRCQ21uSTR1MTY4TTc2ZGRCUnN6VnFneENxTDNYSktCWG9KUFItenpOU0dIZ3U3QnFLU256YllhTXloWWgtcXNPNUQxYll2VlQ3YXVj0gGQAUFVX3lxTE1LS2ljbTUxMkpRc292VWhyQnFZLUhGYVRSSEtBcHdWUktsNTNPRzFZS3hSc0dlYmZ1OGhJaDJEZkhqNDlacVZicl9kNno5ZElqNHg0VzZqeDFFb0MzYkFuNVJQWjhibzljWjFGVGk2N0JtVGFIQTRYRE5DeTJrcFdhWUlCS2ZqZTAzX05qemhTYg?oc=5",
-        "publishedAt": "2025-12-30T13:01:19+00:00",
+        "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBqM1lzOXRpZDQ5czlsVDl5QjB2bXN2SmlDZ0xnSnZiQTkwQjh1NG5HdU13bjRyMDNYem42aWdNd2Z3bzJjcDhkMUh1blZtYm9jTEFZLUNXRXQtZFl1TWl5clAxYVQ3cVFOUW1Vd0daTXUxQUxpTEFJ0gF8QVVfeXFMT0pIaUNtN1B4cEZUZWJtelZiMjZZcEhTRGdjckM2b05XMnBCejJZSFdJOE9wUUJuYzR4U1FFdXFsU1Z6ZGZ0dVhOTHZRSWg4OXoxS21oREw3Yk1RR0JuT2pjcFpsb3pma2o4bmdrcjZYMHN5MDVoSkRJVE1CLQ?oc=5",
+        "publishedAt": "2025-12-31T21:04:12+00:00",
         "category": "company",
-        "relevanceScore": 0.694,
+        "relevanceScore": 0.51,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "S&P 500 closes lower Wednesday, but wraps 2025 with a 16% gain: Live updates - CNBC"
       },
       {
-        "id": "company_4482",
-        "headline": "What the Buffett Indicator says about the bull market, AI trade",
-        "source": "Yahoo Finance Video",
-        "url": "https://finance.yahoo.com/video/buffett-indicator-says-bull-market-183000965.html",
-        "publishedAt": "2025-12-30T10:30:00",
-        "category": "company",
-        "relevanceScore": 0.6353,
-        "tickersMentioned": [],
-        "excerpt": null
-      },
-      {
-        "id": "company_8729",
-        "headline": "Chris Murphy Says Ban On Nvidia Selling To China Was Costing The Chipmaker Billions, So The Company 'Wrote Huge Checks' To Trump's Vanity Projects",
-        "source": "Benzinga",
-        "url": "https://finance.yahoo.com/news/chris-murphy-says-ban-nvidia-223106267.html",
-        "publishedAt": "2025-12-30T14:31:06",
-        "category": "company",
-        "relevanceScore": 0.6233,
-        "tickersMentioned": [],
-        "excerpt": null
-      },
-      {
-        "id": "company_7944",
-        "headline": "Beloved food and recipe site faces surprise bankruptcy",
-        "source": "TheStreet",
-        "url": "https://finance.yahoo.com/m/cb86f058-093a-3f65-9679-7f4633ef640c/beloved-food-and-recipe-site.html",
-        "publishedAt": "2025-12-30T12:47:00",
-        "category": "company",
-        "relevanceScore": 0.6222,
-        "tickersMentioned": [],
-        "excerpt": null
-      },
-      {
-        "id": "company_5954",
-        "headline": "S&P 500, Nasdaq end slightly down in holiday-thin trade, Meta gains on deal - Reuters",
-        "source": "Reuters",
-        "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNelVKblQ5WHBIVjJRQk1odmVQMTd0amhaTEd2dW9aTWF2U21jZzNUcnFmNmE1Y1d2YzNlNW0teXRndkxUOWZlN1VCQ1VaN0ZLc29QTTZ5RDBTdzhIWmZUUkx4Qi1ZbEZWcW51YkxyNmtfTWFFWkZFMVprWEFIS3p1SEtBbzB1d3J6WmVBci01Vjh6aVFaX29KVWNRck02aTVtLWF6QnBPaDNHOWRzVlFMbg?oc=5",
-        "publishedAt": "2025-12-30T23:50:00+00:00",
-        "category": "company",
-        "relevanceScore": 0.5375,
-        "tickersMentioned": [],
-        "excerpt": null
-      },
-      {
-        "id": "company_2869",
-        "headline": "Musk's xAI buys third building to expand AI compute power",
-        "source": "Reuters",
-        "url": "https://finance.yahoo.com/news/musks-xai-buys-third-building-221629820.html",
-        "publishedAt": "2025-12-30T14:16:29",
-        "category": "company",
-        "relevanceScore": 0.5138,
-        "tickersMentioned": [],
-        "excerpt": null
-      },
-      {
-        "id": "company_1244",
-        "headline": "\u2018He has become hostile\u2019: My mom is in her 80s and has dementia. My brother is blocking access.",
+        "id": "c4",
+        "headline": "I\u2019m afraid my financial adviser will steal my money. I\u2019ve read too many cautionary tales. How can I be sure?",
         "source": "marketwatch",
-        "url": "https://www.marketwatch.com/story/he-has-become-hostile-my-mom-is-in-her-80s-and-has-dementia-my-brother-is-blocking-access-b8258d3e?mod=mw_rss_topstories",
-        "publishedAt": "2025-12-30T23:21:00+00:00",
+        "url": "https://www.marketwatch.com/story/im-afraid-my-financial-adviser-will-steal-my-money-ive-read-too-many-cautionary-tales-how-can-i-be-sure-e7f0259f?mod=mw_rss_topstories",
+        "publishedAt": "2025-12-31T23:00:00+00:00",
         "category": "company",
-        "relevanceScore": 0.5125,
+        "relevanceScore": 0.51,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "I\u2019m afraid my financial adviser will steal my money. I\u2019ve read too many cautionary tales. How can I be sure?"
       },
       {
-        "id": "company_9526",
-        "headline": "Trump Media just launched five \u2018Made in America\u2019 ETFs, testing whether political power is an investable theme",
-        "source": "marketwatch",
-        "url": "https://www.marketwatch.com/story/trump-media-just-launched-5-made-in-america-etfs-testing-whether-political-power-can-function-as-an-investable-theme-a959b3ca?mod=mw_rss_topstories",
-        "publishedAt": "2025-12-30T21:11:00+00:00",
+        "id": "c5",
+        "headline": "Stock Market on Dec. 31, 2025: Dow, S&P 500 and Nasdaq cement 3rd straight year of big gains in 2025; silver and gold book best year since 1979 - MarketWatch",
+        "source": "MarketWatch",
+        "url": "https://news.google.com/rss/articles/CBMitgNBVV95cUxOR05jYi11QzZlZFVSV1VrdkJVcDY5RTdIX09Ta1pIU1hqbmZvZWpDT1kyb0JHaUVSa3FYU3RjNWVlQ3ZhSEVSVTJzRGZsbldWQjJtRjB4VjRhbkVwd3FEXzY1U1luMHZVQk1WT2g1Tm5NYVhVbUg4eDExSDEzd1hQQ3NmWlpaelZZTl95UmhTQTB2VWItV2VMTkpoQ3U3RDJsTm1VMjBJRWQ2SEJST01ERzhYcHBjLTN6dFpQOTNqX2FtUHJqTFFXRUdlaG13QktBRGJRWm5SUk5DalVjeDE5TGNwNjFlSU1qamVoNWpvT191TXBGelpEY1hQdm41cFkwd0oyMzRZZVVVQklnRDd3SnY1cnZYU0REZ0JveWNlN1puVU1YRk5Kb2ZITnJRSFo1RjQ0ZmZ6SjNzMXJSZGdNZDBpcDhnbnJvdm1GVUExcjZWaXJubXRBR2RobmdER2hIZE1lUWRjSkw0M1U3NDRfRTdtSEUyRE5qeDE3M3FwT3JKb1NYWEdIVndvLXVrb0M2ZW1CY3NKRDktdjBfMW44YVdyX0JUVkJteEM4QTlkUm1yWk9MN3c?oc=5",
+        "publishedAt": "2025-12-31T21:41:00+00:00",
         "category": "company",
-        "relevanceScore": 0.5125,
+        "relevanceScore": 0.51,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "Stock Market on Dec. 31, 2025: Dow, S&P 500 and Nasdaq cement 3rd straight year of big gains in 2025; silver and gold book best year since 1979 - MarketWatch"
       },
       {
-        "id": "company_1117",
-        "headline": "Stock market today: Dow, S&P 500, Nasdaq struggle for gains in last stretch of 2025 - Yahoo Finance UK",
-        "source": "Yahoo Finance UK",
-        "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQMXFtNTltQW5Hc3JfRl9YTXhTMEhfdGhmT21uOHhCOUZLWkJNcThsWlJVMlU5dGV1bW4tWERtMmNwNWViMVFDTXNIR1p6MWZDT2J6SWNjT19qeV9hRkRzQmlpS2dMTG1fbWpGN0lQWTdzWjNBeVphRnVmeW5FVzBMNHZ2cnhmUzBUWUk0UWFlNkJwT0JPWVNIdHdfal9KVk9peERTQXkyRy1YMFp0UmtKd3VFaG0xUQ?oc=5",
-        "publishedAt": "2025-12-30T21:01:35+00:00",
+        "id": "c6",
+        "headline": "How to Boost Your Portfolio with Top Medical Stocks Set to Beat Earnings",
+        "source": "Zacks",
+        "url": "https://finance.yahoo.com/news/boost-portfolio-top-medical-stocks-140003765.html",
+        "publishedAt": "2025-12-31T06:00:03",
         "category": "company",
-        "relevanceScore": 0.505,
+        "relevanceScore": 0.51,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "How to Boost Your Portfolio with Top Medical Stocks Set to Beat Earnings"
       },
       {
-        "id": "company_8567",
+        "id": "c7",
+        "headline": "Big Tesla News To Start 2026 After Market Tests Key Levels - Investor's Business Daily",
+        "source": "Investor's Business Daily",
+        "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxNTUo5elo4UEY1TzRrdFhXRDNnVlR0OXVodngxYXZFQU9nSVVTaGZROTJ4LThNXzJ4YktINFZYWDU3c19CTWc3NU1QUlJtUHRtQVZnM1BQRVhoNEpaWGt6X01IMHhjZnh0Z1hYOVkwVUJSREQ0U0JMb0J2M3VRQTVYZzZSdDg3eEEwbkEtMTlSMHM2emxLMTZjaWRXbnRpa1NCcDdsQ0JiVWRVTVVMMl9PZ1Ita0RqWWplSnY0SkxCWGJ0c0NEVFpyYXBXQV9KWndKdmFtRjY2QmE?oc=5",
+        "publishedAt": "2026-01-01T02:56:00+00:00",
+        "category": "company",
+        "relevanceScore": 0.51,
+        "tickersMentioned": [],
+        "excerpt": "Big Tesla News To Start 2026 After Market Tests Key Levels - Investor's Business Daily"
+      },
+      {
+        "id": "c8",
+        "headline": "Stock Market Today: Indexes Fall Ahead Of 2026; Warren Buffett Hands Over Reins (Live Coverage) - Investor's Business Daily",
+        "source": "Investor's Business Daily",
+        "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQXzU0OENPc2NRR1hmVWVweTBRbjZDVkVVck5sOW16TUl3VmZkY0ItV3RCRm8xeENpNlRzMkdWX3dldGVrZElrcFdBdjlhVEhXMGdtcEpIU21PVVNwdExhVGhGdzFILWV2cS1VUmVmQ0VBZy0ybGZEd3ozS0l3eWZ5V1NyOEVMV0RkZkllSjdGR0JZVzZvMndxV20tREx6SkN3UHFISU9NWHpoam9qbkNqaVdSRFF6X0FmV0hmb3pSbWdOdw?oc=5",
+        "publishedAt": "2025-12-31T21:37:00+00:00",
+        "category": "company",
+        "relevanceScore": 0.5,
+        "tickersMentioned": [],
+        "excerpt": "Stock Market Today: Indexes Fall Ahead Of 2026; Warren Buffett Hands Over Reins (Live Coverage) - Investor's Business Daily"
+      },
+      {
+        "id": "c9",
+        "headline": "Stock market today: Dow, S&P 500, Nasdaq post double-digit gains in 2025 as AI trade powers market once again - Yahoo Finance",
+        "source": "Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxPMndTZl9FZkdVcW5idDN6emFXWnIzXzVlMl9WVnpwUlZCaVJDUWM2SWd5MWk1RDl5RUctWmRoc3dOSnZxS0xrMWF5d0IweTRUZ3BvSHBzSm0xdzhnU21lWXBlbTBXSy03cTlMOE95QXZjUGRpUlpLLWI3QThjMzlObDlDZlhoOVBELTVZUW1mdDhjbDBUOEJMVlV6WW9qS2w1MVRqX3ZocjdEY1FlckZBaFVzcEZORnprN2ZIT09LQXRwRnAtMVpmN0hoWV9pc2dKTGFBS09XSWpLMHZ6U3dfVlVQc2xWc1Z3QTFxeQ?oc=5",
+        "publishedAt": "2025-12-31T21:33:42+00:00",
+        "category": "company",
+        "relevanceScore": 0.5,
+        "tickersMentioned": [],
+        "excerpt": "Stock market today: Dow, S&P 500, Nasdaq post double-digit gains in 2025 as AI trade powers market once again - Yahoo Finance"
+      },
+      {
+        "id": "c10",
+        "headline": "1 Reason I'm Never Selling Amazon Stock - The Motley Fool",
+        "source": "The Motley Fool",
+        "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQTUhGbF9MUEZSb2gzMG9VQThjOVc5aTZPTktyMGFWOWNBOEZpRTlEcDNPN0FwZTIzN2FLby1ncTh4WmlxWE1acFg4Zkd5XzVOcUZGYTJoekxPUWNGVzNxYTliM3FVWF9uV0NiU2lOaXpPVC1nX001cUZGcXFWWU9jdFVySDV3dENF?oc=5",
+        "publishedAt": "2026-01-01T05:00:00+00:00",
+        "category": "company",
+        "relevanceScore": 0.46,
+        "tickersMentioned": [],
+        "excerpt": "1 Reason I'm Never Selling Amazon Stock - The Motley Fool"
+      },
+      {
+        "id": "c11",
+        "headline": "Stock Market Today, Dec. 31: Plug Power Rises After Clear Street Upgrades Rating Despite Lower Price Target - The Motley Fool",
+        "source": "The Motley Fool",
+        "url": "https://news.google.com/rss/articles/CBMi-AFBVV95cUxPd3p2X21qbjZvcEtjRThRamExUW9INDNFdXBGcnBrMlhBLWUxOGV5T0o2bVRTU2FfZkVSYWJHNmJyeUZ5bU01NVFFYnpURTloZDhEN2tPcHg5U2FDLWNjdzZIbU1aRVloWGpudUJ5RXlOZFpDLXNJQTRFUVJ6Q0JBcVNzbzhFNEVJUEtzNTNUVW5hLWNqanF2UExMVU5UUGNlQjBFWnRMMTVzQWdnVDhVUGYzOHhpS0M1STJoRXMzZ2J4NThtU194WGZHR2RvaFhhTjVGMUJaWkhsNTdlbjF0aHJJUzdwYU1tZm1KWnluNHVJaFVNakNMMQ?oc=5",
+        "publishedAt": "2025-12-31T22:07:00+00:00",
+        "category": "company",
+        "relevanceScore": 0.46,
+        "tickersMentioned": [],
+        "excerpt": "Stock Market Today, Dec. 31: Plug Power Rises After Clear Street Upgrades Rating Despite Lower Price Target - The Motley Fool"
+      },
+      {
+        "id": "c12",
+        "headline": "Stock Market Today, Dec. 31: Lackluster Year End Barely Dents 2025's Double Digit Gains - The Motley Fool",
+        "source": "The Motley Fool",
+        "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxQSGpMeVBiaGVZZi1tVUxQaHlKTlRlc285dm0yX28tTFFndWkwNndiSk50UE1jVUViUkdnUDQ5dDA4TTJyRXVHUEswZHpGOWduODhUelJSXy1WXzlxV1dqLURBdmpFbEFCeDQxQlc1RkZfMkJKem4yNTVPZ2t5bjB0NEYtcjBuRG5GSjRJcTRKVG9ybkpxeVA5SkRVMjNlbjl5SGJVVG54SjJONmJ1aWxNMWktRk5NR1dCNmc2dzRFb0Jka3NxY05wbGJIQnZzbnZjeVBldENlTTlwSnRDSVE?oc=5",
+        "publishedAt": "2025-12-31T22:10:00+00:00",
+        "category": "company",
+        "relevanceScore": 0.46,
+        "tickersMentioned": [],
+        "excerpt": "Stock Market Today, Dec. 31: Lackluster Year End Barely Dents 2025's Double Digit Gains - The Motley Fool"
+      },
+      {
+        "id": "c13",
+        "headline": "Stock Market Today, Dec. 31: Stocks Tick Up After Jobless Claims Come in Soft to End 2025 - Yahoo Finance",
+        "source": "Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTFBBQm1DbTZXRGRxQ29YM1FydERnd3BJeEtiZDhqSHloQTZCVDJVZGhhZDBVZ19wd3N2ZzdRc3ExbkRRX3ZxTllSaG1sUHBKeTVxdGdkaVpVd1g3YkVVcWdEWkg4OVBRNjBKMzZBeldCWWhQT0YzOEdxSlNRRQ?oc=5",
+        "publishedAt": "2025-12-31T15:14:02+00:00",
+        "category": "company",
+        "relevanceScore": 0.45,
+        "tickersMentioned": [],
+        "excerpt": "Stock Market Today, Dec. 31: Stocks Tick Up After Jobless Claims Come in Soft to End 2025 - Yahoo Finance"
+      },
+      {
+        "id": "c14",
+        "headline": "Worth contributing to traditional IRA if I can\u2019t do backdoor Roth?",
+        "source": "r/investing",
+        "url": "https://reddit.com/r/investing/comments/1q0svr7/worth_contributing_to_traditional_ira_if_i_cant/",
+        "publishedAt": "2025-12-31T17:48:42",
+        "category": "company",
+        "relevanceScore": 0.45,
+        "tickersMentioned": [
+          "K"
+        ],
+        "excerpt": "Worth contributing to traditional IRA if I can\u2019t do backdoor Roth?"
+      },
+      {
+        "id": "c15",
         "headline": "Five Trump ETFs Hit The Stock Exchange With 'Made In America Focus' - Investor's Business Daily",
         "source": "Investor's Business Daily",
         "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPbFlySFFtYWZNd2JlUk9JUU9DdmY1WUZUdVNzdFdqR0VfN0ZVTzVON2ZGSTBqcG9sbXF4ZFY3bHlOc1lTczlHSzFLajRxZDNzanRFZFJVYUhBY2VtUDB3Uno5aGZwMjhQNHUyZXU1cEN1emJYNUdBM0VXOUdsQXU5cFkzS2k5UmNZR041elkxalZGS0hUNnRlMWxxZy1qU3N1M2JWcS1R?oc=5",
-        "publishedAt": "2025-12-30T21:20:00+00:00",
+        "publishedAt": "2025-12-31T14:51:00+00:00",
         "category": "company",
-        "relevanceScore": 0.505,
+        "relevanceScore": 0.45,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "Five Trump ETFs Hit The Stock Exchange With 'Made In America Focus' - Investor's Business Daily"
       },
       {
-        "id": "company_2547",
-        "headline": "'We're pretty upbeat': Stock market experts expect continued growth, bolstered by AI, in 2026 - CNBC",
-        "source": "CNBC",
-        "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQS2g4U1JPWHVuRnAtQjd4dGtQUGROcjZjNkZlaVE3Vm41dDVWWUdVRDlhU2ZKbi11d2taVnFnc0tLM0VaN2sxTUJOZ2FzSXA5VVRjSHdEUzh0dkpFWDlXWlA0cUFBbEsxcGRTYldlQzNDZDFQbEdLZWFBbnlVOW15Q1FQcVREZmxOZGozZ2NfT0ZiOC1Kb1FHQ3JFa0VHUFFNX3o3WGRuYWp4akFPS01kYlRMQzdEZGhiaXJwX2Z4V3gyZ9IBxwFBVV95cUxNdWRtLVRsbmgzQzNMMlhlb2FQUjFXRkxsTVZmM2cxTkR1aXUtWmVjN3F5Q1FpQU5zVGJzUkk3dDlQanphc1V6M1UwSkd3bnNESi1VWldGQlpoVmJET3NVZWRIQnN3dlRfMlJKU21fNlZEaU0wN0M3Sjkza0ZGRTdRMzZUbkw3OEd3NENpc3hxbzNrVFRZVlVJMzhSdGVuYjRyUXFfNUpfbjliX3RyVm5PNjhXQk1qQ01NeTA3NXFGaF92V3llRGg0?oc=5",
-        "publishedAt": "2025-12-30T14:00:01+00:00",
+        "id": "c16",
+        "headline": "Futures Fall; Seven Stocks Near Buy Points As 2026 Looms - Investor's Business Daily",
+        "source": "Investor's Business Daily",
+        "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNUFRIS2M5YVdkeHBPdGRJR2ZyWkdjdkhRMFFOcXhzNVc4cE1WaUFZTG9RZVBPVFNtV1haQ3F3RnRXcmQ4SlJnaDBSRmg3LUVvbF9UWDhYcjJyZlhNQldBWjR1cjdJbTFQaFhLQm5kbW9vZzVoTDhkNDg0QnZGSzg0X3AzUmVWZFpDMXFjUmJjR3VYTkdpelJVb3lBNmR3dlVfQzN4ZW1JWllpNEdvbWEzM0xNN3JxY1dDckFJ?oc=5",
+        "publishedAt": "2025-12-31T13:09:00+00:00",
         "category": "company",
-        "relevanceScore": 0.4941,
+        "relevanceScore": 0.44,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "Futures Fall; Seven Stocks Near Buy Points As 2026 Looms - Investor's Business Daily"
       },
       {
-        "id": "company_3499",
-        "headline": "Could 2026 be the year Waymo goes mainstream?",
-        "source": "Yahoo Finance Video",
-        "url": "https://finance.yahoo.com/video/could-2026-waymo-goes-mainstream-214501593.html",
-        "publishedAt": "2025-12-30T13:45:01",
+        "id": "c17",
+        "headline": "Stock market holiday on New Year 2026: Are NSE, BSE closed today on January 1? Check details - Moneycontrol",
+        "source": "Moneycontrol",
+        "url": "https://news.google.com/rss/articles/CBMi6gFBVV95cUxOejItLTd6V1V1bHFoZV9fQ21raEpQR1FCZTV3a19FdWdRWWFCQUlQVm92TkhuelBKcHg4TzFDanV1TGVQQmxiUGtJdHVKOWF5ZW9vMlZfck5NWGRaWTVVamV2cmFnczBCU0ZXS0hmQ3dINzA4WkpxNlItcWkyUTRZVTlnUXFXdzBTZWxpMjBxSnJvNXpWTGdPbzZvSWdMdFVwWjEtYmtLeTk0N1c4QTZIVjN1Mk5tV2g5eXBsWFNFLWoyY1d0NlQ1Rlo5anFlSURDbEV4SEJrYnpXdGVHYUZ4Qk1VWE83YTBUd3fSAe8BQVVfeXFMTWhGczhDOWlEbGw0RldLT0FfZ2ZLNi1raHBONE04cHQ0M3dTOVpkWGg4TjRwLV9rN3l6eS02SVpMRTJXaEZCTHlQVlBkbDFZajBwRmFwZ3Fyams4SkNkZ0ZaM2s1UmJIQTVqRkhfMDB6YVQ0djVqdGRaZnhzbW50UWt2bEM1NjUweG5OT3Bvb3pHbnBlWjI2REZsMTkxYTMzNGxwNU1JRTRqZFZzRURZNFdHXzlNcE1fRXJLNF9ZbVpRQTdUOFF5cGJMS3U1Y28wTkY5NHI2c3dZZmxPNk1pZVNoUkQxNi1OeWlMYnJwZVU?oc=5",
+        "publishedAt": "2026-01-01T01:41:37+00:00",
         "category": "company",
-        "relevanceScore": 0.4772,
+        "relevanceScore": 0.42,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "Stock market holiday on New Year 2026: Are NSE, BSE closed today on January 1? Check details - Moneycontrol"
       },
       {
-        "id": "company_6993",
-        "headline": "Trump Media's ETFs, Nvidia's talks to buy Israeli AI startup",
-        "source": "Yahoo Finance Video",
-        "url": "https://finance.yahoo.com/video/trump-medias-etfs-nvidias-talks-211917075.html",
-        "publishedAt": "2025-12-30T13:19:17",
+        "id": "c18",
+        "headline": "Stock market today: S&P 500, Nasdaq, Dow slide to end 2025 as traders reset for 2026 - ts2.tech",
+        "source": "ts2.tech",
+        "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNZkYtcHIxMk5rc2JQV3B3RGNwcmxmTHQ0UWZjS08wTmxHQlZqVk10ZHR2ZW5JbWlTcDJXRlRrRnY1M3BKdl9KTVZhMGVBa2Y2aG5NSU5QY2ppaURKa2ZTVVpsWVlpc21ISmtEQUUyUXJzeWNpcFZ3OHBHVk96ZDEyT1EtQVI3RWlvaDdtdDRjbExrdGxlYTJhb3lQdFB6djQ2a2FJ?oc=5",
+        "publishedAt": "2025-12-31T22:45:25+00:00",
         "category": "company",
-        "relevanceScore": 0.4738,
+        "relevanceScore": 0.42,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "Stock market today: S&P 500, Nasdaq, Dow slide to end 2025 as traders reset for 2026 - ts2.tech"
       },
       {
-        "id": "company_7998",
-        "headline": "What Are the 2 Top Artificial Intelligence (AI) Stocks to Buy Right Now?",
-        "source": "Motley Fool",
-        "url": "https://finance.yahoo.com/m/a9d99984-4cf6-317a-a05c-b89bdb1f05ab/what-are-the-2-top-artificial.html",
-        "publishedAt": "2025-12-30T10:45:00",
+        "id": "c19",
+        "headline": "Stock Market Today, Dec. 31: Lackluster Year End Barely Dents 2025's Double Digit Gains - Nasdaq",
+        "source": "Nasdaq",
+        "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOWTIyZmR5SXZDWnlKc0Q0Rm0tODU0YTd6UGF2VHJabmRHeHBxQ1Jrd1pPQWw5N3BybldTSlhtT3dXeFFHSmdRUktXZXdJMGxRT0hsN29HOTl2dElkb2RHOGlGTEVSX3o4ekkwMVZDUF9jT0M5LXdWNU9oaTlIazFSRmRjNVJMZzVORi1naDVqSTI4Vm5Sck8zTUx5ZnRGeDFiTFB2SzB0dmlTejRJYkFCZHFTY1RVQQ?oc=5",
+        "publishedAt": "2025-12-31T22:30:00+00:00",
         "category": "company",
-        "relevanceScore": 0.4721,
-        "tickersMentioned": [
-          "AI"
-        ],
-        "excerpt": null
-      },
-      {
-        "id": "company_4784",
-        "headline": "Stock Market Today, Dec. 30: Rocket Lab Regains Momentum - The Motley Fool",
-        "source": "The Motley Fool",
-        "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxPaGk1bVNoS0VNa29QdmRvd1ZhQmV1NXEwMkctY0MxbzNOd1lpVkFhOEx2c2FpcEpKbkdHdndwRkxKbnJrRWNWNVkwOWkxODdvSWgtSlFKQ3pHbFM3VGRlVEthSERwdkRKeVU3NGJSODNvUnRrenU3ZmZ1NUJJcE9hVGhKYU1MZlRzY1VZRFk2LWtvNkl5bFd2Qk5Td29iM2hyaEs3aXYydU85MHFTNW11cEVqNXA?oc=5",
-        "publishedAt": "2025-12-30T22:49:00+00:00",
-        "category": "company",
-        "relevanceScore": 0.4625,
+        "relevanceScore": 0.42,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "Stock Market Today, Dec. 31: Lackluster Year End Barely Dents 2025's Double Digit Gains - Nasdaq"
       },
       {
-        "id": "company_9395",
-        "headline": "Stock Market Today, Dec. 30: Boeing Led Industrials as Major Indexes Drift Near Records - The Motley Fool",
-        "source": "The Motley Fool",
-        "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxNd3l3QWFqamFVRHNsWkxtT012bWp0bkxNMnM0d0t0bGliYjRSSHd3OERCVXh6Yk43SXdYMmtIdDNTWS1vLTFMTGUzajA5Q3h6cTcwOE1zTTFyeGJvenQ4cnhHdzJzRU4tdkhlQ1hOcWJIdF9jeTY5ZjY0UzRjcGhCTFdISEJaZGkxYkdiM2pScHo3OURrTzRCWHZWT01ZWUc5cFV5SjVNOWRSM2J5emtJZ19mcF9JZ08xLVp5V05rSVljNFZxVGJhMGM2Y3J0dEd6SnplQWFhNkNmQy0xRnc?oc=5",
-        "publishedAt": "2025-12-30T22:06:00+00:00",
+        "id": "c20",
+        "headline": "Stock market ends 2025 with double-digit gains - ABC News",
+        "source": "ABC News",
+        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNcjNKN0lhbnZRUTFJdHNNeXM1UU1HRUZWWmY3Z0k0NGVMNU9mV2VSTEcydEFqaWZVemtSLWhBLUhPdERhUmI1aFZrdTNFQmc4aXI1S0pFYThnZ2EyejM1ZUVzbmZFR2NINm00cHNMMDNNVGJVdE4xRkFmSU9iaEduZ1pMQWtWajZMZW9EWXUxZ3EwSDNTRkRR0gGcAUFVX3lxTE90d3JVa2dUb29GREU4bFBhTmhjZUtQR3ZhbWU3TEw0QnJVWmJ2QUNOWU9HUUtZdHJ1STkxdzBYd3lIY3ViT1o4ZUxFQS1SQ1ZLVF92ZUpDUFRnTFBZckZuSzExSzRVb2cza0lxVEhGWnFZRGUtMzgwR3FMRFJueWI0MHdKN19zaG5BSXlBaTdBdUJEanlqN0ZEcC1RZQ?oc=5",
+        "publishedAt": "2025-12-31T21:22:30+00:00",
         "category": "company",
-        "relevanceScore": 0.4625,
+        "relevanceScore": 0.42,
         "tickersMentioned": [],
-        "excerpt": null
+        "excerpt": "Stock market ends 2025 with double-digit gains - ABC News"
       },
       {
-        "id": "company_7918",
-        "headline": "IBKR recurring investment into VWCE on IBIS2 (no fractional shares)",
+        "id": "c21",
+        "headline": "Help me understand long term cap gain reinvesting",
         "source": "r/investing",
-        "url": "https://reddit.com/r/investing/comments/1pzvk0x/ibkr_recurring_investment_into_vwce_on_ibis2_no/",
-        "publishedAt": "2025-12-30T14:19:30",
+        "url": "https://reddit.com/r/investing/comments/1q0tzyf/help_me_understand_long_term_cap_gain_reinvesting/",
+        "publishedAt": "2025-12-31T18:52:45",
         "category": "company",
-        "relevanceScore": 0.4617,
+        "relevanceScore": 0.4,
+        "tickersMentioned": [],
+        "excerpt": "Help me understand long term cap gain reinvesting"
+      },
+      {
+        "id": "c22",
+        "headline": "Bubbles Past and Bubbles Future",
+        "source": "r/investing",
+        "url": "https://reddit.com/r/investing/comments/1q0taha/bubbles_past_and_bubbles_future/",
+        "publishedAt": "2025-12-31T18:11:41",
+        "category": "company",
+        "relevanceScore": 0.39,
+        "tickersMentioned": [],
+        "excerpt": "Bubbles Past and Bubbles Future"
+      },
+      {
+        "id": "c23",
+        "headline": "Morning News Wrap-Up: Wednesday\u2019s Biggest Stock Market Stories! - TipRanks",
+        "source": "TipRanks",
+        "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNTUhFd216TUxhUkNGM0ZiWlNKU1ZLWjdibGhYdkUyMElwRkVaNDlERDJVVV9aRzY5RktMYU11N09HclRpRUZGaS1qaDV2bVNzZ3gzYW9UM1o2ajI1Q0c4d0pPcTRzUmcyRTRDMWFFZ3FhWGZNWFNjeTdodjBkZ0ZqTE15VlpvUXotLXF6VWZkX3VFMlNzb3c3TWtPLUNHQnhGYm9kNmYxWQ?oc=5",
+        "publishedAt": "2025-12-31T17:51:09+00:00",
+        "category": "company",
+        "relevanceScore": 0.39,
+        "tickersMentioned": [],
+        "excerpt": "Morning News Wrap-Up: Wednesday\u2019s Biggest Stock Market Stories! - TipRanks"
+      },
+      {
+        "id": "c24",
+        "headline": "Accenture and Palantir Technologies (PLTR) Form Accenture Palantir Business Group",
+        "source": "Insider Monkey",
+        "url": "https://finance.yahoo.com/news/accenture-palantir-technologies-pltr-form-165648703.html",
+        "publishedAt": "2025-12-31T08:56:48",
+        "category": "company",
+        "relevanceScore": 0.39,
         "tickersMentioned": [
-          "XETRA"
+          "PLTR"
         ],
-        "excerpt": null
+        "excerpt": "Accenture and Palantir Technologies (PLTR) Form Accenture Palantir Business Group"
+      },
+      {
+        "id": "c25",
+        "headline": "AbbVie (ABBV) Maintains Immunology Dominance as Analysts Downplay Competitive Threat From J&J\u2019s Tremfya to Skyrizi Market Share",
+        "source": "Insider Monkey",
+        "url": "https://finance.yahoo.com/news/abbvie-abbv-maintains-immunology-dominance-161245809.html",
+        "publishedAt": "2025-12-31T08:12:45",
+        "category": "company",
+        "relevanceScore": 0.39,
+        "tickersMentioned": [
+          "ABBV"
+        ],
+        "excerpt": "AbbVie (ABBV) Maintains Immunology Dominance as Analysts Downplay Competitive Threat From J&J\u2019s Tremfya to Skyrizi Market Share"
+      },
+      {
+        "id": "c26",
+        "headline": "AbbVie (ABBV): Buy, Sell, or Hold Post Q3 Earnings?",
+        "source": "StockStory",
+        "url": "https://finance.yahoo.com/news/abbvie-abbv-buy-sell-hold-040249267.html",
+        "publishedAt": "2025-12-30T20:02:49",
+        "category": "company",
+        "relevanceScore": 0.38,
+        "tickersMentioned": [
+          "ABBV"
+        ],
+        "excerpt": "AbbVie (ABBV): Buy, Sell, or Hold Post Q3 Earnings?"
+      },
+      {
+        "id": "c27",
+        "headline": "How do you invest in foreign stocks?",
+        "source": "r/investing",
+        "url": "https://reddit.com/r/investing/comments/1q0qj1a/how_do_you_invest_in_foreign_stocks/",
+        "publishedAt": "2025-12-31T15:42:15",
+        "category": "company",
+        "relevanceScore": 0.38,
+        "tickersMentioned": [],
+        "excerpt": "How do you invest in foreign stocks?"
+      },
+      {
+        "id": "c28",
+        "headline": "Here is What to Know Beyond Why Abbott Laboratories (ABT) is a Trending Stock",
+        "source": "Zacks",
+        "url": "https://finance.yahoo.com/news/know-beyond-why-abbott-laboratories-140004169.html",
+        "publishedAt": "2025-12-31T06:00:04",
+        "category": "company",
+        "relevanceScore": 0.37,
+        "tickersMentioned": [
+          "ABT"
+        ],
+        "excerpt": "Here is What to Know Beyond Why Abbott Laboratories (ABT) is a Trending Stock"
+      },
+      {
+        "id": "c29",
+        "headline": "Here is What to Know Beyond Why AbbVie Inc. (ABBV) is a Trending Stock",
+        "source": "Zacks",
+        "url": "https://finance.yahoo.com/news/know-beyond-why-abbvie-inc-140008964.html",
+        "publishedAt": "2025-12-31T06:00:08",
+        "category": "company",
+        "relevanceScore": 0.37,
+        "tickersMentioned": [
+          "ABBV"
+        ],
+        "excerpt": "Here is What to Know Beyond Why AbbVie Inc. (ABBV) is a Trending Stock"
+      },
+      {
+        "id": "c30",
+        "headline": "Do You Believe in the Growth Potential of Accenture (ACN)?",
+        "source": "Insider Monkey",
+        "url": "https://finance.yahoo.com/news/believe-growth-potential-accenture-acn-131158274.html",
+        "publishedAt": "2025-12-31T05:11:58",
+        "category": "company",
+        "relevanceScore": 0.37,
+        "tickersMentioned": [
+          "ACN"
+        ],
+        "excerpt": "Do You Believe in the Growth Potential of Accenture (ACN)?"
+      },
+      {
+        "id": "c31",
+        "headline": "By 2026, These Underrated AI Stocks Could Be the Market's Biggest Winners",
+        "source": "Motley Fool",
+        "url": "https://finance.yahoo.com/m/ee91eb5a-910b-35a4-80cb-507c716ac61e/by-2026%2C-these-underrated-ai.html",
+        "publishedAt": "2025-12-31T06:57:00",
+        "category": "company",
+        "relevanceScore": 0.36,
+        "tickersMentioned": [],
+        "excerpt": "By 2026, These Underrated AI Stocks Could Be the Market's Biggest Winners"
+      },
+      {
+        "id": "c32",
+        "headline": "Is Advanced Micro Devices (AMD) the Best New Stock from David Tepper\u2019s Portfolio?",
+        "source": "Insider Monkey",
+        "url": "https://finance.yahoo.com/news/advanced-micro-devices-amd-best-102540614.html",
+        "publishedAt": "2025-12-31T02:25:40",
+        "category": "company",
+        "relevanceScore": 0.36,
+        "tickersMentioned": [
+          "AMD"
+        ],
+        "excerpt": "Is Advanced Micro Devices (AMD) the Best New Stock from David Tepper\u2019s Portfolio?"
+      },
+      {
+        "id": "c33",
+        "headline": "Schwab vs. Vanguard vs. Fidelity",
+        "source": "r/investing",
+        "url": "https://reddit.com/r/investing/comments/1q0mxh9/schwab_vs_vanguard_vs_fidelity/",
+        "publishedAt": "2025-12-31T12:42:41",
+        "category": "company",
+        "relevanceScore": 0.35,
+        "tickersMentioned": [],
+        "excerpt": "Schwab vs. Vanguard vs. Fidelity"
+      },
+      {
+        "id": "c34",
+        "headline": "Is the stock market open on New Year's Eve? Holiday closures to know - NBC New York",
+        "source": "NBC New York",
+        "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPS2x4UFg0Y3B6eUlHUU5JRmVKbGgzNmFTcWRlMGdaUVNlRDhvOE5iZF9Fa1NsNTJFai00cWJINXhjWXRqYUhfa0N5X3BySHFZM3RTMS1zT1dLMHJoSkVySXRQT3hQcVUzYlhLNEVxQXNUdUxoTzAwNVgtVEg4TEduYzh2SExBNTZYaTdvR9IBlAFBVV95cUxNVzY1MVZ2aUlRM2ljOC1DN0ZMa1ZwYzlpSEhDT0RGcGI4b3E3TVV3aVdDeTBaOHVfcXF5YTlhcUEtX2VkNXdNWDktUVM3YjU4d0hUck9QNWswU1ExYXRYQm45bGhEZEd1RERsVWRrTVk1TkpqZC1idUVWbWhUVFdYTlF4NVpSZTFrRHRoSHpHdUxEczNK?oc=5",
+        "publishedAt": "2025-12-31T12:39:56+00:00",
+        "category": "company",
+        "relevanceScore": 0.35,
+        "tickersMentioned": [],
+        "excerpt": "Is the stock market open on New Year's Eve? Holiday closures to know - NBC New York"
+      },
+      {
+        "id": "c35",
+        "headline": "What are the options for safe AI/robotics long-term investments?",
+        "source": "r/investing",
+        "url": "https://reddit.com/r/investing/comments/1q0m625/what_are_the_options_for_safe_airobotics_longterm/",
+        "publishedAt": "2025-12-31T12:07:05",
+        "category": "company",
+        "relevanceScore": 0.35,
+        "tickersMentioned": [],
+        "excerpt": "What are the options for safe AI/robotics long-term investments?"
+      },
+      {
+        "id": "c36",
+        "headline": "JPMorgan Forecast: US Labor Market to Slow, Then Recover in 2026",
+        "source": "r/investing",
+        "url": "https://reddit.com/r/investing/comments/1q0lo35/jpmorgan_forecast_us_labor_market_to_slow_then/",
+        "publishedAt": "2025-12-31T11:44:53",
+        "category": "company",
+        "relevanceScore": 0.35,
+        "tickersMentioned": [],
+        "excerpt": "JPMorgan Forecast: US Labor Market to Slow, Then Recover in 2026"
+      },
+      {
+        "id": "c37",
+        "headline": "What AES (AES)'s Data Center Utility Deals and Dividend Move Mean For Shareholders",
+        "source": "Simply Wall St.",
+        "url": "https://finance.yahoo.com/news/aes-aes-data-center-utility-020817611.html",
+        "publishedAt": "2025-12-24T18:08:17",
+        "category": "company",
+        "relevanceScore": 0.34,
+        "tickersMentioned": [
+          "AES"
+        ],
+        "excerpt": "What AES (AES)'s Data Center Utility Deals and Dividend Move Mean For Shareholders"
+      },
+      {
+        "id": "c38",
+        "headline": "US stocks just posted a third straight year of stellar gains - CNN",
+        "source": "CNN",
+        "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE92UUpwZ1NjMDg3WXprYTFXNk4tSFdPRktvaDlvSnFKQ29nNVpDUXJnSmtlYW5sMk9Yd1NMcTByMzM0eGVwWEhNQ1V5bWE3akUwaTVWRWc2SjlDYzdxVElsRTBmZmtqY1ZSY1ZXZUVvTVRPd1RUOWc?oc=5",
+        "publishedAt": "2025-12-31T09:00:58+00:00",
+        "category": "company",
+        "relevanceScore": 0.33,
+        "tickersMentioned": [],
+        "excerpt": "US stocks just posted a third straight year of stellar gains - CNN"
+      },
+      {
+        "id": "c39",
+        "headline": "Here's Why Investors Should Retain Aflac Incorporated Stock for Now",
+        "source": "Zacks",
+        "url": "https://finance.yahoo.com/news/heres-why-investors-retain-aflac-163300067.html",
+        "publishedAt": "2025-12-31T08:33:00",
+        "category": "company",
+        "relevanceScore": 0.33,
+        "tickersMentioned": [],
+        "excerpt": "Here's Why Investors Should Retain Aflac Incorporated Stock for Now"
+      },
+      {
+        "id": "c40",
+        "headline": "3 No-Brainer Dividend Stocks to Buy Right Now",
+        "source": "Motley Fool",
+        "url": "https://finance.yahoo.com/m/f089ecfc-8f49-386a-a653-1db54a510f6b/3-no-brainer-dividend-stocks.html",
+        "publishedAt": "2025-12-30T12:25:00",
+        "category": "company",
+        "relevanceScore": 0.32,
+        "tickersMentioned": [],
+        "excerpt": "3 No-Brainer Dividend Stocks to Buy Right Now"
+      },
+      {
+        "id": "c41",
+        "headline": "Nvidia Stock Has Barely Budged Since the End of July. What Gets It Going Again.",
+        "source": "Barrons.com",
+        "url": "https://finance.yahoo.com/m/586cab0b-f177-3383-83f7-a7f71f2dd3c2/nvidia-stock-has-barely.html",
+        "publishedAt": "2025-12-31T06:51:00",
+        "category": "company",
+        "relevanceScore": 0.32,
+        "tickersMentioned": [],
+        "excerpt": "Nvidia Stock Has Barely Budged Since the End of July. What Gets It Going Again."
+      },
+      {
+        "id": "c42",
+        "headline": "Pfizer, GSK Lead U.S. Drugmakers Planning 2026 Price Hikes on 350 Drugs",
+        "source": "GuruFocus.com",
+        "url": "https://finance.yahoo.com/news/pfizer-gsk-lead-u-drugmakers-143442942.html",
+        "publishedAt": "2025-12-31T06:34:42",
+        "category": "company",
+        "relevanceScore": 0.32,
+        "tickersMentioned": [],
+        "excerpt": "Pfizer, GSK Lead U.S. Drugmakers Planning 2026 Price Hikes on 350 Drugs"
+      },
+      {
+        "id": "c43",
+        "headline": "American Electric's Investments and Renewables Fuel Long-Term Growth",
+        "source": "Zacks",
+        "url": "https://finance.yahoo.com/news/american-electrics-investments-renewables-fuel-123100694.html",
+        "publishedAt": "2025-12-31T04:31:00",
+        "category": "company",
+        "relevanceScore": 0.31,
+        "tickersMentioned": [],
+        "excerpt": "American Electric's Investments and Renewables Fuel Long-Term Growth"
+      },
+      {
+        "id": "c44",
+        "headline": "3M's Safety & Industrial Unit's Strength Holds Firm: More Upside Ahead?",
+        "source": "Zacks",
+        "url": "https://finance.yahoo.com/news/3ms-safety-industrial-units-strength-120400333.html",
+        "publishedAt": "2025-12-31T04:04:00",
+        "category": "company",
+        "relevanceScore": 0.3,
+        "tickersMentioned": [],
+        "excerpt": "3M's Safety & Industrial Unit's Strength Holds Firm: More Upside Ahead?"
+      },
+      {
+        "id": "c45",
+        "headline": "AI Chips Today - AI Infrastructure Surge Driving Market Growth",
+        "source": "Simply Wall St.",
+        "url": "https://finance.yahoo.com/news/ai-chips-today-ai-infrastructure-113719440.html",
+        "publishedAt": "2025-12-31T03:37:19",
+        "category": "company",
+        "relevanceScore": 0.3,
+        "tickersMentioned": [],
+        "excerpt": "AI Chips Today - AI Infrastructure Surge Driving Market Growth"
       }
     ]
   },
   "summary": {
-    "totalPicks": 7,
-    "avgConviction": 0.47,
+    "totalPicks": 30,
+    "avgConviction": 0.63,
     "topSector": "technology",
     "highRiskCount": 1,
-    "newsCount": 25,
-    "marketTrend": "flat"
+    "newsCount": 51,
+    "marketTrend": "up"
   }
 }
