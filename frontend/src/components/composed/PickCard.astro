@@ -1,16 +1,20 @@
 ---
 import Badge from "../primitives/Badge.astro";
 import ConvictionBar from "../primitives/ConvictionBar.astro";
+import Sparkline from "../islands/Sparkline";
+import { CompareButton } from "../islands/CompareManager";
+import { WatchlistButton } from "../islands/WatchlistManager";
 import { formatChange } from "../../data/report";
-import type { StockPick } from "../../data/types";
+import type { StockPick, PricePoint } from "../../data/types";
 
 interface Props {
   pick: StockPick;
+  priceHistory?: PricePoint[];
   compact?: boolean;
   class?: string;
 }
 
-const { pick, compact = false, class: className = "" } = Astro.props;
+const { pick, priceHistory, compact = false, class: className = "" } = Astro.props;
 
 const timeframeLabels = {
   short: "Short-term",
@@ -41,7 +45,7 @@ const priceChangePositive = pick.priceChange >= 0;
     className,
   ]}
 >
-  <!-- Header: Ticker + Timeframe -->
+  <!-- Header: Ticker + Timeframe + Compare -->
   <div class="flex items-start justify-between mb-2">
     <div class="flex items-center gap-2">
       <span class="font-mono text-lg font-bold text-accent hover:underline">
@@ -49,25 +53,44 @@ const priceChangePositive = pick.priceChange >= 0;
       </span>
       <Badge text={timeframeLabels[pick.timeframe]} variant={timeframeColors[pick.timeframe]} size="sm" />
     </div>
+    {!compact && (
+      <div class="flex items-center gap-1">
+        <WatchlistButton client:load ticker={pick.ticker} companyName={pick.companyName} size="sm" />
+        <CompareButton client:load ticker={pick.ticker} companyName={pick.companyName} size="sm" />
+      </div>
+    )}
   </div>
 
   <!-- Company name -->
   <p class="text-sm text-text-secondary mb-2">{pick.companyName}</p>
 
-  <!-- Price with change -->
-  <div class="flex items-baseline gap-2 mb-3">
-    <span class="text-xl font-semibold text-text-primary">
-      {_formatPrice(pick.currentPrice)}
-    </span>
-    <span
-      class:list={[
-        "text-sm font-medium flex items-center gap-0.5",
-        priceChangePositive ? "text-success" : "text-danger",
-      ]}
-    >
-      <span>{priceChangePositive ? "↑" : "↓"}</span>
-      <span>{formatChange(pick.priceChangePercent, true)}</span>
-    </span>
+  <!-- Price with sparkline or change -->
+  <div class="flex items-center justify-between gap-2 mb-3">
+    <div class="flex items-baseline gap-2">
+      <span class="text-xl font-semibold text-text-primary">
+        {_formatPrice(pick.currentPrice)}
+      </span>
+      {!priceHistory && (
+        <span
+          class:list={[
+            "text-sm font-medium flex items-center gap-0.5",
+            priceChangePositive ? "text-success" : "text-danger",
+          ]}
+        >
+          <span>{priceChangePositive ? "↑" : "↓"}</span>
+          <span>{formatChange(pick.priceChangePercent, true)}</span>
+        </span>
+      )}
+    </div>
+    {priceHistory && priceHistory.length >= 2 && (
+      <Sparkline
+        client:load
+        data={priceHistory.map(p => ({ time: p.time, close: p.close }))}
+        width={80}
+        height={32}
+        showChange={true}
+      />
+    )}
   </div>
 
   <!-- Conviction bar -->

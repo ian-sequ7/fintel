@@ -5,6 +5,7 @@ import Card from "../components/primitives/Card.astro";
 import PickCard from "../components/composed/PickCard.astro";
 import RiskCard from "../components/composed/RiskCard.astro";
 import NewsCard from "../components/composed/NewsCard.astro";
+import MarketStatus from "../components/islands/MarketStatus";
 import {
   getPicks,
   getMacroRisks,
@@ -13,6 +14,7 @@ import {
   getGeneratedAt,
   formatRelativeTime,
   getSummary,
+  getStockDetail,
 } from "../data/report";
 
 // Load data
@@ -31,6 +33,11 @@ const longPicks = getPicks("long", "conviction", "desc");
 const topShort = shortPicks[0];
 const topMedium = mediumPicks[0];
 const topLong = longPicks[0];
+
+// Get price history for top picks
+const topShortHistory = topShort ? getStockDetail(topShort.ticker)?.priceHistory : undefined;
+const topMediumHistory = topMedium ? getStockDetail(topMedium.ticker)?.priceHistory : undefined;
+const topLongHistory = topLong ? getStockDetail(topLong.ticker)?.priceHistory : undefined;
 
 // Calculate metrics
 const avgConviction = allPicks.length > 0
@@ -51,10 +58,15 @@ const sentimentLabels = {
 <Layout title="Overview" description="Dashboard overview with market metrics, top stock picks, macro risks, and latest financial news.">
   <!-- Page header -->
   <div class="mb-6">
-    <h1 class="text-2xl font-bold text-text-primary">Dashboard Overview</h1>
-    <p class="text-text-secondary">
-      Last updated: {formatRelativeTime(generatedAt.toISOString())}
-    </p>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div>
+        <h1 class="text-2xl font-bold text-text-primary">Dashboard Overview</h1>
+        <p class="text-text-secondary">
+          Last updated: {formatRelativeTime(generatedAt.toISOString())}
+        </p>
+      </div>
+      <MarketStatus client:load />
+    </div>
   </div>
 
   <!-- 1. Metrics strip -->
@@ -94,7 +106,7 @@ const sentimentLabels = {
       <div>
         <p class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">Short-term</p>
         {topShort ? (
-          <PickCard pick={topShort} compact />
+          <PickCard pick={topShort} priceHistory={topShortHistory} compact />
         ) : (
           <Card>
             <p class="text-text-secondary text-sm text-center py-4">No short-term picks</p>
@@ -106,7 +118,7 @@ const sentimentLabels = {
       <div>
         <p class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">Medium-term</p>
         {topMedium ? (
-          <PickCard pick={topMedium} compact />
+          <PickCard pick={topMedium} priceHistory={topMediumHistory} compact />
         ) : (
           <Card>
             <p class="text-text-secondary text-sm text-center py-4">No medium-term picks</p>
@@ -118,7 +130,7 @@ const sentimentLabels = {
       <div>
         <p class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">Long-term</p>
         {topLong ? (
-          <PickCard pick={topLong} compact />
+          <PickCard pick={topLong} priceHistory={topLongHistory} compact />
         ) : (
           <Card>
             <p class="text-text-secondary text-sm text-center py-4">No long-term picks</p>

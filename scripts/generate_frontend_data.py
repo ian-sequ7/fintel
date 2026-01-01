@@ -173,7 +173,7 @@ def fetch_stock_details(tickers: list[str]) -> dict:
             fund_data = fund_obs[0].data if fund_obs else {}
 
             # Get price history for charts
-            price_history = yahoo.get_price_history(ticker, days=30)
+            price_history = yahoo.get_price_history(ticker, days=365)
 
             # Get current price data
             price_obs = yahoo.get_price(ticker)

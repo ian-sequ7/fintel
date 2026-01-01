@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import Header from "../components/sections/Header.astro";
 import Footer from "../components/sections/Footer.astro";
+import { CompareBar } from "../components/islands/CompareManager";
 
 interface Props {
   title: string;
@@ -44,5 +45,7 @@ const { title, description = "Financial intelligence dashboard" } = Astro.props;
       <slot />
     </main>
     <Footer />
+    <!-- Floating compare bar -->
+    <CompareBar client:load />
   </body>
 </html>

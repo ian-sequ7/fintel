@@ -3,13 +3,22 @@ import Layout from "../../layouts/Layout.astro";
 import Card from "../../components/primitives/Card.astro";
 import FilterBar from "../../components/composed/FilterBar.astro";
 import PickCard from "../../components/composed/PickCard.astro";
-import { getPicks } from "../../data/report";
+import { getPicks, getStockDetail } from "../../data/report";
 import type { SortOption } from "../../data/types";
 
 // All picks (no timeframe filter)
 const activeTimeframe = "all";
 const sortParam = (Astro.url.searchParams.get("sort") ?? "conviction") as SortOption;
 const picks = getPicks("all", sortParam, sortParam === "ticker" ? "asc" : "desc");
+
+// Get price history for each pick
+const priceHistoryMap = new Map<string, { time: string; close: number }[]>();
+for (const pick of picks) {
+  const detail = getStockDetail(pick.ticker);
+  if (detail?.priceHistory) {
+    priceHistoryMap.set(pick.ticker, detail.priceHistory);
+  }
+}
 
 const pageTitle = "Stock Picks";
 
@@ -55,7 +64,7 @@ const sortOptions = [
   ) : (
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
       {picks.map((pick) => (
-        <PickCard pick={pick} />
+        <PickCard pick={pick} priceHistory={priceHistoryMap.get(pick.ticker)} />
       ))}
     </div>
   )}

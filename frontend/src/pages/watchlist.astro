@@ -1,0 +1,32 @@
+---
+import Layout from "../layouts/Layout.astro";
+import WatchlistView from "../components/islands/WatchlistView";
+import { getReportSync } from "../data/report";
+
+// Get all stock details for the watchlist view
+const report = getReportSync();
+const stockDetails = report.stockDetails;
+---
+
+<Layout title="My Watchlist" description="Track your favorite stocks with personal notes and price alerts.">
+  <!-- Page header -->
+  <div class="mb-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-text-primary">My Watchlist</h1>
+        <p class="text-text-secondary">
+          Track your favorite stocks
+        </p>
+      </div>
+      <a
+        href="/picks"
+        class="text-sm text-accent hover:underline"
+      >
+        ← Browse Picks
+      </a>
+    </div>
+  </div>
+
+  <!-- Watchlist view (React island) -->
+  <WatchlistView client:load stockDetails={stockDetails} />
+</Layout>

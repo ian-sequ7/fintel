@@ -1,11 +1,13 @@
 ---
 import ThemeToggle from "../islands/ThemeToggle";
+import { WatchlistBadge } from "../islands/WatchlistManager";
 
 const navItems = [
   { href: "/", label: "Overview" },
   { href: "/picks", label: "Picks" },
   { href: "/macro", label: "Macro" },
   { href: "/news", label: "News" },
+  { href: "/watchlist", label: "Watchlist", hasNotification: true },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -47,13 +49,14 @@ function _isActive(href: string): boolean {
             <a
               href={item.href}
               class:list={[
-                "px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                "px-3 py-2 text-sm font-medium rounded-lg transition-colors relative",
                 _isActive(item.href)
                   ? "bg-accent/10 text-accent"
                   : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated",
               ]}
             >
               {item.label}
+              {item.hasNotification && <WatchlistBadge client:load />}
             </a>
           ))
         }
@@ -98,13 +101,16 @@ function _isActive(href: string): boolean {
           <a
             href={item.href}
             class:list={[
-              "block px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+              "block px-3 py-2 text-sm font-medium rounded-lg transition-colors relative",
               _isActive(item.href)
                 ? "bg-accent/10 text-accent"
                 : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated",
             ]}
           >
-            {item.label}
+            <span class="inline-flex items-center gap-2">
+              {item.label}
+              {item.hasNotification && <WatchlistBadge client:load />}
+            </span>
           </a>
         ))
       }

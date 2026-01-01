@@ -64,20 +64,35 @@ Identified on 2025-12-31 via Playwright browser analysis.
 
 ## Phase 4: Polish/Enhancements
 
-- [ ] **4.1 Add Sparklines to Picks**
+- [x] **4.1 Add Sparklines to Picks** (DONE)
   - Mini price charts next to each pick for quick trend visualization
+  - Location: `frontend/src/components/islands/Sparkline.tsx`, `frontend/src/components/composed/PickCard.astro`
 
-- [ ] **4.2 Comparison View**
+- [x] **4.2 Comparison View** (DONE)
   - Allow comparing 2-3 stocks side-by-side
+  - Floating compare bar when stocks are selected
+  - Side-by-side metrics table with fundamentals
+  - Location: `frontend/src/components/islands/CompareManager.tsx`, `frontend/src/components/islands/CompareView.tsx`, `frontend/src/pages/compare.astro`
 
-- [ ] **4.3 Portfolio/Watchlist**
+- [x] **4.3 Portfolio/Watchlist** (DONE)
   - Let users save stocks (localStorage)
+  - Star icon on picks and stock pages
+  - Watchlist page with notes, summary stats
+  - Badge in header showing count
+  - Location: `frontend/src/components/islands/WatchlistManager.tsx`, `frontend/src/pages/watchlist.astro`
 
-- [ ] **4.4 Market Status Indicator**
+- [x] **4.4 Market Status Indicator** (DONE)
   - Show if market is open/closed/pre-market
+  - Location: `frontend/src/components/islands/MarketStatus.tsx`, `frontend/src/pages/index.astro`
 
-- [ ] **4.5 Historical Performance Tracking**
+- [x] **4.5 Historical Performance Tracking** (DONE)
   - Show how past picks performed
+  - Added Trade Progress section on stock detail pages with:
+    - Performance since entry (gain/loss %)
+    - Progress bar toward target price
+    - Risk/Reward ratio display
+    - Trade status indicator (In Profit, Below Entry, Target Hit, Stop Triggered)
+  - Location: `frontend/src/pages/stock/[ticker].astro`
 
 ---
 
@@ -95,3 +110,13 @@ Identified on 2025-12-31 via Playwright browser analysis.
 - Stop loss displayed on stock pages
 - Varied thesis text
 - Better conviction score distribution
+- Interactive price charts with time range selector (1W, 1M, 3M, 6M, 1Y, ALL)
+- Volume histogram bars on price charts
+- OHLC tooltip on chart hover
+- Sparklines on pick cards showing price trend
+- Market status indicator (open/closed/pre-market/after-hours)
+- Trade progress tracking on stock detail pages
+- Stock comparison view (up to 3 stocks side-by-side)
+- Personal watchlist with notes (localStorage)
+- Watchlist badge in navigation showing count
+- 1-year price history for all charts

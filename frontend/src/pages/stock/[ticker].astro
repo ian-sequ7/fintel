@@ -5,6 +5,8 @@ import Badge from "../../components/primitives/Badge.astro";
 import ConvictionBar from "../../components/primitives/ConvictionBar.astro";
 import NewsCard from "../../components/composed/NewsCard.astro";
 import PriceChart from "../../components/islands/PriceChart";
+import { WatchlistButton } from "../../components/islands/WatchlistManager";
+import { CompareButton } from "../../components/islands/CompareManager";
 import { getPicks, getStockDetail, getNewsForStock, formatChange, formatPrice, formatLargeNumber } from "../../data/report";
 import type { StockPick, StockDetail } from "../../data/types";
 
@@ -50,6 +52,38 @@ function _formatLargeNumber(num: number | undefined): string {
   if (num === undefined) return "-";
   return formatLargeNumber(num);
 }
+
+// Calculate trade progress metrics
+function _calculateTradeProgress() {
+  const entry = pick.entryPrice;
+  const target = pick.targetPrice;
+  const stop = pick.stopLoss;
+  const current = pick.currentPrice;
+
+  if (!entry || !target) return null;
+
+  const gainFromEntry = current - entry;
+  const gainPctFromEntry = (gainFromEntry / entry) * 100;
+  const potentialGain = target - entry;
+  const progressToTarget = potentialGain > 0 ? Math.min(100, Math.max(0, ((current - entry) / potentialGain) * 100)) : 0;
+
+  // Risk/reward ratio
+  const riskAmount = stop ? entry - stop : entry * 0.1; // Assume 10% if no stop
+  const rewardAmount = target - entry;
+  const riskReward = riskAmount > 0 ? rewardAmount / riskAmount : 0;
+
+  return {
+    gainFromEntry,
+    gainPctFromEntry,
+    progressToTarget,
+    riskReward,
+    isInProfit: gainFromEntry >= 0,
+    targetReached: current >= target,
+    stopTriggered: stop ? current <= stop : false,
+  };
+}
+
+const tradeProgress = _calculateTradeProgress();
 ---
 
 <Layout title={`${pick.ticker} - ${pick.companyName}`} description={`${pick.companyName} (${pick.ticker}) analysis with price chart, investment thesis, risk factors, and key metrics.`}>
@@ -66,9 +100,15 @@ function _formatLargeNumber(num: number | undefined): string {
     <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
       <!-- Left: Ticker, name, price -->
       <div class="flex-1">
-        <div class="flex items-center gap-3 mb-2">
-          <h1 class="text-3xl font-bold text-text-primary font-mono">{pick.ticker}</h1>
-          <Badge text={timeframeLabels[pick.timeframe]} variant={timeframeColors[pick.timeframe]} />
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-3">
+            <h1 class="text-3xl font-bold text-text-primary font-mono">{pick.ticker}</h1>
+            <Badge text={timeframeLabels[pick.timeframe]} variant={timeframeColors[pick.timeframe]} />
+          </div>
+          <div class="flex items-center gap-2">
+            <WatchlistButton client:load ticker={pick.ticker} companyName={pick.companyName} size="md" variant="icon" />
+            <CompareButton client:load ticker={pick.ticker} companyName={pick.companyName} size="md" />
+          </div>
         </div>
         <p class="text-lg text-text-secondary mb-4">{pick.companyName}</p>
 
@@ -120,6 +160,91 @@ function _formatLargeNumber(num: number | undefined): string {
       </div>
     </div>
   </div>
+
+  <!-- Trade Progress Section -->
+  {tradeProgress && (
+    <div class="bg-bg-surface border border-border rounded-lg p-6 mb-6">
+      <h2 class="text-lg font-semibold text-text-primary mb-4">Trade Progress</h2>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Performance since entry -->
+        <div>
+          <p class="text-xs text-text-secondary uppercase tracking-wide mb-1">Since Entry</p>
+          <p class:list={[
+            "text-2xl font-bold",
+            tradeProgress.isInProfit ? "text-success" : "text-danger"
+          ]}>
+            {tradeProgress.isInProfit ? "+" : ""}{tradeProgress.gainPctFromEntry.toFixed(2)}%
+          </p>
+          <p class:list={[
+            "text-sm",
+            tradeProgress.isInProfit ? "text-success" : "text-danger"
+          ]}>
+            {tradeProgress.isInProfit ? "+" : ""}{formatChange(tradeProgress.gainFromEntry)}
+          </p>
+        </div>
+
+        <!-- Progress to target -->
+        <div>
+          <p class="text-xs text-text-secondary uppercase tracking-wide mb-1">Progress to Target</p>
+          <div class="flex items-center gap-3">
+            <div class="flex-1 h-3 bg-bg-elevated rounded-full overflow-hidden">
+              <div
+                class:list={[
+                  "h-full rounded-full transition-all",
+                  tradeProgress.targetReached ? "bg-success" : tradeProgress.isInProfit ? "bg-accent" : "bg-danger"
+                ]}
+                style={`width: ${Math.max(0, tradeProgress.progressToTarget)}%`}
+              />
+            </div>
+            <span class="text-lg font-bold text-text-primary">
+              {Math.round(tradeProgress.progressToTarget)}%
+            </span>
+          </div>
+          {tradeProgress.targetReached && (
+            <p class="text-sm text-success font-medium mt-1">Target Reached!</p>
+          )}
+        </div>
+
+        <!-- Risk/Reward ratio -->
+        <div>
+          <p class="text-xs text-text-secondary uppercase tracking-wide mb-1">Risk/Reward</p>
+          <p class="text-2xl font-bold text-text-primary">
+            1:{tradeProgress.riskReward.toFixed(1)}
+          </p>
+          <p class="text-sm text-text-secondary">
+            {tradeProgress.riskReward >= 2 ? "Favorable" : tradeProgress.riskReward >= 1 ? "Neutral" : "Unfavorable"}
+          </p>
+        </div>
+
+        <!-- Status -->
+        <div>
+          <p class="text-xs text-text-secondary uppercase tracking-wide mb-1">Status</p>
+          {tradeProgress.targetReached ? (
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-success" />
+              <span class="text-lg font-bold text-success">Target Hit</span>
+            </div>
+          ) : tradeProgress.stopTriggered ? (
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-danger" />
+              <span class="text-lg font-bold text-danger">Stop Triggered</span>
+            </div>
+          ) : tradeProgress.isInProfit ? (
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-success animate-pulse" />
+              <span class="text-lg font-bold text-success">In Profit</span>
+            </div>
+          ) : (
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-warning" />
+              <span class="text-lg font-bold text-warning">Below Entry</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )}
 
   <div class="grid lg:grid-cols-3 gap-6">
     <!-- Main content (2 cols) -->
