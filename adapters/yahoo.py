@@ -298,6 +298,42 @@ class YahooAdapter(BaseAdapter):
 
         return observations
 
+    def _fetch_price_history(self, ticker: str, days: int = 30) -> list[Observation]:
+        """Fetch historical price data for charting."""
+        try:
+            stock = yf.Ticker(ticker)
+            hist = stock.history(period=f"{days}d")
+
+            if hist.empty:
+                logger.debug(f"No price history for {ticker}")
+                return []
+
+            price_points = []
+            for date, row in hist.iterrows():
+                price_points.append({
+                    "time": date.strftime("%Y-%m-%d"),
+                    "open": round(row["Open"], 2),
+                    "high": round(row["High"], 2),
+                    "low": round(row["Low"], 2),
+                    "close": round(row["Close"], 2),
+                    "volume": int(row["Volume"]),
+                })
+
+            logger.debug(f"Fetched {len(price_points)} price points for {ticker}")
+
+            return [Observation(
+                source=self.source_name,
+                timestamp=datetime.now(),
+                category=Category.PRICE,
+                data={"price_history": price_points},
+                ticker=ticker,
+                reliability=self.reliability,
+            )]
+
+        except Exception as e:
+            logger.warning(f"Price history unavailable for {ticker}: {e}")
+            return []
+
     # Convenience methods for cleaner API
     def get_price(self, ticker: str) -> list[Observation]:
         """Get current price for a ticker."""
@@ -310,3 +346,10 @@ class YahooAdapter(BaseAdapter):
     def get_news(self, ticker: str) -> list[Observation]:
         """Get news for a ticker."""
         return self.fetch(ticker=ticker, data_type="news")
+
+    def get_price_history(self, ticker: str, days: int = 30) -> list[dict]:
+        """Get historical price data for charting."""
+        obs = self._fetch_price_history(ticker, days)
+        if obs and "price_history" in obs[0].data:
+            return obs[0].data["price_history"]
+        return []

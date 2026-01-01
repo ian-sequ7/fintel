@@ -142,17 +142,107 @@ def news_to_frontend(item, idx: int, category: str) -> dict:
     }
 
 
-def generate_report_json(result, config: PipelineConfig) -> dict:
+def fetch_stock_details(tickers: list[str]) -> dict:
+    """Fetch detailed stock data including price history and fundamentals."""
+    from adapters.yahoo import YahooAdapter
+    import time
+
+    yahoo = YahooAdapter()
+    details = {}
+
+    print(f"Fetching detailed data for {len(tickers)} stocks...")
+
+    for i, ticker in enumerate(tickers):
+        try:
+            # Rate limit
+            time.sleep(0.3)
+
+            # Get fundamentals (includes 52W high/low, PE forward, etc.)
+            fund_obs = yahoo.get_fundamentals(ticker)
+            fund_data = fund_obs[0].data if fund_obs else {}
+
+            # Get price history for charts
+            price_history = yahoo.get_price_history(ticker, days=30)
+
+            # Get current price data
+            price_obs = yahoo.get_price(ticker)
+            price_data = price_obs[0].data if price_obs else {}
+
+            details[ticker] = {
+                "price": price_data.get("price") or fund_data.get("current_price"),
+                "previous_close": price_data.get("previous_close"),
+                "change": price_data.get("change", 0),
+                "change_percent": price_data.get("change_percent", 0),
+                "volume": price_data.get("volume"),
+                "market_cap": fund_data.get("market_cap"),
+                "pe_trailing": fund_data.get("pe_trailing"),
+                "pe_forward": fund_data.get("pe_forward"),
+                "peg_ratio": fund_data.get("peg_ratio"),
+                "price_to_book": fund_data.get("price_to_book"),
+                "fifty_two_week_high": fund_data.get("fifty_two_week_high"),
+                "fifty_two_week_low": fund_data.get("fifty_two_week_low"),
+                "revenue_growth": fund_data.get("revenue_growth"),
+                "profit_margin": fund_data.get("profit_margin"),
+                "dividend_yield": fund_data.get("dividend_yield"),
+                "beta": fund_data.get("beta"),
+                "avg_volume": fund_data.get("average_volume"),
+                "sector": fund_data.get("sector"),
+                "price_history": price_history,
+            }
+
+            if (i + 1) % 10 == 0:
+                print(f"  Fetched {i + 1}/{len(tickers)} stocks...")
+
+        except Exception as e:
+            print(f"  Warning: Could not fetch details for {ticker}: {e}")
+            details[ticker] = {}
+
+    return details
+
+
+def generate_report_json(result, config: PipelineConfig, stock_details: dict) -> dict:
     """Convert pipeline ReportData to frontend FinancialReport format."""
     now = datetime.now().isoformat()
 
     # Get metrics lookup
     metrics = result.stock_metrics or {}
 
-    # Convert picks
-    short_picks = [pick_to_frontend(p, metrics.get(p.ticker)) for p in result.short_term_picks]
-    medium_picks = [pick_to_frontend(p, metrics.get(p.ticker)) for p in result.medium_term_picks]
-    long_picks = [pick_to_frontend(p, metrics.get(p.ticker)) for p in result.long_term_picks]
+    def enhance_pick(pick, details: dict) -> dict:
+        """Enhance pick with detailed stock data."""
+        d = details.get(pick.ticker, {})
+        m = metrics.get(pick.ticker)
+
+        # Get price data
+        current_price = d.get("price") or (getattr(m, "price", None) if m else None) or pick.entry_price or 100.0
+        prev_close = d.get("previous_close") or current_price
+        change = d.get("change") or (current_price - prev_close)
+        change_pct = d.get("change_percent") or ((change / prev_close * 100) if prev_close else 0)
+
+        # Get sector
+        sector = d.get("sector") or (getattr(m, "sector", None) if m else None)
+
+        return {
+            "ticker": pick.ticker,
+            "companyName": pick.ticker,  # Could enhance with company name lookup
+            "currentPrice": round(current_price, 2),
+            "priceChange": round(change, 2),
+            "priceChangePercent": round(change_pct, 2),
+            "convictionScore": round(pick.conviction_score, 3),
+            "timeframe": pick.timeframe.value if hasattr(pick.timeframe, 'value') else str(pick.timeframe),
+            "thesis": pick.thesis,
+            "riskFactors": pick.risk_factors[:5] if pick.risk_factors else [],
+            "sector": map_sector(sector),
+            "entryPrice": round(pick.entry_price, 2) if pick.entry_price else None,
+            "targetPrice": round(pick.target_price, 2) if pick.target_price else None,
+            "marketCap": d.get("market_cap"),
+            "peRatio": d.get("pe_trailing"),
+            "volume": d.get("volume"),
+        }
+
+    # Convert picks with enhanced data
+    short_picks = [enhance_pick(p, stock_details) for p in result.short_term_picks]
+    medium_picks = [enhance_pick(p, stock_details) for p in result.medium_term_picks]
+    long_picks = [enhance_pick(p, stock_details) for p in result.long_term_picks]
 
     # Convert indicators
     indicators = [indicator_to_frontend(i) for i in result.macro_indicators]
@@ -164,19 +254,33 @@ def generate_report_json(result, config: PipelineConfig) -> dict:
     market_news = [news_to_frontend(n, i, "market") for i, n in enumerate(result.market_news[:50])]
     company_news = [news_to_frontend(n, i, "company") for i, n in enumerate(result.company_news[:50])]
 
-    # Build stock details (simplified - no price history for now)
-    stock_details = {}
+    # Build stock details with price history and fundamentals
+    stock_details_export = {}
     all_picks = short_picks + medium_picks + long_picks
     for pick in all_picks:
         ticker = pick["ticker"]
-        if ticker not in stock_details:
-            stock_details[ticker] = {
+        if ticker not in stock_details_export:
+            d = stock_details.get(ticker, {})
+
+            # Find related news
+            related = [n for n in company_news if ticker in n.get("tickersMentioned", [])]
+
+            stock_details_export[ticker] = {
                 **pick,
-                "priceHistory": [],  # Would need historical data
-                "relatedNews": [],
+                "priceHistory": d.get("price_history", []),
+                "relatedNews": related[:5],
                 "fundamentals": {
-                    "peTrailing": pick.get("peRatio"),
-                    "avgVolume": pick.get("volume"),
+                    "peTrailing": d.get("pe_trailing"),
+                    "peForward": d.get("pe_forward"),
+                    "pegRatio": d.get("peg_ratio"),
+                    "priceToBook": d.get("price_to_book"),
+                    "revenueGrowth": d.get("revenue_growth"),
+                    "profitMargin": d.get("profit_margin"),
+                    "dividendYield": d.get("dividend_yield"),
+                    "beta": d.get("beta"),
+                    "fiftyTwoWeekHigh": d.get("fifty_two_week_high"),
+                    "fiftyTwoWeekLow": d.get("fifty_two_week_low"),
+                    "avgVolume": d.get("avg_volume"),
                 },
             }
 
@@ -210,7 +314,7 @@ def generate_report_json(result, config: PipelineConfig) -> dict:
             "medium": medium_picks,
             "long": long_picks,
         },
-        "stockDetails": stock_details,
+        "stockDetails": stock_details_export,
         "macro": {
             "indicators": indicators,
             "risks": risks,
@@ -252,8 +356,16 @@ def main():
     print(f"Collected {len(result.macro_indicators)} macro indicators")
     print(f"Found {len(result.market_news) + len(result.company_news)} news items")
 
+    # Get unique tickers from all picks
+    all_tickers = set()
+    for pick in result.short_term_picks + result.medium_term_picks + result.long_term_picks:
+        all_tickers.add(pick.ticker)
+
+    # Fetch detailed stock data (price history, fundamentals)
+    stock_details = fetch_stock_details(list(all_tickers))
+
     # Convert to frontend format
-    report = generate_report_json(result, config)
+    report = generate_report_json(result, config, stock_details)
 
     # Write to frontend data directory
     output_path = Path(__file__).parent.parent / "frontend" / "src" / "data" / "report.json"
@@ -266,6 +378,16 @@ def main():
     print(f"Total picks: {report['summary']['totalPicks']}")
     print(f"Avg conviction: {report['summary']['avgConviction']:.0%}")
     print(f"Top sector: {report['summary']['topSector']}")
+
+    # Show sample stock detail
+    sample_ticker = list(report["stockDetails"].keys())[0] if report["stockDetails"] else None
+    if sample_ticker:
+        detail = report["stockDetails"][sample_ticker]
+        print(f"\nSample stock ({sample_ticker}):")
+        print(f"  Price: ${detail['currentPrice']} ({detail['priceChange']:+.2f}, {detail['priceChangePercent']:+.2f}%)")
+        print(f"  Price history points: {len(detail.get('priceHistory', []))}")
+        print(f"  52W High: {detail['fundamentals'].get('fiftyTwoWeekHigh')}")
+        print(f"  52W Low: {detail['fundamentals'].get('fiftyTwoWeekLow')}")
 
 
 if __name__ == "__main__":
