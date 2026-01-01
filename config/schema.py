@@ -127,6 +127,88 @@ class ScoringWeightsConfig(BaseModel):
         return v
 
 
+class SectorSensitivityConfig(BaseModel):
+    """Macro sensitivity by sector for scoring adjustments."""
+
+    # Rate sensitivity: positive = benefits from rising rates, negative = hurt by rising rates
+    rate_sensitivity: dict[str, float] = Field(default_factory=lambda: {
+        "financials": 0.3,      # Banks benefit from higher rates
+        "utilities": -0.2,     # Rate-sensitive, dividend plays
+        "real_estate": -0.3,   # REIT financing costs
+        "technology": -0.2,    # Growth stocks, long-duration
+        "consumer_discretionary": -0.15,
+        "communication_services": -0.1,
+        "healthcare": 0.0,     # Relatively rate-insensitive
+        "consumer_staples": 0.0,
+        "industrials": -0.1,
+        "materials": -0.1,
+        "energy": 0.1,
+    })
+
+    # Inflation sensitivity: positive = benefits from inflation
+    inflation_sensitivity: dict[str, float] = Field(default_factory=lambda: {
+        "energy": 0.4,         # Commodity pricing power
+        "materials": 0.3,      # Raw materials pricing
+        "financials": 0.1,
+        "real_estate": 0.2,    # Real assets
+        "consumer_staples": 0.1,  # Pricing power
+        "healthcare": 0.0,
+        "industrials": 0.0,
+        "technology": -0.1,
+        "consumer_discretionary": -0.2,  # Demand destruction
+        "utilities": -0.1,
+        "communication_services": -0.1,
+    })
+
+    # Recession sensitivity: positive = defensive, negative = cyclical
+    recession_sensitivity: dict[str, float] = Field(default_factory=lambda: {
+        "consumer_staples": 0.3,   # Defensive
+        "healthcare": 0.3,         # Defensive
+        "utilities": 0.25,         # Defensive
+        "communication_services": 0.1,
+        "technology": -0.1,        # Mixed
+        "financials": -0.2,        # Credit losses
+        "industrials": -0.25,      # Cyclical
+        "materials": -0.25,        # Cyclical
+        "consumer_discretionary": -0.3,  # Very cyclical
+        "energy": -0.2,
+        "real_estate": -0.15,
+    })
+
+
+class TimeframeRulesConfig(BaseModel):
+    """Rules for classifying investment timeframe."""
+
+    # Short-term triggers (1-3 months)
+    short_momentum_threshold: float = Field(
+        default=-0.15,
+        description="Price drop threshold to consider oversold bounce (negative)"
+    )
+    short_rsi_oversold: float = Field(default=30.0, ge=10.0, le=50.0)
+    short_rsi_overbought: float = Field(default=70.0, ge=50.0, le=90.0)
+    short_volume_spike: float = Field(
+        default=2.0,
+        description="Volume multiple vs average to indicate catalyst"
+    )
+
+    # Medium-term indicators (3-12 months)
+    medium_valuation_gap: float = Field(
+        default=0.20,
+        description="PE discount vs sector to trigger medium-term"
+    )
+    medium_momentum_trend_days: int = Field(default=50, ge=20, le=100)
+
+    # Long-term factors (1-3 years)
+    long_quality_threshold: float = Field(
+        default=0.6,
+        description="Quality score minimum for long-term"
+    )
+    long_valuation_fair: float = Field(
+        default=0.4,
+        description="Valuation score minimum for long-term"
+    )
+
+
 class AnalysisThresholdsConfig(BaseModel):
     """Combined analysis thresholds configuration."""
 
@@ -135,6 +217,8 @@ class AnalysisThresholdsConfig(BaseModel):
     quality: QualityThresholdsConfig = Field(default_factory=QualityThresholdsConfig)
     macro: MacroThresholdsConfig = Field(default_factory=MacroThresholdsConfig)
     scoring_weights: ScoringWeightsConfig = Field(default_factory=ScoringWeightsConfig)
+    sector_sensitivity: SectorSensitivityConfig = Field(default_factory=SectorSensitivityConfig)
+    timeframe_rules: TimeframeRulesConfig = Field(default_factory=TimeframeRulesConfig)
 
 
 class DataSourcesConfig(BaseModel):

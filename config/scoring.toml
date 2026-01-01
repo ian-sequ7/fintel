@@ -1,0 +1,116 @@
+# Scoring Algorithm Configuration
+# ================================
+# This file configures the systematic scoring algorithm for stock picks.
+# All weights and thresholds can be adjusted to tune the algorithm.
+
+# Scoring weights for overall conviction
+# These must sum to 1.0
+[scoring_weights]
+valuation = 0.25
+growth = 0.25
+quality = 0.20
+momentum = 0.15
+analyst = 0.15
+
+# Valuation thresholds
+[valuation]
+pe_low = 15.0       # Below = cheap
+pe_high = 30.0      # Above = expensive
+peg_fair = 1.0      # Below = undervalued for growth
+pb_low = 1.0        # Below = cheap (book value)
+pb_high = 5.0       # Above = expensive
+
+# Growth thresholds (as decimals, e.g., 0.20 = 20%)
+[growth]
+revenue_high = 0.20     # 20%+ YoY = high growth
+revenue_low = 0.05      # Below 5% = low growth
+earnings_high = 0.25    # 25%+ EPS growth = high growth
+
+# Quality thresholds
+[quality]
+profit_margin_good = 0.15   # 15%+ net margin = good
+roe_good = 0.15             # 15%+ ROE = good
+
+# Macro environment thresholds
+[macro]
+unemployment_high = 5.0         # Above = recession risk
+inflation_high = 4.0            # Above = Fed likely hawkish
+vix_high = 25.0                 # Above = high market fear
+consumer_sentiment_low = 60.0   # Below = consumer pessimism
+
+# Sector sensitivity to macro factors
+# Positive = benefits from the condition
+# Negative = hurt by the condition
+
+[sector_sensitivity.rate]
+# Sensitivity to rising interest rates
+financials = 0.3
+utilities = -0.2
+real_estate = -0.3
+technology = -0.2
+consumer_discretionary = -0.15
+communication_services = -0.1
+healthcare = 0.0
+consumer_staples = 0.0
+industrials = -0.1
+materials = -0.1
+energy = 0.1
+
+[sector_sensitivity.inflation]
+# Sensitivity to rising inflation
+energy = 0.4
+materials = 0.3
+financials = 0.1
+real_estate = 0.2
+consumer_staples = 0.1
+healthcare = 0.0
+industrials = 0.0
+technology = -0.1
+consumer_discretionary = -0.2
+utilities = -0.1
+communication_services = -0.1
+
+[sector_sensitivity.recession]
+# Sensitivity to recession risk (positive = defensive)
+consumer_staples = 0.3
+healthcare = 0.3
+utilities = 0.25
+communication_services = 0.1
+technology = -0.1
+financials = -0.2
+industrials = -0.25
+materials = -0.25
+consumer_discretionary = -0.3
+energy = -0.2
+real_estate = -0.15
+
+# Timeframe classification rules
+[timeframe]
+# Short-term (1-3 months) - technical setups, oversold bounces
+short_momentum_threshold = -0.15    # Price drop to consider oversold
+short_rsi_oversold = 30.0           # RSI below = oversold
+short_rsi_overbought = 70.0         # RSI above = overbought
+short_volume_spike = 2.0            # Volume vs average for catalyst
+
+# Medium-term (3-12 months) - valuation gaps, sector rotation
+medium_valuation_gap = 0.20         # PE discount vs sector
+medium_momentum_trend_days = 50     # Days for trend analysis
+
+# Long-term (1-3 years) - quality compounding, secular trends
+long_quality_threshold = 0.6        # Minimum quality score
+long_valuation_fair = 0.4           # Minimum valuation score
+
+# Sector average P/E ratios for relative valuation
+# These should be updated periodically
+[sector_pe_averages]
+technology = 28.0
+healthcare = 22.0
+financials = 12.0
+consumer_discretionary = 20.0
+consumer_staples = 22.0
+industrials = 18.0
+materials = 15.0
+energy = 12.0
+utilities = 18.0
+real_estate = 35.0
+communication_services = 18.0
