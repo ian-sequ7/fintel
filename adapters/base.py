@@ -39,23 +39,41 @@ class CacheEntry:
 
 
 class RateLimiter:
-    """Token bucket rate limiter."""
+    """Token bucket rate limiter with optional waiting."""
 
-    __slots__ = ("max_requests", "window_seconds", "requests")
+    __slots__ = ("max_requests", "window_seconds", "min_delay", "requests", "_last_request")
 
-    def __init__(self, max_requests: int, window_seconds: float = 60.0):
+    def __init__(
+        self,
+        max_requests: int,
+        window_seconds: float = 60.0,
+        min_delay: float = 0.0,
+    ):
         self.max_requests = max_requests
         self.window_seconds = window_seconds
+        self.min_delay = min_delay  # Minimum seconds between requests
         self.requests: list[float] = []
+        self._last_request: float = 0.0
 
-    def acquire(self) -> None:
+    def acquire(self, wait: bool = True) -> None:
         """
         Acquire a request slot.
 
+        Args:
+            wait: If True, wait when rate limited instead of raising error
+
         Raises:
-            RateLimitError: If rate limit exceeded
+            RateLimitError: If rate limit exceeded and wait=False
         """
         now = time.monotonic()
+
+        # Enforce minimum delay between requests
+        if self.min_delay > 0 and self._last_request > 0:
+            elapsed = now - self._last_request
+            if elapsed < self.min_delay:
+                sleep_time = self.min_delay - elapsed
+                time.sleep(sleep_time)
+                now = time.monotonic()
 
         # Prune old requests outside window
         cutoff = now - self.window_seconds
@@ -63,10 +81,21 @@ class RateLimiter:
 
         if len(self.requests) >= self.max_requests:
             oldest = min(self.requests)
-            retry_after = timedelta(seconds=oldest + self.window_seconds - now)
-            raise RateLimitError(retry_after=retry_after)
+            wait_time = oldest + self.window_seconds - now
+
+            if wait and wait_time > 0:
+                # Wait until we can make the request
+                time.sleep(wait_time + 0.1)  # Small buffer
+                now = time.monotonic()
+                # Re-prune after waiting
+                cutoff = now - self.window_seconds
+                self.requests = [t for t in self.requests if t > cutoff]
+            else:
+                retry_after = timedelta(seconds=wait_time)
+                raise RateLimitError(retry_after=retry_after)
 
         self.requests.append(now)
+        self._last_request = now
 
 
 class BaseAdapter(ABC):
@@ -83,7 +112,8 @@ class BaseAdapter(ABC):
         settings = get_settings()
         self._cache: dict[str, CacheEntry] = {}
         self._rate_limiter = RateLimiter(
-            max_requests=settings.rate_limits.get(self.source_name, 60)
+            max_requests=settings.rate_limits.get(self.source_name, 60),
+            min_delay=settings.rate_delays.get(self.source_name, 0.0),
         )
         self._settings = settings
 

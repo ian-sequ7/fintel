@@ -52,6 +52,17 @@ class Settings:
         }
 
     @property
+    def rate_delays(self) -> dict[str, float]:
+        """Minimum delay between requests (seconds)."""
+        cfg = self._config.rate_limits
+        return {
+            "yahoo": cfg.yahoo_delay,
+            "fred": cfg.fred_delay,
+            "reddit": cfg.reddit_delay,
+            "rss": cfg.rss_delay,
+        }
+
+    @property
     def watchlist(self) -> list[str]:
         """Default tickers to track."""
         return self._config.watchlist

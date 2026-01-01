@@ -46,10 +46,16 @@ class CacheTtlConfig(BaseModel):
 class RateLimitsConfig(BaseModel):
     """Rate limits per source (requests per minute)."""
 
-    yahoo: int = Field(default=60, ge=1, le=200)
+    yahoo: int = Field(default=30, ge=1, le=200)
     fred: int = Field(default=30, ge=1, le=120)
     reddit: int = Field(default=30, ge=1, le=60)
     rss: int = Field(default=60, ge=1, le=120)
+
+    # Minimum delay between requests (seconds) - prevents burst requests
+    yahoo_delay: float = Field(default=0.5, ge=0.0, le=5.0)
+    fred_delay: float = Field(default=0.2, ge=0.0, le=5.0)
+    reddit_delay: float = Field(default=0.5, ge=0.0, le=5.0)
+    rss_delay: float = Field(default=0.1, ge=0.0, le=5.0)
 
 
 class HttpConfig(BaseModel):
