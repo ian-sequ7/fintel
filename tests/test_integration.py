@@ -63,6 +63,12 @@ def mock_fundamental_observation():
             "revenue_growth": 0.08,
             "profit_margin": 0.26,
             "recommendation": "hold",
+            "sector": "Technology",
+            "industry": "Consumer Electronics",
+            "roe": 0.45,
+            "analyst_rating": 2.0,
+            "fifty_day_average": 245.0,
+            "average_volume": 50000000,
         },
         reliability=0.9,
     )
@@ -311,7 +317,7 @@ class TestDataTransformer:
     ):
         """Transformer should create StockMetrics from observations."""
         transformer = DataTransformer(pipeline_config)
-        metrics = transformer.transform_to_metrics(
+        metrics, sectors = transformer.transform_to_metrics(
             prices=[mock_price_observation],
             fundamentals=[mock_fundamental_observation],
         )
@@ -320,6 +326,8 @@ class TestDataTransformer:
         aapl = metrics["AAPL"]
         assert aapl.price == 250.00
         assert aapl.pe_trailing == 28.5
+        assert "AAPL" in sectors
+        assert sectors["AAPL"] == "technology"
 
     def test_transform_to_macro_context(
         self,
@@ -351,7 +359,7 @@ class TestAnalyzer:
     ):
         """Analyzer should generate stock picks."""
         transformer = DataTransformer(pipeline_config)
-        metrics = transformer.transform_to_metrics(
+        metrics, sectors = transformer.transform_to_metrics(
             prices=[mock_price_observation],
             fundamentals=[mock_fundamental_observation],
         )

@@ -48,6 +48,8 @@ class FundamentalData:
     revenue_growth: float | None
     profit_margin: float | None
     recommendation: str | None  # buy, hold, sell
+    sector: str | None = None
+    industry: str | None = None
 
 
 @dataclass
@@ -186,6 +188,8 @@ class YahooAdapter(BaseAdapter):
                 revenue_growth=info.get("revenueGrowth"),
                 profit_margin=info.get("profitMargins"),
                 recommendation=info.get("recommendationKey", "hold"),
+                sector=info.get("sector"),
+                industry=info.get("industry"),
             )
 
             # Extract additional metrics for richer analysis
@@ -211,6 +215,14 @@ class YahooAdapter(BaseAdapter):
                 "fifty_two_week_high": info.get("fiftyTwoWeekHigh"),
                 "fifty_two_week_low": info.get("fiftyTwoWeekLow"),
                 "beta": info.get("beta"),
+                # Sector and industry for scoring
+                "sector": fundamental_data.sector,
+                "industry": fundamental_data.industry,
+                # Technical data for momentum scoring
+                "fifty_day_average": info.get("fiftyDayAverage"),
+                "two_hundred_day_average": info.get("twoHundredDayAverage"),
+                "average_volume": info.get("averageVolume"),
+                "current_price": info.get("regularMarketPrice"),
             }
 
             logger.debug(

@@ -39,6 +39,14 @@ from domain import (
     NewsCategory,
     aggregate_news,
     RawNewsItem,
+    # V2 Scoring
+    ScoredPick,
+    ScoringThresholds,
+    ScoringWeights,
+    SectorSensitivities,
+    TimeframeRules,
+    score_stock_v2,
+    score_stocks,
 )
 from domain.models import Timeframe
 from domain.analysis_types import RiskCategory
@@ -127,6 +135,50 @@ class PipelineConfig:
     scoring_config: ScoringConfig = field(default_factory=ScoringConfig)
     strategy: Strategy = field(default_factory=Strategy)
 
+    # V2 Scoring settings
+    scoring_thresholds: ScoringThresholds = field(default_factory=ScoringThresholds)
+    scoring_weights: ScoringWeights = field(default_factory=ScoringWeights)
+    sector_sensitivities: SectorSensitivities = field(default_factory=lambda: SectorSensitivities(
+        rate_sensitivity={
+            "technology": -0.2, "financials": 0.3, "utilities": -0.2,
+            "real estate": -0.3, "consumer discretionary": -0.15,
+            "communication services": -0.1, "healthcare": 0.0,
+            "consumer staples": 0.0, "industrials": -0.1, "materials": -0.1, "energy": 0.1,
+        },
+        inflation_sensitivity={
+            "energy": 0.4, "materials": 0.3, "financials": 0.1, "real estate": 0.2,
+            "consumer staples": 0.1, "healthcare": 0.0, "industrials": 0.0,
+            "technology": -0.1, "consumer discretionary": -0.2, "utilities": -0.1,
+            "communication services": -0.1,
+        },
+        recession_sensitivity={
+            "consumer staples": 0.3, "healthcare": 0.3, "utilities": 0.25,
+            "communication services": 0.1, "technology": -0.1, "financials": -0.2,
+            "industrials": -0.25, "materials": -0.25, "consumer discretionary": -0.3,
+            "energy": -0.2, "real estate": -0.15,
+        },
+    ))
+    timeframe_rules: TimeframeRules = field(default_factory=TimeframeRules)
+
+    # Sector average P/E ratios for relative valuation
+    sector_pe_averages: dict[str, float] = field(default_factory=lambda: {
+        "technology": 28.0,
+        "healthcare": 22.0,
+        "financials": 12.0,
+        "financial services": 12.0,
+        "consumer discretionary": 20.0,
+        "consumer cyclical": 20.0,
+        "consumer staples": 22.0,
+        "consumer defensive": 22.0,
+        "industrials": 18.0,
+        "materials": 15.0,
+        "basic materials": 15.0,
+        "energy": 12.0,
+        "utilities": 18.0,
+        "real estate": 35.0,
+        "communication services": 18.0,
+    })
+
     # Limits
     max_picks_per_timeframe: int = 5
     max_news_items: int = 20
@@ -135,6 +187,7 @@ class PipelineConfig:
     fail_fast: bool = False  # If True, stop on first error
     include_social: bool = True
     verbose: bool = False
+    use_v2_scoring: bool = True  # Use new systematic scoring
 
 
 # ============================================================================
@@ -154,17 +207,53 @@ def _generate_mock_data() -> dict:
             "AMZN": {"price": 225.00, "change_percent": 1.0, "volume": 35000000},
         },
         "fundamentals": {
-            "AAPL": {"pe_trailing": 32.5, "revenue_growth": 0.08, "profit_margin": 0.26},
-            "MSFT": {"pe_trailing": 38.0, "revenue_growth": 0.15, "profit_margin": 0.35},
-            "GOOGL": {"pe_trailing": 25.0, "revenue_growth": 0.12, "profit_margin": 0.22},
-            "NVDA": {"pe_trailing": 65.0, "revenue_growth": 0.85, "profit_margin": 0.55},
-            "AMZN": {"pe_trailing": 45.0, "revenue_growth": 0.10, "profit_margin": 0.08},
+            "AAPL": {
+                "pe_trailing": 32.5, "pe_forward": 28.0, "peg_ratio": 1.8,
+                "revenue_growth": 0.08, "earnings_growth": 0.12,
+                "profit_margin": 0.26, "roe": 0.45,
+                "analyst_rating": 2.0, "price_target": 280.0,
+                "sector": "Technology", "industry": "Consumer Electronics",
+                "fifty_day_average": 245.0, "average_volume": 50000000,
+            },
+            "MSFT": {
+                "pe_trailing": 38.0, "pe_forward": 32.0, "peg_ratio": 2.2,
+                "revenue_growth": 0.15, "earnings_growth": 0.18,
+                "profit_margin": 0.35, "roe": 0.38,
+                "analyst_rating": 1.8, "price_target": 480.0,
+                "sector": "Technology", "industry": "Software",
+                "fifty_day_average": 420.0, "average_volume": 25000000,
+            },
+            "GOOGL": {
+                "pe_trailing": 25.0, "pe_forward": 22.0, "peg_ratio": 1.2,
+                "revenue_growth": 0.12, "earnings_growth": 0.15,
+                "profit_margin": 0.22, "roe": 0.28,
+                "analyst_rating": 1.9, "price_target": 220.0,
+                "sector": "Communication Services", "industry": "Internet",
+                "fifty_day_average": 190.0, "average_volume": 20000000,
+            },
+            "NVDA": {
+                "pe_trailing": 65.0, "pe_forward": 45.0, "peg_ratio": 1.0,
+                "revenue_growth": 0.85, "earnings_growth": 1.20,
+                "profit_margin": 0.55, "roe": 0.65,
+                "analyst_rating": 1.5, "price_target": 180.0,
+                "sector": "Technology", "industry": "Semiconductors",
+                "fifty_day_average": 130.0, "average_volume": 60000000,
+            },
+            "AMZN": {
+                "pe_trailing": 45.0, "pe_forward": 35.0, "peg_ratio": 1.5,
+                "revenue_growth": 0.10, "earnings_growth": 0.25,
+                "profit_margin": 0.08, "roe": 0.18,
+                "analyst_rating": 1.7, "price_target": 260.0,
+                "sector": "Consumer Discretionary", "industry": "Internet Retail",
+                "fifty_day_average": 220.0, "average_volume": 40000000,
+            },
         },
         "macro": [
             {"series_id": "UNRATE", "name": "Unemployment Rate", "value": 4.2, "unit": "%"},
             {"series_id": "FEDFUNDS", "name": "Federal Funds Rate", "value": 5.25, "unit": "%"},
             {"series_id": "T10Y2Y", "name": "10Y-2Y Treasury Spread", "value": -0.25, "unit": "%"},
             {"series_id": "CPIAUCSL", "name": "CPI (Inflation)", "value": 3.5, "unit": "%"},
+            {"series_id": "UMCSENT", "name": "Consumer Sentiment", "value": 68.0, "unit": "Index"},
         ],
         "news": [
             {"title": "Fed signals rate cuts ahead", "source": "Reuters", "category": "market_wide"},
@@ -433,9 +522,15 @@ class DataTransformer:
         self,
         prices: list[Observation],
         fundamentals: list[Observation],
-    ) -> dict[str, StockMetrics]:
-        """Transform price and fundamental observations to StockMetrics."""
+    ) -> tuple[dict[str, StockMetrics], dict[str, str]]:
+        """
+        Transform price and fundamental observations to StockMetrics.
+
+        Returns:
+            (metrics_by_ticker, sectors_by_ticker)
+        """
         metrics: dict[str, StockMetrics] = {}
+        sectors: dict[str, str] = {}
 
         # Group by ticker
         price_by_ticker = {obs.ticker: obs for obs in prices if obs.ticker}
@@ -451,30 +546,49 @@ class DataTransformer:
             price_data = price_obs.data
             fund_data = fund_obs.data if fund_obs else {}
 
+            # Extract sector
+            sector = fund_data.get("sector", "").lower() if fund_data.get("sector") else "technology"
+            sectors[ticker] = sector
+
+            # Calculate price change from moving averages if available
+            current_price = fund_data.get("current_price") or price_data.get("price", 0)
+            fifty_day_avg = fund_data.get("fifty_day_average")
+            two_hundred_day_avg = fund_data.get("two_hundred_day_average")
+
+            # Estimate monthly change from 50-day MA comparison
+            price_change_1m = None
+            if fifty_day_avg and current_price:
+                # Approximate: current vs 50-day avg gives rough monthly momentum
+                price_change_1m = (current_price - fifty_day_avg) / fifty_day_avg
+
             try:
                 metrics[ticker] = StockMetrics(
                     ticker=ticker,
                     price=price_data.get("price", 0),
-                    market_cap=price_data.get("market_cap"),
+                    market_cap=price_data.get("market_cap") or fund_data.get("market_cap"),
                     pe_trailing=fund_data.get("pe_trailing"),
                     pe_forward=fund_data.get("pe_forward"),
                     peg_ratio=fund_data.get("peg_ratio"),
                     price_to_book=fund_data.get("price_to_book"),
+                    price_to_sales=fund_data.get("price_to_sales"),
                     revenue_growth=fund_data.get("revenue_growth"),
                     earnings_growth=fund_data.get("earnings_growth"),
                     profit_margin=fund_data.get("profit_margin"),
                     roe=fund_data.get("roe"),
+                    roa=fund_data.get("roa"),
                     price_change_1d=price_data.get("change_percent", 0) / 100 if price_data.get("change_percent") else None,
+                    price_change_1m=price_change_1m,
                     volume_current=price_data.get("volume"),
+                    volume_avg=fund_data.get("average_volume"),
                     analyst_rating=fund_data.get("analyst_rating"),
                     price_target=fund_data.get("price_target"),
                     dividend_yield=fund_data.get("dividend_yield"),
                 )
-                self._log(f"  Transformed metrics for {ticker}")
+                self._log(f"  Transformed metrics for {ticker} (sector: {sector})")
             except Exception as e:
                 self._log(f"  Failed to transform {ticker}: {e}")
 
-        return metrics
+        return metrics, sectors
 
     def transform_to_macro_context(
         self,
@@ -592,7 +706,7 @@ class Analyzer:
         metrics: dict[str, StockMetrics],
         macro_context: MacroContext,
     ) -> tuple[list[StockPick], dict[str, ConvictionScore]]:
-        """Analyze stocks and generate picks."""
+        """Analyze stocks and generate picks (legacy v1)."""
         picks = []
         scores: dict[str, ConvictionScore] = {}
 
@@ -626,6 +740,71 @@ class Analyzer:
             picks.append(pick)
 
         return picks, scores
+
+    def analyze_stocks_v2(
+        self,
+        metrics: dict[str, StockMetrics],
+        sectors: dict[str, str],
+        macro_context: MacroContext,
+    ) -> tuple[list[StockPick], dict[str, ConvictionScore], list[ScoredPick]]:
+        """
+        Analyze stocks using the v2 systematic scoring algorithm.
+
+        Returns:
+            (picks, scores, scored_picks) - StockPick for report compatibility,
+            ConvictionScore for enrichment, ScoredPick for detailed breakdown
+        """
+        picks: list[StockPick] = []
+        scores: dict[str, ConvictionScore] = {}
+        scored_picks: list[ScoredPick] = []
+
+        for ticker, m in metrics.items():
+            self._log(f"  Scoring {ticker} (v2)...")
+
+            # Get sector and sector average PE
+            sector = sectors.get(ticker, "technology")
+            sector_avg_pe = self.config.sector_pe_averages.get(
+                sector.lower(), 20.0  # Default PE if sector unknown
+            )
+
+            # Score using v2 algorithm
+            scored = score_stock_v2(
+                metrics=m,
+                macro=macro_context,
+                sector=sector,
+                sector_avg_pe=sector_avg_pe,
+                thresholds=self.config.scoring_thresholds,
+                weights=self.config.scoring_weights,
+                sensitivities=self.config.sector_sensitivities,
+                timeframe_rules=self.config.timeframe_rules,
+            )
+            scored_picks.append(scored)
+
+            # Store conviction score for enrichment
+            scores[ticker] = scored.score_breakdown
+
+            # Convert ScoredPick to StockPick for report compatibility
+            pick = StockPick(
+                ticker=ticker,
+                timeframe=scored.timeframe,
+                conviction_score=scored.conviction_normalized,  # 0-1 scale
+                thesis=scored.thesis,
+                risk_factors=scored.risks[:3],
+                entry_price=m.price,
+                target_price=m.price * (1 + scored.conviction_normalized * 0.3) if scored.conviction > 5 else None,
+            )
+            picks.append(pick)
+
+            self._log(
+                f"    {ticker}: conviction={scored.conviction}/10, "
+                f"timeframe={scored.timeframe.value}, sector={sector}"
+            )
+
+        # Sort by conviction (descending)
+        picks.sort(key=lambda p: p.conviction_score, reverse=True)
+        scored_picks.sort(key=lambda p: p.conviction, reverse=True)
+
+        return picks, scores, scored_picks
 
     def analyze_macro(
         self,
@@ -684,7 +863,7 @@ class Pipeline:
 
         # Phase 2: Transform data
         self._log("Phase 2: Transforming data...")
-        metrics = self.transformer.transform_to_metrics(
+        metrics, sectors = self.transformer.transform_to_metrics(
             raw_data.get("prices", []),
             raw_data.get("fundamentals", []),
         )
@@ -698,7 +877,17 @@ class Pipeline:
 
         # Phase 3: Analyze
         self._log("Phase 3: Running analysis...")
-        picks, scores = self.analyzer.analyze_stocks(metrics, macro_context)
+
+        if self.config.use_v2_scoring:
+            # Use v2 systematic scoring
+            self._log("Using v2 systematic scoring algorithm...")
+            picks, scores, scored_picks = self.analyzer.analyze_stocks_v2(
+                metrics, sectors, macro_context
+            )
+        else:
+            # Use legacy v1 scoring
+            picks, scores = self.analyzer.analyze_stocks(metrics, macro_context)
+
         macro_risks = self.analyzer.analyze_macro(macro_indicators)
 
         # Phase 4: Organize picks by timeframe
@@ -707,10 +896,11 @@ class Pipeline:
         medium_picks = [p for p in picks if p.timeframe == Timeframe.MEDIUM]
         long_picks = [p for p in picks if p.timeframe == Timeframe.LONG]
 
-        # Rank by conviction
-        short_picks = rank_picks(short_picks, self.config.strategy, scores)
-        medium_picks = rank_picks(medium_picks, self.config.strategy, scores)
-        long_picks = rank_picks(long_picks, self.config.strategy, scores)
+        # V2 scoring already sorts by conviction, v1 needs ranking
+        if not self.config.use_v2_scoring:
+            short_picks = rank_picks(short_picks, self.config.strategy, scores)
+            medium_picks = rank_picks(medium_picks, self.config.strategy, scores)
+            long_picks = rank_picks(long_picks, self.config.strategy, scores)
 
         # Apply limits
         max_picks = self.config.max_picks_per_timeframe
