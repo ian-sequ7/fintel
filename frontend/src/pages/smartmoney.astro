@@ -1,0 +1,133 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/primitives/Card.astro";
+import FilterBar from "../components/composed/FilterBar.astro";
+import SmartMoneyCard from "../components/composed/SmartMoneyCard.astro";
+import MetricCard from "../components/primitives/MetricCard.astro";
+import { getSmartMoneySignals, getSmartMoneySummary } from "../data/report";
+
+// Get all signals and summary
+const allSignals = getSmartMoneySignals("all");
+const summary = getSmartMoneySummary();
+
+// Filter tabs
+const filterTabs = [
+  { value: "all", label: "All Signals", href: "/smartmoney" },
+  { value: "congress", label: `Congress (${summary.congress})`, href: "/smartmoney?filter=congress" },
+  { value: "options", label: `Options (${summary.options})`, href: "/smartmoney?filter=options" },
+];
+
+// Calculate sentiment (more buys than sells = bullish)
+const sentimentRatio = summary.total > 0
+  ? summary.buySignals / summary.total
+  : 0.5;
+
+function getSentimentLabel(ratio: number): string {
+  if (ratio >= 0.7) return "Strongly Bullish";
+  if (ratio >= 0.55) return "Mildly Bullish";
+  if (ratio <= 0.3) return "Strongly Bearish";
+  if (ratio <= 0.45) return "Mildly Bearish";
+  return "Neutral";
+}
+
+function getSentimentColor(ratio: number): string {
+  if (ratio >= 0.6) return "text-success";
+  if (ratio <= 0.4) return "text-danger";
+  return "text-warning";
+}
+
+function getSentimentBg(ratio: number): string {
+  if (ratio >= 0.6) return "bg-success/15 border-success/30";
+  if (ratio <= 0.4) return "bg-danger/15 border-danger/30";
+  return "bg-warning/15 border-warning/30";
+}
+
+const sentimentLabel = getSentimentLabel(sentimentRatio);
+const sentimentColor = getSentimentColor(sentimentRatio);
+const sentimentBg = getSentimentBg(sentimentRatio);
+---
+
+<Layout title="Smart Money Radar" description="Track institutional activity including Congress trades and unusual options activity.">
+  <!-- Page header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-text-primary">Smart Money Radar</h1>
+    <p class="text-text-secondary">
+      Track institutional activity: Congress trades & unusual options
+    </p>
+  </div>
+
+  <!-- Summary cards row -->
+  <section class="mb-8">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <!-- Sentiment overview card -->
+      <div class:list={["rounded-lg border p-4", sentimentBg]}>
+        <div class="text-sm text-text-secondary mb-1">Net Sentiment</div>
+        <div class:list={["text-2xl font-bold", sentimentColor]}>
+          {sentimentLabel}
+        </div>
+        <div class="text-xs text-text-secondary mt-1">
+          {summary.buySignals} buys / {summary.sellSignals} sells
+        </div>
+      </div>
+
+      <!-- Total signals -->
+      <MetricCard
+        title="Total Signals"
+        value={summary.total.toString()}
+        subtitle="Last 60 days"
+      />
+
+      <!-- Congress trades -->
+      <MetricCard
+        title="Congress Trades"
+        value={summary.congress.toString()}
+        subtitle="Politician transactions"
+      />
+
+      <!-- Unusual options -->
+      <MetricCard
+        title="Unusual Options"
+        value={summary.options.toString()}
+        subtitle="High volume/OI ratio"
+      />
+    </div>
+  </section>
+
+  <!-- Filters -->
+  <div class="mb-6">
+    <FilterBar
+      tabs={filterTabs}
+      currentValue="all"
+    />
+  </div>
+
+  <!-- Signals list -->
+  {allSignals.length === 0 ? (
+    <Card>
+      <div class="text-center py-12">
+        <div class="text-4xl mb-4">📡</div>
+        <p class="text-text-secondary">
+          No smart money signals detected recently.
+        </p>
+        <p class="text-text-secondary text-sm mt-2">
+          Check back later for Congress trades and unusual options activity.
+        </p>
+      </div>
+    </Card>
+  ) : (
+    <div class="space-y-4">
+      {allSignals.map((signal) => (
+        <SmartMoneyCard signal={signal} />
+      ))}
+    </div>
+  )}
+
+  <!-- Disclaimer -->
+  <div class="mt-8 p-4 bg-bg-elevated rounded-lg border border-border">
+    <p class="text-xs text-text-secondary">
+      <strong>Disclaimer:</strong> Smart money signals are for informational purposes only.
+      Congress trades are disclosed 45 days after transaction. Unusual options activity
+      may reflect hedging rather than directional bets. Always do your own research.
+    </p>
+  </div>
+</Layout>

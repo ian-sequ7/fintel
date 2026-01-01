@@ -50,7 +50,7 @@ from domain import (
 )
 from domain.models import Timeframe
 from domain.analysis_types import RiskCategory
-from adapters import YahooAdapter, FredAdapter, RedditAdapter, RssAdapter, get_universe_provider
+from adapters import YahooAdapter, FredAdapter, RedditAdapter, RssAdapter, CongressAdapter, get_universe_provider
 from ports import FetchError, RateLimitError
 from presentation.report import ReportData
 
@@ -195,6 +195,7 @@ class PipelineConfig:
     # Behavior
     fail_fast: bool = False  # If True, stop on first error
     include_social: bool = True
+    include_smart_money: bool = True  # Include Congress trades & unusual options
     verbose: bool = False
     use_v2_scoring: bool = True  # Use new systematic scoring
 
@@ -290,6 +291,58 @@ def _generate_mock_data() -> dict:
             {"title": "NVDA announces next-gen GPUs", "source": "CNBC", "category": "company"},
             {"title": "Tech sector leads market rally", "source": "MarketWatch", "category": "sector"},
         ],
+        "smart_money": [
+            {
+                "id": "mock_congress_1",
+                "signal_type": "congress",
+                "ticker": "NVDA",
+                "direction": "buy",
+                "strength": 0.8,
+                "summary": "Nancy Pelosi (D-House) bought NVDA ($100,001 - $250,000)",
+                "details": {
+                    "politician": "Nancy Pelosi",
+                    "party": "D",
+                    "chamber": "House",
+                    "amount_low": 100001,
+                    "amount_high": 250000,
+                    "disclosure_date": now.isoformat(),
+                },
+            },
+            {
+                "id": "mock_congress_2",
+                "signal_type": "congress",
+                "ticker": "AAPL",
+                "direction": "sell",
+                "strength": 0.5,
+                "summary": "Dan Crenshaw (R-House) sold AAPL ($15,001 - $50,000)",
+                "details": {
+                    "politician": "Dan Crenshaw",
+                    "party": "R",
+                    "chamber": "House",
+                    "amount_low": 15001,
+                    "amount_high": 50000,
+                    "disclosure_date": now.isoformat(),
+                },
+            },
+            {
+                "id": "mock_options_1",
+                "signal_type": "options",
+                "ticker": "NVDA",
+                "direction": "buy",
+                "strength": 0.75,
+                "summary": "Unusual CALL activity on NVDA: $150 2025-02-21, Volume/OI=5.2x",
+                "details": {
+                    "option_type": "call",
+                    "strike": 150.0,
+                    "expiry": "2025-02-21",
+                    "volume": 5200,
+                    "open_interest": 1000,
+                    "volume_oi_ratio": 5.2,
+                    "implied_volatility": 0.45,
+                    "premium_total": 520000.0,
+                },
+            },
+        ],
     }
 
 
@@ -314,6 +367,7 @@ class DataFetcher:
         self._fred: FredAdapter | None = None
         self._reddit: RedditAdapter | None = None
         self._rss: RssAdapter | None = None
+        self._congress: CongressAdapter | None = None
 
     @property
     def yahoo(self) -> YahooAdapter:
@@ -339,6 +393,12 @@ class DataFetcher:
             self._rss = RssAdapter()
         return self._rss
 
+    @property
+    def congress(self) -> CongressAdapter:
+        if self._congress is None:
+            self._congress = CongressAdapter()
+        return self._congress
+
     def _log(self, msg: str) -> None:
         """Log if verbose mode enabled."""
         if self.config.verbose:
@@ -361,6 +421,7 @@ class DataFetcher:
             "macro": [],
             "news": [],
             "social": [],
+            "smart_money": [],
         }
 
         # Resolve universe
@@ -414,6 +475,27 @@ class DataFetcher:
             result = self._fetch_source("reddit", lambda: self.reddit.get_all(limit=25))
             if result.status == SourceStatus.OK:
                 results["social"] = result.observations
+
+        # Fetch smart money signals (congress trades + unusual options)
+        if self.config.include_smart_money:
+            self._log("Fetching smart money signals...")
+
+            # Congress trades
+            result = self._fetch_source(
+                "congress",
+                lambda: self.congress.get_recent(days=60, limit=50),
+            )
+            if result.status == SourceStatus.OK:
+                results["smart_money"].extend(result.observations)
+
+            # Unusual options activity (top 10 tickers)
+            for ticker in tickers[:10]:
+                result = self._fetch_source(
+                    f"options_{ticker}",
+                    lambda t=ticker: self.yahoo.get_unusual_options(t),
+                )
+                if result.status == SourceStatus.OK:
+                    results["smart_money"].extend(result.observations)
 
         self.status.completed_at = datetime.now()
         return results
@@ -474,6 +556,7 @@ class DataFetcher:
             "macro": [],
             "news": [],
             "social": [],
+            "smart_money": [],
         }
 
         # Mock prices
@@ -529,6 +612,23 @@ class DataFetcher:
                 data=data,
                 reliability=0.8,
             ))
+
+        # Mock smart money
+        for data in mock["smart_money"]:
+            source = "congress" if data["signal_type"] == "congress" else "yahoo"
+            results["smart_money"].append(Observation(
+                source=source,
+                timestamp=now,
+                category=Category.SENTIMENT,
+                ticker=data.get("ticker"),
+                data=data,
+                reliability=0.85,
+            ))
+        self.status.sources["congress"] = SourceResult(
+            source="congress",
+            status=SourceStatus.OK,
+            observations=[],
+        )
 
         self.status.completed_at = datetime.now()
         return results
@@ -958,6 +1058,17 @@ class Pipeline:
         max_macro = self.config.max_macro_indicators
         max_risks = self.config.max_risks_displayed
 
+        # Transform smart money observations to signals
+        smart_money_signals = []
+        for obs in raw_data.get("smart_money", []):
+            # Observations already contain structured data from adapters
+            signal_data = obs.data
+            if isinstance(signal_data, dict) and "signal_type" in signal_data:
+                smart_money_signals.append(signal_data)
+
+        # Sort by strength (strongest signals first)
+        smart_money_signals.sort(key=lambda s: s.get("strength", 0), reverse=True)
+
         # Build report data
         report = ReportData(
             generated_at=datetime.now(),
@@ -971,6 +1082,7 @@ class Pipeline:
             watchlist=self.config.get_tickers(),
             stock_metrics=metrics,
             conviction_scores=scores,
+            smart_money_signals=smart_money_signals[:50],  # Limit to top 50 signals
         )
 
         # Add warnings to report if needed

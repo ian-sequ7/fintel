@@ -16,6 +16,9 @@ import type {
   NewsCategory,
   Sector,
   PricePoint,
+  SmartMoneySignal,
+  SmartMoneyContext,
+  SmartMoneySignalType,
 } from "./types";
 
 // =============================================================================
@@ -261,6 +264,102 @@ export function getNewsForStock(ticker: string): NewsItem[] {
  */
 export function getLatestNews(limit: number = 10): NewsItem[] {
   return getNews("all").slice(0, limit);
+}
+
+// =============================================================================
+// Smart Money
+// =============================================================================
+
+/**
+ * Get smart money context (all signals).
+ */
+export function getSmartMoneyData(): SmartMoneyContext {
+  const report = getReportSync();
+  return report.smartMoney ?? { signals: [], congress: [], options: [], lastUpdated: new Date().toISOString() };
+}
+
+/**
+ * Get smart money signals, optionally filtered by type.
+ */
+export function getSmartMoneySignals(
+  type?: SmartMoneySignalType | "all"
+): SmartMoneySignal[] {
+  const data = getSmartMoneyData();
+
+  if (!type || type === "all") {
+    return data.signals;
+  }
+
+  return data.signals.filter((signal) => signal.type === type);
+}
+
+/**
+ * Get smart money signals for a specific ticker.
+ */
+export function getSmartMoneyForStock(ticker: string): SmartMoneySignal[] {
+  const signals = getSmartMoneySignals("all");
+  return signals.filter((s) => s.ticker.toUpperCase() === ticker.toUpperCase());
+}
+
+/**
+ * Get smart money summary stats.
+ */
+export function getSmartMoneySummary(): {
+  total: number;
+  congress: number;
+  options: number;
+  buySignals: number;
+  sellSignals: number;
+} {
+  const data = getSmartMoneyData();
+  const buySignals = data.signals.filter((s) => s.direction === "buy").length;
+  const sellSignals = data.signals.filter((s) => s.direction === "sell").length;
+
+  return {
+    total: data.signals.length,
+    congress: data.congress.length,
+    options: data.options.length,
+    buySignals,
+    sellSignals,
+  };
+}
+
+/**
+ * Get top smart money signals by strength.
+ */
+export function getTopSmartMoneySignals(limit: number = 10): SmartMoneySignal[] {
+  const signals = getSmartMoneySignals("all");
+  return [...signals]
+    .sort((a, b) => b.strength - a.strength)
+    .slice(0, limit);
+}
+
+/**
+ * Format smart money signal strength as percentage.
+ */
+export function formatSignalStrength(strength: number): string {
+  return `${Math.round(strength * 100)}%`;
+}
+
+/**
+ * Get signal strength level.
+ */
+export function getSignalStrengthLevel(strength: number): "strong" | "moderate" | "weak" {
+  if (strength >= 0.7) return "strong";
+  if (strength >= 0.4) return "moderate";
+  return "weak";
+}
+
+/**
+ * Format amount range for congress trades.
+ */
+export function formatAmountRange(low: number, high: number): string {
+  const formatAmount = (n: number) => {
+    if (n >= 1e6) return `$${(n / 1e6).toFixed(1)}M`;
+    if (n >= 1e3) return `$${(n / 1e3).toFixed(0)}K`;
+    return `$${n}`;
+  };
+  return `${formatAmount(low)} - ${formatAmount(high)}`;
 }
 
 // =============================================================================
@@ -546,6 +645,131 @@ function _generateMockReport(): FinancialReport {
     }
   }
 
+  // Smart money signals
+  const congressSignals: SmartMoneySignal[] = [
+    {
+      id: "cong_1",
+      type: "congress",
+      ticker: "NVDA",
+      direction: "buy",
+      strength: 0.85,
+      summary: "Nancy Pelosi (D-House) bought NVDA ($100,001 - $250,000)",
+      timestamp: new Date(Date.now() - 86400000 * 3).toISOString(),
+      source: "congress",
+      details: {
+        politician: "Nancy Pelosi",
+        party: "D",
+        chamber: "House",
+        amount_low: 100001,
+        amount_high: 250000,
+        disclosure_date: new Date(Date.now() - 86400000 * 3).toISOString(),
+      },
+    },
+    {
+      id: "cong_2",
+      type: "congress",
+      ticker: "MSFT",
+      direction: "buy",
+      strength: 0.7,
+      summary: "Dan Crenshaw (R-House) bought MSFT ($50,001 - $100,000)",
+      timestamp: new Date(Date.now() - 86400000 * 5).toISOString(),
+      source: "congress",
+      details: {
+        politician: "Dan Crenshaw",
+        party: "R",
+        chamber: "House",
+        amount_low: 50001,
+        amount_high: 100000,
+        disclosure_date: new Date(Date.now() - 86400000 * 5).toISOString(),
+      },
+    },
+    {
+      id: "cong_3",
+      type: "congress",
+      ticker: "AAPL",
+      direction: "sell",
+      strength: 0.5,
+      summary: "Tommy Tuberville (R-Senate) sold AAPL ($15,001 - $50,000)",
+      timestamp: new Date(Date.now() - 86400000 * 7).toISOString(),
+      source: "congress",
+      details: {
+        politician: "Tommy Tuberville",
+        party: "R",
+        chamber: "Senate",
+        amount_low: 15001,
+        amount_high: 50000,
+        disclosure_date: new Date(Date.now() - 86400000 * 7).toISOString(),
+      },
+    },
+  ];
+
+  const optionsSignals: SmartMoneySignal[] = [
+    {
+      id: "opt_1",
+      type: "options",
+      ticker: "NVDA",
+      direction: "buy",
+      strength: 0.82,
+      summary: "Unusual CALL activity on NVDA: $950 2025-01-17, Volume/OI=6.2x, $1.2M premium",
+      timestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
+      source: "yahoo",
+      details: {
+        option_type: "call",
+        strike: 950,
+        expiry: "2025-01-17",
+        volume: 12400,
+        open_interest: 2000,
+        volume_oi_ratio: 6.2,
+        implied_volatility: 0.52,
+        premium_total: 1240000,
+      },
+    },
+    {
+      id: "opt_2",
+      type: "options",
+      ticker: "TSLA",
+      direction: "sell",
+      strength: 0.68,
+      summary: "Unusual PUT activity on TSLA: $220 2025-01-17, Volume/OI=4.5x",
+      timestamp: new Date(Date.now() - 3600000 * 4).toISOString(),
+      source: "yahoo",
+      details: {
+        option_type: "put",
+        strike: 220,
+        expiry: "2025-01-17",
+        volume: 9000,
+        open_interest: 2000,
+        volume_oi_ratio: 4.5,
+        implied_volatility: 0.65,
+        premium_total: 540000,
+      },
+    },
+    {
+      id: "opt_3",
+      type: "options",
+      ticker: "META",
+      direction: "buy",
+      strength: 0.75,
+      summary: "Unusual CALL activity on META: $550 2025-02-21, Volume/OI=5.0x",
+      timestamp: new Date(Date.now() - 3600000 * 6).toISOString(),
+      source: "yahoo",
+      details: {
+        option_type: "call",
+        strike: 550,
+        expiry: "2025-02-21",
+        volume: 5000,
+        open_interest: 1000,
+        volume_oi_ratio: 5.0,
+        implied_volatility: 0.48,
+        premium_total: 750000,
+      },
+    },
+  ];
+
+  const allSmartMoneySignals = [...congressSignals, ...optionsSignals].sort(
+    (a, b) => b.strength - a.strength
+  );
+
   return {
     generatedAt: now,
     version: "1.0.0",
@@ -566,6 +790,12 @@ function _generateMockReport(): FinancialReport {
       market: marketNews,
       company: companyNews,
     },
+    smartMoney: {
+      signals: allSmartMoneySignals,
+      congress: congressSignals,
+      options: optionsSignals,
+      lastUpdated: now,
+    },
     summary: {
       totalPicks: shortPicks.length + mediumPicks.length + longPicks.length,
       avgConviction:
@@ -577,6 +807,9 @@ function _generateMockReport(): FinancialReport {
       highRiskCount: risks.filter((r) => r.severity === "high").length,
       newsCount: marketNews.length + companyNews.length,
       marketTrend: "up",
+      smartMoneySignals: allSmartMoneySignals.length,
+      congressTrades: congressSignals.length,
+      unusualOptions: optionsSignals.length,
     },
   };
 }

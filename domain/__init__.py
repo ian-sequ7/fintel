@@ -68,6 +68,20 @@ from .news import (
     filter_by_ticker,
     filter_by_priority,
 )
+from .smart_money import (
+    SmartMoneySignalType,
+    TradeDirection,
+    PoliticalParty,
+    Chamber,
+    OptionType,
+    CongressTradeDetails,
+    UnusualOptionsDetails,
+    DarkPoolDetails,
+    SmartMoneySignal,
+    SmartMoneyContext,
+    signal_to_dict,
+    context_to_dict,
+)
 
 __all__ = [
     # Primitives (observation layer)
@@ -140,4 +154,17 @@ __all__ = [
     "filter_by_category",
     "filter_by_ticker",
     "filter_by_priority",
+    # Smart Money
+    "SmartMoneySignalType",
+    "TradeDirection",
+    "PoliticalParty",
+    "Chamber",
+    "OptionType",
+    "CongressTradeDetails",
+    "UnusualOptionsDetails",
+    "DarkPoolDetails",
+    "SmartMoneySignal",
+    "SmartMoneyContext",
+    "signal_to_dict",
+    "context_to_dict",
 ]

@@ -131,6 +131,67 @@ export interface NewsItem {
 }
 
 // =============================================================================
+// Smart Money Types
+// =============================================================================
+
+export type SmartMoneySignalType = "congress" | "options" | "darkpool";
+export type TradeDirection = "buy" | "sell" | "exchange";
+export type PoliticalParty = "D" | "R" | "I";
+export type Chamber = "House" | "Senate";
+export type OptionType = "call" | "put";
+
+export interface CongressDetails {
+  politician: string;
+  party: PoliticalParty;
+  chamber: Chamber;
+  amount_low: number;
+  amount_high: number;
+  asset_description?: string;
+  transaction_date?: string;
+  disclosure_date: string;
+}
+
+export interface OptionsDetails {
+  option_type: OptionType;
+  strike: number;
+  expiry: string;
+  volume: number;
+  open_interest: number;
+  volume_oi_ratio: number;
+  implied_volatility?: number;
+  premium_total?: number;
+}
+
+export interface DarkPoolDetails {
+  dark_pool_percent: number;
+  total_volume: number;
+  dark_pool_volume: number;
+  reporting_period: string;
+  source_venue?: string;
+}
+
+export type SmartMoneyDetails = CongressDetails | OptionsDetails | DarkPoolDetails;
+
+export interface SmartMoneySignal {
+  id: string;
+  type: SmartMoneySignalType;
+  ticker: string;
+  direction: TradeDirection;
+  strength: number; // 0-1
+  summary: string;
+  timestamp: string;
+  source: string;
+  details: SmartMoneyDetails;
+}
+
+export interface SmartMoneyContext {
+  signals: SmartMoneySignal[];
+  congress: SmartMoneySignal[];
+  options: SmartMoneySignal[];
+  lastUpdated: string;
+}
+
+// =============================================================================
 // Report Types (Root)
 // =============================================================================
 
@@ -158,6 +219,9 @@ export interface FinancialReport {
     company: NewsItem[];
   };
 
+  // Smart Money
+  smartMoney: SmartMoneyContext;
+
   // Summary metrics
   summary: ReportSummary;
 }
@@ -169,6 +233,9 @@ export interface ReportSummary {
   highRiskCount: number;
   newsCount: number;
   marketTrend: Trend;
+  smartMoneySignals?: number;
+  congressTrades?: number;
+  unusualOptions?: number;
 }
 
 // =============================================================================

@@ -54,6 +54,9 @@ class ReportData:
     stock_metrics: dict = field(default_factory=dict)
     conviction_scores: dict = field(default_factory=dict)  # ticker -> ConvictionScore
 
+    # Smart money signals (congress trades, unusual options)
+    smart_money_signals: list = field(default_factory=list)
+
 
 def _format_date(dt: datetime) -> str:
     """Format datetime for display."""

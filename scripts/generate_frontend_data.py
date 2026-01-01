@@ -153,6 +153,23 @@ def news_to_frontend(item, idx: int, fallback_category: str) -> dict:
     }
 
 
+def smart_money_to_frontend(signal: dict) -> dict:
+    """Convert SmartMoneySignal dict to frontend format."""
+    details = signal.get("details", {})
+
+    return {
+        "id": signal.get("id", ""),
+        "type": signal.get("signal_type", "congress"),
+        "ticker": signal.get("ticker", ""),
+        "direction": signal.get("direction", "buy"),
+        "strength": round(signal.get("strength", 0.5), 2),
+        "summary": signal.get("summary", ""),
+        "timestamp": details.get("disclosure_date") or details.get("expiry") or datetime.now().isoformat(),
+        "source": signal.get("source", ""),
+        "details": details,
+    }
+
+
 def fetch_stock_details(tickers: list[str]) -> dict:
     """Fetch detailed stock data including price history and fundamentals."""
     from adapters.yahoo import YahooAdapter
@@ -270,6 +287,11 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict) ->
     market_news = [news_to_frontend(n, i, "market") for i, n in enumerate(result.market_news[:50])]
     company_news = [news_to_frontend(n, i, "company") for i, n in enumerate(result.company_news[:50])]
 
+    # Convert smart money signals
+    smart_money_signals = [smart_money_to_frontend(s) for s in result.smart_money_signals[:50]]
+    congress_signals = [s for s in smart_money_signals if s["type"] == "congress"]
+    options_signals = [s for s in smart_money_signals if s["type"] == "options"]
+
     # Build stock details with price history and fundamentals
     stock_details_export = {}
     all_picks = short_picks + medium_picks + long_picks
@@ -341,6 +363,12 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict) ->
             "market": market_news,
             "company": company_news,
         },
+        "smartMoney": {
+            "signals": smart_money_signals,
+            "congress": congress_signals,
+            "options": options_signals,
+            "lastUpdated": now,
+        },
         "summary": {
             "totalPicks": len(all_picks_list),
             "avgConviction": round(avg_conviction, 3),
@@ -348,6 +376,9 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict) ->
             "highRiskCount": len([r for r in risks if r["severity"] == "high"]),
             "newsCount": len(market_news) + len(company_news),
             "marketTrend": market_trend,
+            "smartMoneySignals": len(smart_money_signals),
+            "congressTrades": len(congress_signals),
+            "unusualOptions": len(options_signals),
         },
     }
 
@@ -371,6 +402,7 @@ def main():
     print(f"Generated {len(result.short_term_picks)} short / {len(result.medium_term_picks)} medium / {len(result.long_term_picks)} long picks")
     print(f"Collected {len(result.macro_indicators)} macro indicators")
     print(f"Found {len(result.market_news) + len(result.company_news)} news items")
+    print(f"Found {len(result.smart_money_signals)} smart money signals")
 
     # Get unique tickers from all picks
     all_tickers = set()

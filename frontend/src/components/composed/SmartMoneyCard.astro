@@ -1,0 +1,172 @@
+---
+import Badge from "../primitives/Badge.astro";
+import { formatRelativeTime, formatAmountRange } from "../../data/report";
+import type { SmartMoneySignal, CongressDetails, OptionsDetails } from "../../data/types";
+
+interface Props {
+  signal: SmartMoneySignal;
+  compact?: boolean;
+  class?: string;
+}
+
+const { signal, compact = false, class: className = "" } = Astro.props;
+
+// Type icons
+const typeIcons = {
+  congress: "🏛️",
+  options: "📊",
+  darkpool: "🌑",
+};
+
+// Direction badge variants
+const directionVariants = {
+  buy: "bullish" as const,
+  sell: "bearish" as const,
+  exchange: "neutral" as const,
+};
+
+const directionLabels = {
+  buy: "BUY",
+  sell: "SELL",
+  exchange: "EXCHANGE",
+};
+
+// Type badge variants
+const typeVariants = {
+  congress: "info" as const,
+  options: "caution" as const,
+  darkpool: "neutral" as const,
+};
+
+const typeLabels = {
+  congress: "Congress",
+  options: "Options",
+  darkpool: "Dark Pool",
+};
+
+// Check if congress details
+function isCongressDetails(d: unknown): d is CongressDetails {
+  return typeof d === "object" && d !== null && "politician" in d;
+}
+
+// Check if options details
+function isOptionsDetails(d: unknown): d is OptionsDetails {
+  return typeof d === "object" && d !== null && "strike" in d;
+}
+
+// Get strength color class
+function getStrengthClass(strength: number): string {
+  if (strength >= 0.7) return "bg-success/15 text-success";
+  if (strength >= 0.4) return "bg-warning/15 text-warning";
+  return "bg-bg-elevated text-text-secondary";
+}
+
+const congressDetails = isCongressDetails(signal.details) ? signal.details : null;
+const optionsDetails = isOptionsDetails(signal.details) ? signal.details : null;
+---
+
+<div
+  class:list={[
+    "bg-bg-surface border border-border rounded-lg hover:border-accent transition-colors",
+    compact ? "p-3" : "p-4",
+    className,
+  ]}
+>
+  <div class="flex items-start gap-3">
+    <!-- Type icon -->
+    <div class="flex-shrink-0 text-xl" title={typeLabels[signal.type]}>
+      {typeIcons[signal.type]}
+    </div>
+
+    <div class="flex-1 min-w-0">
+      <!-- Top row: Ticker link + Direction badge -->
+      <div class="flex items-center gap-2 mb-1">
+        <a
+          href={`/stock/${signal.ticker}`}
+          class="font-bold text-accent hover:underline"
+        >
+          {signal.ticker}
+        </a>
+        <Badge
+          text={directionLabels[signal.direction]}
+          variant={directionVariants[signal.direction]}
+          size="sm"
+        />
+        <Badge
+          text={typeLabels[signal.type]}
+          variant={typeVariants[signal.type]}
+          size="sm"
+        />
+      </div>
+
+      <!-- Summary -->
+      <p
+        class:list={[
+          "text-text-primary",
+          compact ? "text-sm line-clamp-1" : "line-clamp-2",
+        ]}
+      >
+        {signal.summary}
+      </p>
+
+      <!-- Details row (hidden if compact) -->
+      {!compact && (
+        <div class="flex items-center flex-wrap gap-2 mt-2">
+          {/* Congress-specific details */}
+          {congressDetails && (
+            <>
+              <span class="text-xs font-medium text-text-secondary bg-bg-elevated px-2 py-0.5 rounded">
+                {congressDetails.party === "D" ? "🔵" : congressDetails.party === "R" ? "🔴" : "⚪"} {congressDetails.chamber}
+              </span>
+              <span class="text-xs text-text-secondary">·</span>
+              <span class="text-xs text-text-secondary">
+                {formatAmountRange(congressDetails.amount_low, congressDetails.amount_high)}
+              </span>
+            </>
+          )}
+
+          {/* Options-specific details */}
+          {optionsDetails && (
+            <>
+              <span class="text-xs font-medium text-text-secondary bg-bg-elevated px-2 py-0.5 rounded">
+                {optionsDetails.option_type.toUpperCase()} ${optionsDetails.strike}
+              </span>
+              <span class="text-xs text-text-secondary">·</span>
+              <span class="text-xs text-text-secondary">
+                Vol/OI: {optionsDetails.volume_oi_ratio.toFixed(1)}x
+              </span>
+              {optionsDetails.premium_total && (
+                <>
+                  <span class="text-xs text-text-secondary">·</span>
+                  <span class="text-xs text-text-secondary">
+                    ${(optionsDetails.premium_total / 1000).toFixed(0)}K premium
+                  </span>
+                </>
+              )}
+            </>
+          )}
+
+          <span class="text-xs text-text-secondary">·</span>
+
+          <!-- Relative time -->
+          <span class="text-xs text-text-secondary">
+            {formatRelativeTime(signal.timestamp)}
+          </span>
+        </div>
+      )}
+    </div>
+
+    <!-- Strength score -->
+    <div class="flex-shrink-0">
+      <div
+        class:list={[
+          "text-xs font-medium px-2 py-1 rounded",
+          getStrengthClass(signal.strength),
+        ]}
+        title={`Signal strength: ${Math.round(signal.strength * 100)}%`}
+      >
+        {Math.round(signal.strength * 100)}%
+      </div>
+    </div>
+  </div>
+</div>

@@ -356,3 +356,179 @@ class YahooAdapter(BaseAdapter):
         if obs and "price_history" in obs[0].data:
             return obs[0].data["price_history"]
         return []
+
+    # ========================================================================
+    # Unusual Options Activity Detection
+    # ========================================================================
+
+    def get_unusual_options(
+        self,
+        ticker: str,
+        threshold: float = 3.0,
+        min_volume: int = 100,
+    ) -> list[Observation]:
+        """
+        Detect unusual options activity for a ticker.
+
+        Flags options where volume/OI ratio exceeds threshold,
+        indicating unusual interest/activity.
+
+        Args:
+            ticker: Stock ticker symbol
+            threshold: Volume/OI ratio threshold (default 3.0)
+            min_volume: Minimum volume to consider (default 100)
+
+        Returns:
+            List of Observations for unusual options
+        """
+        import hashlib
+
+        ticker = self._validate_ticker(ticker)
+
+        try:
+            stock = yf.Ticker(ticker)
+
+            # Get available expiration dates
+            expirations = stock.options
+            if not expirations:
+                logger.debug(f"No options data for {ticker}")
+                return []
+
+            unusual_options = []
+
+            # Check first 3 expiration dates (near-term activity is most relevant)
+            for expiry in expirations[:3]:
+                try:
+                    chain = stock.option_chain(expiry)
+                except Exception as e:
+                    logger.debug(f"Failed to get options chain for {ticker} {expiry}: {e}")
+                    continue
+
+                # Check calls
+                for _, row in chain.calls.iterrows():
+                    unusual = self._check_unusual_option(
+                        row, "call", ticker, expiry, threshold, min_volume
+                    )
+                    if unusual:
+                        unusual_options.append(unusual)
+
+                # Check puts
+                for _, row in chain.puts.iterrows():
+                    unusual = self._check_unusual_option(
+                        row, "put", ticker, expiry, threshold, min_volume
+                    )
+                    if unusual:
+                        unusual_options.append(unusual)
+
+            # Sort by volume/OI ratio (most unusual first) and limit
+            unusual_options.sort(
+                key=lambda x: x.data.get("details", {}).get("volume_oi_ratio", 0),
+                reverse=True,
+            )
+
+            logger.info(f"Found {len(unusual_options)} unusual options for {ticker}")
+            return unusual_options[:10]  # Limit to top 10 most unusual
+
+        except Exception as e:
+            logger.warning(f"Failed to get options for {ticker}: {e}")
+            return []
+
+    def _check_unusual_option(
+        self,
+        row,
+        option_type: str,
+        ticker: str,
+        expiry: str,
+        threshold: float,
+        min_volume: int,
+    ) -> Observation | None:
+        """Check if an option contract shows unusual activity."""
+        import hashlib
+        import math
+
+        # Safely convert volume and OI, handling NaN values
+        volume_raw = row.get("volume", 0)
+        if volume_raw is None or (isinstance(volume_raw, float) and math.isnan(volume_raw)):
+            volume = 0
+        else:
+            volume = int(volume_raw)
+
+        oi_raw = row.get("openInterest", 0)
+        if oi_raw is None or (isinstance(oi_raw, float) and math.isnan(oi_raw)):
+            open_interest = 0
+        else:
+            open_interest = int(oi_raw)
+
+        # Skip if below minimum volume
+        if volume < min_volume:
+            return None
+
+        # Calculate volume/OI ratio
+        if open_interest <= 0:
+            # High volume with no OI is very unusual
+            if volume >= min_volume * 5:
+                vol_oi_ratio = 10.0  # Cap at 10x
+            else:
+                return None
+        else:
+            vol_oi_ratio = volume / open_interest
+
+        # Check if unusual
+        if vol_oi_ratio < threshold:
+            return None
+
+        # This option is unusual - create observation
+        strike = float(row.get("strike", 0))
+        last_price = float(row.get("lastPrice", 0) or 0)
+        implied_vol = row.get("impliedVolatility")
+        if implied_vol is not None:
+            implied_vol = float(implied_vol)
+
+        # Calculate premium total
+        premium_total = volume * last_price * 100 if last_price else None
+
+        # Determine direction (calls = bullish, puts = bearish)
+        direction = "buy" if option_type == "call" else "sell"
+
+        # Calculate signal strength based on vol/oi ratio and premium
+        strength = min(0.9, 0.3 + (vol_oi_ratio / 20))  # Scale up to 0.9
+        if premium_total and premium_total > 1000000:
+            strength = min(0.95, strength + 0.1)  # Boost for large premium
+
+        # Generate summary
+        summary = (
+            f"Unusual {option_type.upper()} activity on {ticker}: "
+            f"${strike:.0f} {expiry}, Volume/OI={vol_oi_ratio:.1f}x"
+        )
+        if premium_total:
+            summary += f", ${premium_total/1000:.0f}K premium"
+
+        # Generate unique ID
+        id_str = f"{ticker}:{option_type}:{strike}:{expiry}"
+        option_id = hashlib.md5(id_str.encode()).hexdigest()[:12]
+
+        return Observation(
+            source=self.source_name,
+            timestamp=datetime.now(),
+            category=Category.SENTIMENT,
+            data={
+                "id": option_id,
+                "signal_type": "options",
+                "ticker": ticker,
+                "direction": direction,
+                "strength": round(strength, 2),
+                "summary": summary,
+                "details": {
+                    "option_type": option_type,
+                    "strike": strike,
+                    "expiry": expiry,
+                    "volume": volume,
+                    "open_interest": open_interest,
+                    "volume_oi_ratio": round(vol_oi_ratio, 2),
+                    "implied_volatility": round(implied_vol, 4) if implied_vol else None,
+                    "premium_total": round(premium_total, 2) if premium_total else None,
+                },
+            },
+            ticker=ticker,
+            reliability=0.7,  # Lower reliability for options signals
+        )
