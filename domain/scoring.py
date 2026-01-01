@@ -629,15 +629,37 @@ def classify_timeframe(
     Returns:
         (Timeframe, reason)
     """
-    # SHORT: Technical setups, oversold bounces
+    # SHORT: Technical setups, momentum plays, oversold bounces
+
+    # Oversold bounce - stock dropped significantly
     if metrics.price_change_1m is not None and metrics.price_change_1m < rules.short_momentum_threshold:
         rsi = _estimate_rsi(metrics.price_change_1m)
         if rsi is not None and rsi < 35:
             return Timeframe.SHORT, "Oversold bounce opportunity"
 
+    # Volume spike - catalyst driven
     volume_ratio = metrics.volume_ratio or 1.0
     if volume_ratio >= rules.short_volume_spike:
         return Timeframe.SHORT, "Catalyst-driven volume spike"
+
+    # Strong positive momentum - ride the wave
+    if metrics.price_change_1m is not None and metrics.price_change_1m > 0.10:
+        return Timeframe.SHORT, "Strong momentum play"
+
+    # Strong 3-month momentum with high conviction
+    if metrics.price_change_3m is not None and metrics.price_change_3m > 0.20:
+        if momentum_score >= 0.6:
+            return Timeframe.SHORT, "Strong trend momentum"
+
+    # Strong analyst consensus (1.0 = Strong Buy) - near-term catalyst
+    if metrics.analyst_rating is not None and metrics.analyst_rating <= 1.8:
+        if momentum_score >= 0.4:
+            return Timeframe.SHORT, "Strong analyst conviction catalyst"
+
+    # High growth with positive momentum - capture growth phase
+    if metrics.revenue_growth is not None and metrics.revenue_growth > 0.25:
+        if momentum_score >= 0.5:
+            return Timeframe.SHORT, "High growth momentum play"
 
     # LONG: High quality + fair valuation = compounding opportunity
     if quality_score >= rules.long_quality_threshold and valuation_score >= rules.long_valuation_fair:
