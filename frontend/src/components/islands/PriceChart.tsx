@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { createChart, type IChartApi, type ISeriesApi, ColorType } from "lightweight-charts";
+import { createChart, CandlestickSeries, type IChartApi, type ISeriesApi, ColorType } from "lightweight-charts";
 
 interface PricePoint {
   time: string; // YYYY-MM-DD format
@@ -146,8 +146,8 @@ export default function PriceChart({ ticker, data, height = 350 }: Props) {
 
     chartRef.current = chart;
 
-    // Add candlestick series
-    const candlestickSeries = chart.addCandlestickSeries({
+    // Add candlestick series (v5 API)
+    const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: theme.upColor,
       downColor: theme.downColor,
       borderUpColor: theme.upColor,
