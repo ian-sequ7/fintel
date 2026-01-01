@@ -50,7 +50,7 @@ from domain import (
 )
 from domain.models import Timeframe
 from domain.analysis_types import RiskCategory
-from adapters import YahooAdapter, FredAdapter, RedditAdapter, RssAdapter
+from adapters import YahooAdapter, FredAdapter, RedditAdapter, RssAdapter, get_universe_provider
 from ports import FetchError, RateLimitError
 from presentation.report import ReportData
 
@@ -120,7 +120,14 @@ class PipelineStatus:
 class PipelineConfig:
     """Configuration for the orchestration pipeline."""
 
-    # Tickers to analyze
+    # Universe configuration
+    universe_source: str = "watchlist"  # "watchlist", "sp500", "sector"
+    universe_max_tickers: int = 100
+    universe_sectors: list[str] = field(default_factory=lambda: [
+        "technology", "healthcare", "financials"
+    ])
+
+    # Custom watchlist (used when universe_source="watchlist")
     watchlist: list[str] = field(default_factory=lambda: [
         "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA",
         "META", "TSLA", "BRK-B", "JPM", "V",
@@ -179,15 +186,38 @@ class PipelineConfig:
         "communication services": 18.0,
     })
 
-    # Limits
-    max_picks_per_timeframe: int = 5
-    max_news_items: int = 20
+    # Limits (updated for production scale)
+    max_picks_per_timeframe: int = 15
+    max_news_items: int = 100
+    max_macro_indicators: int = 20
+    max_risks_displayed: int = 10
 
     # Behavior
     fail_fast: bool = False  # If True, stop on first error
     include_social: bool = True
     verbose: bool = False
     use_v2_scoring: bool = True  # Use new systematic scoring
+
+    def get_tickers(self) -> list[str]:
+        """
+        Resolve tickers based on universe configuration.
+
+        Returns list of tickers to analyze, respecting max_tickers limit.
+        """
+        if self.universe_source == "watchlist":
+            return self.watchlist[:self.universe_max_tickers]
+
+        provider = get_universe_provider()
+
+        if self.universe_source == "sp500":
+            tickers = provider.get_tickers()
+        elif self.universe_source == "sector":
+            tickers = provider.filter_by_sector(self.universe_sectors)
+        else:
+            # Fallback to watchlist
+            return self.watchlist[:self.universe_max_tickers]
+
+        return tickers[:self.universe_max_tickers]
 
 
 # ============================================================================
@@ -333,9 +363,13 @@ class DataFetcher:
             "social": [],
         }
 
+        # Resolve universe
+        tickers = self.config.get_tickers()
+        self._log(f"Analyzing {len(tickers)} tickers (source: {self.config.universe_source})")
+
         # Fetch prices
         self._log("Fetching price data...")
-        for ticker in self.config.watchlist:
+        for ticker in tickers:
             result = self._fetch_source(
                 f"yahoo_price_{ticker}",
                 lambda t=ticker: self.yahoo.get_price(t),
@@ -345,7 +379,7 @@ class DataFetcher:
 
         # Fetch fundamentals
         self._log("Fetching fundamental data...")
-        for ticker in self.config.watchlist:
+        for ticker in tickers:
             result = self._fetch_source(
                 f"yahoo_fund_{ticker}",
                 lambda t=ticker: self.yahoo.get_fundamentals(t),
@@ -365,8 +399,8 @@ class DataFetcher:
         if result.status == SourceStatus.OK:
             results["news"].extend(result.observations)
 
-        # Fetch company news
-        for ticker in self.config.watchlist[:5]:  # Limit API calls
+        # Fetch company news (limit to top 10 tickers to avoid rate limits)
+        for ticker in tickers[:10]:
             result = self._fetch_source(
                 f"yahoo_news_{ticker}",
                 lambda t=ticker: self.yahoo.get_news(t),
@@ -902,21 +936,23 @@ class Pipeline:
             medium_picks = rank_picks(medium_picks, self.config.strategy, scores)
             long_picks = rank_picks(long_picks, self.config.strategy, scores)
 
-        # Apply limits
+        # Apply limits (now configurable for production scale)
         max_picks = self.config.max_picks_per_timeframe
         max_news = self.config.max_news_items
+        max_macro = self.config.max_macro_indicators
+        max_risks = self.config.max_risks_displayed
 
         # Build report data
         report = ReportData(
             generated_at=datetime.now(),
-            macro_indicators=macro_indicators[:8],
-            macro_risks=macro_risks[:5],
+            macro_indicators=macro_indicators[:max_macro],
+            macro_risks=macro_risks[:max_risks],
             short_term_picks=short_picks[:max_picks],
             medium_term_picks=medium_picks[:max_picks],
             long_term_picks=long_picks[:max_picks],
             market_news=market_news[:max_news],
             company_news=company_news[:max_news],
-            watchlist=self.config.watchlist,
+            watchlist=self.config.get_tickers(),
             stock_metrics=metrics,
             conviction_scores=scores,
         )

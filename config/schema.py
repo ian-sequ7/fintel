@@ -249,8 +249,10 @@ class DataSourcesConfig(BaseModel):
 class OutputConfig(BaseModel):
     """Output preferences."""
 
-    max_picks_per_timeframe: int = Field(default=5, ge=1, le=20)
-    max_news_items: int = Field(default=20, ge=5, le=100)
+    max_picks_per_timeframe: int = Field(default=15, ge=1, le=50)
+    max_news_items: int = Field(default=100, ge=5, le=500)
+    max_macro_indicators: int = Field(default=20, ge=5, le=30)
+    max_risks_displayed: int = Field(default=10, ge=1, le=20)
     date_format: str = Field(default="%Y-%m-%d %H:%M")
     include_social_news: bool = Field(default=True)
 
@@ -268,6 +270,29 @@ class PipelineConfig(BaseModel):
     min_healthy_sources: int = Field(default=2, ge=1, le=5)
 
 
+class UniverseConfig(BaseModel):
+    """Stock universe configuration."""
+
+    # Universe source: "watchlist", "sp500", "sector"
+    source: str = Field(
+        default="watchlist",
+        pattern="^(watchlist|sp500|sector)$",
+        description="Universe source: watchlist (custom), sp500 (full S&P 500), sector (filter by sectors)"
+    )
+
+    # Maximum tickers to analyze (for performance)
+    max_tickers: int = Field(default=100, ge=10, le=600)
+
+    # Sectors to include (when source="sector")
+    sectors: list[str] = Field(
+        default_factory=lambda: ["technology", "healthcare", "financials"],
+        description="Sectors to include when source='sector'"
+    )
+
+    # Whether to use fallback if live fetch fails
+    use_fallback: bool = Field(default=True)
+
+
 class FintelConfig(BaseModel):
     """
     Root configuration model.
@@ -275,7 +300,10 @@ class FintelConfig(BaseModel):
     All settings are validated on load.
     """
 
-    # Default tickers to track
+    # Universe configuration (replaces simple watchlist)
+    universe: UniverseConfig = Field(default_factory=UniverseConfig)
+
+    # Custom watchlist (used when universe.source="watchlist")
     watchlist: list[str] = Field(default_factory=lambda: [
         "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA",
         "META", "TSLA", "BRK-B", "JPM", "V",

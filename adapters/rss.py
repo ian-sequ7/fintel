@@ -33,11 +33,21 @@ class NewsArticle:
     description: str | None = None
 
 
-# RSS feed URLs
+# RSS feed URLs (8 sources)
 RSS_FEEDS = {
+    # Google News aggregators
     "google_market": "https://news.google.com/rss/search?q=stock+market&hl=en-US&gl=US&ceid=US:en",
     "google_economy": "https://news.google.com/rss/search?q=economy+finance&hl=en-US&gl=US&ceid=US:en",
+    "google_fed": "https://news.google.com/rss/search?q=federal+reserve&hl=en-US&gl=US&ceid=US:en",
+
+    # Major financial news
     "marketwatch": "https://feeds.marketwatch.com/marketwatch/topstories/",
+    "cnbc": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+    "investing": "https://www.investing.com/rss/news.rss",
+
+    # Sector-specific
+    "seekingalpha": "https://seekingalpha.com/market_currents.xml",
+    "yahoo_finance": "https://finance.yahoo.com/news/rssindex",
 }
 
 

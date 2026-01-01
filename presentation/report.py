@@ -137,7 +137,7 @@ def generate_macro_section(data: ReportData) -> str:
         lines.append("| Indicator | Value | Trend | Impact |")
         lines.append("|-----------|-------|-------|--------|")
 
-        for ind in data.macro_indicators[:8]:
+        for ind in data.macro_indicators[:20]:  # Show up to 20 indicators
             trend = _trend_arrow(ind.trend)
             impact = _impact_emoji(ind.impact_assessment)
             value = f"{ind.current_value:.2f}{ind.unit}" if ind.unit else f"{ind.current_value:.2f}"
@@ -150,7 +150,7 @@ def generate_macro_section(data: ReportData) -> str:
         lines.append("### Headwinds & Risks")
         lines.append("")
 
-        for i, risk in enumerate(data.macro_risks[:5], 1):
+        for i, risk in enumerate(data.macro_risks[:10], 1):  # Show up to 10 risks
             severity_bar = _conviction_bar(risk.severity, 5)
             lines.append(f"**{i}. {risk.name}** ({risk.category.value})")
             lines.append(f"   - Severity: {severity_bar}")
@@ -179,7 +179,7 @@ def generate_picks_section(
         lines.append("")
         return "\n".join(lines)
 
-    for i, pick in enumerate(picks[:5], 1):
+    for i, pick in enumerate(picks[:15], 1):  # Show up to 15 picks per timeframe
         conviction = _conviction_bar(pick.conviction_score)
 
         lines.append(f"### {i}. {pick.ticker}")

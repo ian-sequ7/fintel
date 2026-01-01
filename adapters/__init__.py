@@ -3,6 +3,13 @@ from .yahoo import YahooAdapter
 from .fred import FredAdapter
 from .reddit import RedditAdapter
 from .rss import RssAdapter
+from .universe import (
+    UniverseProvider,
+    StockInfo,
+    get_universe_provider,
+    get_sp500_tickers,
+    get_sector_for_ticker,
+)
 
 __all__ = [
     "BaseAdapter",
@@ -10,4 +17,9 @@ __all__ = [
     "FredAdapter",
     "RedditAdapter",
     "RssAdapter",
+    "UniverseProvider",
+    "StockInfo",
+    "get_universe_provider",
+    "get_sp500_tickers",
+    "get_sector_for_ticker",
 ]

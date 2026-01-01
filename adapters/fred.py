@@ -33,16 +33,45 @@ class MacroIndicator:
     unit: str
 
 
-# Key FRED series for macro analysis
+# Key FRED series for macro analysis (20 total)
 MACRO_SERIES = {
+    # Labor market (3)
     "UNRATE": ("Unemployment Rate", "%"),
+    "PAYEMS": ("Nonfarm Payrolls", "Thousands"),
+    "ICSA": ("Initial Jobless Claims", "Thousands"),
+
+    # Inflation (2)
     "CPIAUCSL": ("CPI (Inflation)", "Index"),
+    "PCEPI": ("PCE Price Index", "Index"),
+
+    # GDP & Production (2)
     "GDP": ("Gross Domestic Product", "Billions USD"),
-    "FEDFUNDS": ("Federal Funds Rate", "%"),
-    "T10Y2Y": ("10Y-2Y Treasury Spread", "%"),
-    "UMCSENT": ("Consumer Sentiment", "Index"),
     "INDPRO": ("Industrial Production", "Index"),
+
+    # Interest Rates (4)
+    "FEDFUNDS": ("Federal Funds Rate", "%"),
+    "DGS10": ("10-Year Treasury Yield", "%"),
+    "DGS2": ("2-Year Treasury Yield", "%"),
+    "T10Y2Y": ("10Y-2Y Treasury Spread", "%"),
+
+    # Credit & Risk (2)
+    "BAMLH0A0HYM2": ("High Yield Spread", "%"),
+    "VIXCLS": ("VIX Volatility Index", "Index"),
+
+    # Consumer (2)
+    "UMCSENT": ("Consumer Sentiment", "Index"),
+    "RSXFS": ("Retail Sales", "Millions USD"),
+
+    # Housing (2)
     "HOUST": ("Housing Starts", "Thousands"),
+    "MORTGAGE30US": ("30-Year Mortgage Rate", "%"),
+
+    # Commodities (2)
+    "DCOILWTICO": ("WTI Crude Oil Price", "USD/Barrel"),
+    "GOLDAMGBD228NLBM": ("Gold Price", "USD/Oz"),
+
+    # Fed Balance Sheet (1)
+    "WALCL": ("Fed Balance Sheet", "Millions USD"),
 }
 
 
