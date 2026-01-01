@@ -513,25 +513,26 @@ def identify_headwinds(
                 source_indicator="UNRATE",
             ))
 
-    # Check inflation
+    # Check inflation (now using YoY rate, not index value)
     cpi = by_id.get("CPIAUCSL") or by_name.get("cpi (inflation)")
     if cpi:
+        inflation_rate = cpi.current_value  # Now this is YoY % change
         # Flag if inflation is elevated (>3.0%) or rising
-        if cpi.current_value > config.inflation_high:
+        if inflation_rate > config.inflation_high:
             risks.append(Risk(
                 category=RiskCategory.MACRO,
                 name="Elevated Inflation",
-                description=f"Inflation at {cpi.current_value}% above Fed target - policy may stay restrictive",
+                description=f"Inflation at {inflation_rate:.1f}% YoY, above Fed's 2% target - policy may stay restrictive",
                 severity=0.7,
                 probability=0.75,
                 source_indicator="CPIAUCSL",
             ))
-        elif cpi.current_value > 3.0:
+        elif inflation_rate > 3.0:
             if cpi.trend == Trend.RISING:
                 risks.append(Risk(
                     category=RiskCategory.MACRO,
                     name="Rising Inflation",
-                    description="Rising inflation may force Fed to maintain restrictive policy",
+                    description=f"Inflation at {inflation_rate:.1f}% and rising - Fed may maintain restrictive policy",
                     severity=0.6,
                     probability=0.7,
                     source_indicator="CPIAUCSL",
@@ -541,11 +542,21 @@ def identify_headwinds(
                 risks.append(Risk(
                     category=RiskCategory.MACRO,
                     name="Above-Target Inflation",
-                    description=f"Inflation at {cpi.current_value}% remains above Fed's 2% target",
+                    description=f"Inflation at {inflation_rate:.1f}% YoY remains above Fed's 2% target",
                     severity=0.5,
                     probability=0.65,
                     source_indicator="CPIAUCSL",
                 ))
+        elif inflation_rate > 2.5:
+            # Inflation slightly above target, minor risk
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Sticky Inflation",
+                description=f"Inflation at {inflation_rate:.1f}% YoY, slightly above Fed's 2% target",
+                severity=0.3,
+                probability=0.5,
+                source_indicator="CPIAUCSL",
+            ))
 
     # Check Fed Funds rate trend
     fed = by_id.get("FEDFUNDS") or by_name.get("federal funds rate")

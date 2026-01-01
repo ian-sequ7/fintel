@@ -216,6 +216,8 @@ class YahooAdapter(BaseAdapter):
                 "fifty_two_week_high": info.get("fiftyTwoWeekHigh"),
                 "fifty_two_week_low": info.get("fiftyTwoWeekLow"),
                 "beta": info.get("beta"),
+                # Company info
+                "company_name": info.get("shortName") or info.get("longName") or ticker,
                 # Sector and industry for scoring
                 "sector": fundamental_data.sector,
                 "industry": fundamental_data.industry,

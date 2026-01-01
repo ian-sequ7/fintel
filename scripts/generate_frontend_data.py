@@ -127,15 +127,26 @@ def risk_to_frontend(risk) -> dict:
     }
 
 
-def news_to_frontend(item, idx: int, category: str) -> dict:
+def news_to_frontend(item, idx: int, fallback_category: str) -> dict:
     """Convert ScoredNewsItem to frontend NewsItem format."""
+    # Use item's actual category if available, otherwise fallback
+    category_map = {
+        "market_wide": "Market",
+        "sector": "Sector",
+        "company": "Company",
+        "social": "Social",
+        "unknown": fallback_category.title(),
+    }
+    actual_category = getattr(item.category, 'value', fallback_category) if hasattr(item, 'category') else fallback_category
+    display_category = category_map.get(actual_category, fallback_category.title())
+
     return {
-        "id": f"{category[0]}{idx}",
+        "id": f"{fallback_category[0]}{idx}",
         "headline": item.title,
         "source": item.source,
         "url": item.url or "",
         "publishedAt": item.published.isoformat() if item.published else datetime.now().isoformat(),
-        "category": category,
+        "category": display_category,
         "relevanceScore": round(item.relevance_score, 2),
         "tickersMentioned": item.tickers_mentioned[:5] if item.tickers_mentioned else [],
         "excerpt": item.title[:200] if item.title else "",
@@ -187,6 +198,7 @@ def fetch_stock_details(tickers: list[str]) -> dict:
                 "beta": fund_data.get("beta"),
                 "avg_volume": fund_data.get("average_volume"),
                 "sector": fund_data.get("sector"),
+                "company_name": fund_data.get("company_name") or ticker,
                 "price_history": price_history,
             }
 
@@ -221,9 +233,12 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict) ->
         # Get sector
         sector = d.get("sector") or (getattr(m, "sector", None) if m else None)
 
+        # Get company name from details, metrics, or fall back to ticker
+        company_name = d.get("company_name") or (getattr(m, "name", None) if m else None) or pick.ticker
+
         return {
             "ticker": pick.ticker,
-            "companyName": pick.ticker,  # Could enhance with company name lookup
+            "companyName": company_name,
             "currentPrice": round(current_price, 2),
             "priceChange": round(change, 2),
             "priceChangePercent": round(change_pct, 2),
@@ -234,6 +249,7 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict) ->
             "sector": map_sector(sector),
             "entryPrice": round(pick.entry_price, 2) if pick.entry_price else None,
             "targetPrice": round(pick.target_price, 2) if pick.target_price else None,
+            "stopLoss": round(pick.stop_loss, 2) if pick.stop_loss else None,
             "marketCap": d.get("market_cap"),
             "peRatio": d.get("pe_trailing"),
             "volume": d.get("volume"),

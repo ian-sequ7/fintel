@@ -12,6 +12,7 @@ The algorithm works in stages:
 5. Risk Identification: Flag low-scoring factors as risks
 """
 
+import math
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -690,6 +691,8 @@ def generate_thesis(
     conviction: int,
 ) -> str:
     """Generate investment thesis from top contributing factors."""
+    import hashlib
+
     # Sort factors by contribution (score * weight)
     sorted_factors = sorted(factors, key=lambda f: f.score * f.weight, reverse=True)
 
@@ -697,35 +700,70 @@ def generate_thesis(
     top_factors = [f for f in sorted_factors[:3] if f.score >= 0.5]
 
     if not top_factors:
-        return f"{ticker} ({sector}): Limited conviction due to weak fundamentals across metrics."
+        return f"{ticker}: Caution advised - weak fundamentals across key metrics."
 
-    # Build thesis
+    # Identify the dominant factor type for thesis framing
+    top_factor_name = top_factors[0].name.lower()
     factor_descriptions = [f.description for f in top_factors]
 
-    timeframe_str = {
-        Timeframe.SHORT: "near-term",
-        Timeframe.MEDIUM: "medium-term",
-        Timeframe.LONG: "long-term",
-    }[timeframe]
+    # Use ticker hash for deterministic but varied selection
+    ticker_hash = int(hashlib.md5(ticker.encode()).hexdigest()[:8], 16)
 
-    conviction_adj = {
-        range(1, 4): "speculative",
-        range(4, 6): "moderate",
-        range(6, 8): "solid",
-        range(8, 11): "high-conviction",
-    }
-    conv_str = next(
-        (v for k, v in conviction_adj.items() if conviction in k),
-        "moderate",
-    )
+    # Varied opening phrases based on conviction and dominant factor
+    if conviction >= 8:
+        openings = [
+            f"{ticker} stands out with exceptional fundamentals.",
+            f"Strong conviction in {ticker} driven by multiple tailwinds.",
+            f"{ticker} shows compelling characteristics across key metrics.",
+        ]
+    elif conviction >= 6:
+        if "momentum" in top_factor_name or "technical" in top_factor_name:
+            openings = [
+                f"{ticker} shows favorable technical setup.",
+                f"Momentum indicators favor {ticker}.",
+                f"{ticker} benefits from positive price action.",
+            ]
+        elif "value" in top_factor_name or "pe" in top_factor_name:
+            openings = [
+                f"{ticker} trades at attractive valuations.",
+                f"Value opportunity in {ticker}.",
+                f"{ticker} offers compelling risk/reward at current prices.",
+            ]
+        elif "growth" in top_factor_name:
+            openings = [
+                f"{ticker} demonstrates strong growth trajectory.",
+                f"Growth metrics favor {ticker}.",
+                f"{ticker} positioned for continued expansion.",
+            ]
+        else:
+            openings = [
+                f"{ticker} presents a balanced opportunity.",
+                f"Multiple factors support {ticker}.",
+                f"{ticker} scores well on key fundamentals.",
+            ]
+    else:
+        openings = [
+            f"{ticker} warrants consideration despite mixed signals.",
+            f"Selective opportunity in {ticker}.",
+            f"{ticker} may suit risk-tolerant investors.",
+        ]
 
-    thesis = f"{ticker} ({sector}): {conv_str.capitalize()} {timeframe_str} opportunity. "
-    thesis += ". ".join(factor_descriptions[:2]) + ". "
+    opening = openings[ticker_hash % len(openings)]
 
+    # Build the thesis with key supporting factors
+    thesis = f"{opening} {factor_descriptions[0]}"
+    if len(factor_descriptions) > 1:
+        thesis += f". {factor_descriptions[1]}"
+
+    # Add macro context if meaningful
     if macro_description and "Neutral" not in macro_description:
-        thesis += macro_description + "."
+        thesis += f". {macro_description}"
 
-    return thesis
+    # Add sector context occasionally
+    if ticker_hash % 3 == 0 and sector:
+        thesis += f" ({sector} sector)"
+
+    return thesis + "."
 
 
 def identify_risks(
@@ -836,8 +874,16 @@ def score_stock(
     # Apply macro adjustment
     overall_score = max(0.0, min(1.0, base_score + macro_adjustment))
 
-    # Convert to 1-10 conviction
-    conviction = max(1, min(10, round(overall_score * 10)))
+    # Apply score differentiation to spread out clustered scores
+    # This uses a power transformation that amplifies differences from 0.5
+    # Scores > 0.5 are pushed higher, scores < 0.5 are pushed lower
+    centered = overall_score - 0.5
+    amplification = 1.8  # Higher = more spread
+    differentiated = 0.5 + (math.copysign(abs(centered) ** (1/amplification), centered))
+    differentiated = max(0.0, min(1.0, differentiated))
+
+    # Convert to 1-10 conviction using differentiated score
+    conviction = max(1, min(10, round(differentiated * 10)))
 
     # Confidence based on data completeness
     confidence = len(factors_used) / (len(factors_used) + len(factors_missing))

@@ -160,6 +160,23 @@ COMMON_WORDS = {
     "HAS", "BIG", "TOP", "LOW", "KEY", "MAY", "CAN", "OUR", "ANY",
 }
 
+# Keywords indicating non-financial/lifestyle content to filter out
+IRRELEVANT_KEYWORDS = {
+    # Personal finance advice (not market-relevant)
+    "gift my", "gift your", "grandchildren", "fixed budget",
+    "steal my money", "cautionary tales", "financial adviser",
+    # Lifestyle/entertainment
+    "movie", "film", "actor", "actress", "celebrity", "hollywood",
+    "restaurant", "recipe", "cooking", "travel", "vacation",
+    "wedding", "dating", "relationship",
+    # Sports (unless betting-related)
+    "nfl", "nba", "mlb", "nhl", "football", "basketball", "soccer",
+    # Health/wellness (non-pharma)
+    "diet", "weight loss", "exercise", "workout", "yoga",
+    # General lifestyle
+    "horoscope", "zodiac", "astrology",
+}
+
 
 # ============================================================================
 # Data Types
@@ -175,6 +192,7 @@ class RawNewsItem(BaseModel):
     published: datetime
     description: str | None = None
     category_hint: str | None = None  # From adapter if available
+    source_ticker: str | None = None  # Ticker this news was fetched for
 
 
 class ScoredNewsItem(BaseModel):
@@ -368,6 +386,21 @@ def score_keywords(text: str) -> tuple[float, list[str]]:
     multi_bonus = min(0.15, len(scores) * 0.03)
 
     return round(min(1.0, max_score + multi_bonus), 4), found_keywords
+
+
+def is_irrelevant_content(title: str, description: str | None = None) -> bool:
+    """
+    Check if content is irrelevant lifestyle/non-financial news.
+
+    Pure function - returns True if content should be filtered out.
+    """
+    text = f"{title} {description or ''}".lower()
+
+    for keyword in IRRELEVANT_KEYWORDS:
+        if keyword in text:
+            return True
+
+    return False
 
 
 def compute_relevance_score(
@@ -590,8 +623,12 @@ def score_news_item(
 
     text = f"{item.title} {item.description or ''}"
 
-    # Extract tickers
+    # Extract tickers from text
     tickers = extract_tickers(text, known_tickers)
+
+    # Include source ticker if provided (news fetched for a specific ticker)
+    if item.source_ticker and item.source_ticker.upper() not in tickers:
+        tickers.insert(0, item.source_ticker.upper())
 
     # Score components
     source_score = score_source_credibility(item.source)
@@ -653,10 +690,16 @@ def aggregate_news(
     config = config or NewsAggregatorConfig()
     now = now or datetime.now()
 
-    # Score all items
+    # Filter out irrelevant content first (lifestyle, non-financial)
+    relevant_items = [
+        item for item in items
+        if not is_irrelevant_content(item.title, item.description)
+    ]
+
+    # Score remaining items
     scored = [
         score_news_item(item, config, known_tickers, now)
-        for item in items
+        for item in relevant_items
     ]
 
     # Filter by minimum relevance

@@ -129,6 +129,11 @@ class StockPick(BaseModel):
         gt=0,
         description="Price target"
     )
+    stop_loss: float | None = Field(
+        default=None,
+        gt=0,
+        description="Stop loss price for risk management"
+    )
     generated_at: datetime = Field(default_factory=datetime.now)
 
     @model_validator(mode="after")

@@ -695,6 +695,7 @@ class DataTransformer:
                 source=obs.data.get("source") or obs.data.get("publisher") or obs.source,
                 published=obs.timestamp,
                 description=obs.data.get("description"),
+                source_ticker=obs.ticker,  # Link news to ticker it was fetched for
             ))
 
         # Convert social observations
@@ -761,6 +762,9 @@ class Analyzer:
             # Generate thesis
             thesis = generate_thesis(m, score, risks)
 
+            # Calculate stop loss based on conviction (8% default for legacy path)
+            stop_loss = m.price * 0.92 if m.price else None
+
             # Create pick
             pick = StockPick(
                 ticker=ticker,
@@ -770,6 +774,7 @@ class Analyzer:
                 risk_factors=risk_factors,
                 entry_price=m.price,
                 target_price=m.price * (1 + score.overall * 0.3) if score.overall > 0.5 else None,
+                stop_loss=stop_loss,
             )
             picks.append(pick)
 
@@ -817,6 +822,16 @@ class Analyzer:
             # Store conviction score for enrichment
             scores[ticker] = scored.score_breakdown
 
+            # Calculate stop loss (wider for lower conviction, tighter for higher)
+            # High conviction (8-10): 5% stop, Medium (5-7): 8% stop, Low (1-4): 12% stop
+            if scored.conviction >= 8:
+                stop_pct = 0.05
+            elif scored.conviction >= 5:
+                stop_pct = 0.08
+            else:
+                stop_pct = 0.12
+            stop_loss = m.price * (1 - stop_pct) if m.price else None
+
             # Convert ScoredPick to StockPick for report compatibility
             pick = StockPick(
                 ticker=ticker,
@@ -826,6 +841,7 @@ class Analyzer:
                 risk_factors=scored.risks[:3],
                 entry_price=m.price,
                 target_price=m.price * (1 + scored.conviction_normalized * 0.3) if scored.conviction > 5 else None,
+                stop_loss=stop_loss,
             )
             picks.append(pick)
 

@@ -75,7 +75,7 @@ class NewsAggregator:
             self._reddit = RedditAdapter()
         return self._reddit
 
-    def _observation_to_raw(self, obs: Observation) -> RawNewsItem:
+    def _observation_to_raw(self, obs: Observation, source_ticker: str | None = None) -> RawNewsItem:
         """Convert adapter Observation to RawNewsItem."""
         data = obs.data
 
@@ -85,6 +85,9 @@ class NewsAggregator:
         source = data.get("source") or data.get("publisher") or obs.source
         description = data.get("description") or data.get("text", "")[:200]
 
+        # Use provided source_ticker, or fallback to observation's ticker
+        ticker = source_ticker or obs.ticker
+
         return RawNewsItem(
             title=title,
             url=url,
@@ -92,6 +95,7 @@ class NewsAggregator:
             published=obs.timestamp,
             description=description,
             category_hint=data.get("subreddit"),  # For Reddit
+            source_ticker=ticker,
         )
 
     def fetch_company_news(self, tickers: list[str]) -> list[RawNewsItem]:
@@ -102,7 +106,8 @@ class NewsAggregator:
             try:
                 observations = self.yahoo.get_news(ticker)
                 for obs in observations:
-                    raw_items.append(self._observation_to_raw(obs))
+                    # Pass the ticker explicitly to ensure news is linked to it
+                    raw_items.append(self._observation_to_raw(obs, source_ticker=ticker))
             except FetchError as e:
                 logger.warning(f"Failed to fetch news for {ticker}: {e}")
 

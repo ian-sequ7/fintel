@@ -13,19 +13,27 @@ const sortedRisks = [...macro.risks].sort(
   (a, b) => severityOrder[a.severity] - severityOrder[b.severity]
 );
 
-// Calculate overall risk score (1-10)
+// Calculate overall risk score (1-10) based on absolute risk levels
 function _calculateRiskScore(): number {
   if (macro.risks.length === 0) return 1;
 
-  const severityPoints = { high: 10, medium: 6, low: 2 };
-  const totalPoints = macro.risks.reduce(
-    (sum, risk) => sum + severityPoints[risk.severity],
-    0
-  );
-  const maxPossible = macro.risks.length * 10;
-  const normalized = (totalPoints / maxPossible) * 10;
+  const highCount = macro.risks.filter((r) => r.severity === "high").length;
+  const mediumCount = macro.risks.filter((r) => r.severity === "medium").length;
 
-  return Math.max(1, Math.min(10, Math.round(normalized)));
+  // Base score starts at 1 (minimal risk)
+  // High risks add 2 points each (capped), medium risks add 0.5 each
+  // This creates a more intuitive mapping:
+  // 0 high, 0 medium = 1 (minimal)
+  // 0 high, 1-2 medium = 2-3 (low)
+  // 1 high = 4 (moderate)
+  // 1 high + 1-2 medium = 5 (moderate)
+  // 2 high = 6 (moderate-high)
+  // 3+ high = 8+ (elevated)
+  const highImpact = Math.min(highCount * 2.5, 8);
+  const mediumImpact = Math.min(mediumCount * 0.5, 2);
+
+  const score = 1 + highImpact + mediumImpact;
+  return Math.max(1, Math.min(10, Math.round(score)));
 }
 
 const overallRiskScore = _calculateRiskScore();

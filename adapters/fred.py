@@ -40,7 +40,7 @@ MACRO_SERIES = {
     "PAYEMS": ("Nonfarm Payrolls", "Thousands"),
     "ICSA": ("Initial Jobless Claims", "Thousands"),
 
-    # Inflation (2)
+    # Inflation (2) - Note: These are index values, YoY change calculated separately
     "CPIAUCSL": ("CPI (Inflation)", "Index"),
     "PCEPI": ("PCE Price Index", "Index"),
 
@@ -73,6 +73,27 @@ MACRO_SERIES = {
     # Fed Balance Sheet (1)
     "WALCL": ("Fed Balance Sheet", "Millions USD"),
 }
+
+# Series that need YoY change calculation (index-based inflation measures)
+INFLATION_INDEX_SERIES = {"CPIAUCSL", "PCEPI"}
+
+
+def _calculate_yoy_change(data: list[tuple[str, str]]) -> float | None:
+    """Calculate year-over-year percentage change from historical data."""
+    if len(data) < 13:  # Need at least 13 months of data
+        return None
+
+    try:
+        current_value = float(data[-1][1])
+        # Find value from ~12 months ago (monthly data)
+        year_ago_value = float(data[-13][1])
+
+        if year_ago_value <= 0:
+            return None
+
+        return ((current_value - year_ago_value) / year_ago_value) * 100
+    except (ValueError, IndexError):
+        return None
 
 
 class FredAdapter(BaseAdapter):
@@ -146,24 +167,43 @@ class FredAdapter(BaseAdapter):
             except (ValueError, TypeError):
                 continue
 
+            # For inflation indices, calculate YoY change rate
+            yoy_change = None
+            display_value = value
+            display_unit = unit
+
+            if series_id in INFLATION_INDEX_SERIES:
+                yoy_change = _calculate_yoy_change(data)
+                if yoy_change is not None:
+                    # Use the YoY rate as the primary display value
+                    display_value = round(yoy_change, 1)
+                    display_unit = "% YoY"
+
             indicator = MacroIndicator(
                 series_id=series_id,
                 name=name,
-                value=value,
+                value=display_value,
                 date=date,
-                unit=unit,
+                unit=display_unit,
             )
+
+            obs_data = {
+                "series_id": indicator.series_id,
+                "name": indicator.name,
+                "value": indicator.value,
+                "unit": indicator.unit,
+            }
+
+            # Include raw index value for inflation series
+            if series_id in INFLATION_INDEX_SERIES:
+                obs_data["index_value"] = value
+                obs_data["yoy_change"] = yoy_change
 
             observations.append(Observation(
                 source=self.source_name,
                 timestamp=date,
                 category=Category.MACRO,
-                data={
-                    "series_id": indicator.series_id,
-                    "name": indicator.name,
-                    "value": indicator.value,
-                    "unit": indicator.unit,
-                },
+                data=obs_data,
                 ticker=None,
                 reliability=self.reliability,
             ))
