@@ -120,3 +120,4 @@ Identified on 2025-12-31 via Playwright browser analysis.
 - Personal watchlist with notes (localStorage)
 - Watchlist badge in navigation showing count
 - 1-year price history for all charts
+- Interactive Finviz-style heat map visualization (Market Heat Map page)

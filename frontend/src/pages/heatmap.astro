@@ -1,0 +1,29 @@
+---
+import Layout from "../layouts/Layout.astro";
+import HeatMap from "../components/islands/HeatMap";
+import { getPicks } from "../data/report";
+
+// Get all picks for the heat map
+const allPicks = getPicks("all");
+
+const pageTitle = "Market Heat Map";
+const pageDescription = "Interactive Finviz-style heat map visualization of stock picks. View stocks grouped by sector, sized by market cap or conviction, colored by daily price change.";
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <!-- Page header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-text-primary">{pageTitle}</h1>
+    <p class="text-text-secondary">
+      Visualize {allPicks.length} stocks by sector, sized by market cap or conviction
+    </p>
+  </div>
+
+  <!-- Heat Map Component -->
+  <HeatMap
+    client:visible
+    stocks={allPicks}
+    initialSizeBy="marketCap"
+    initialView="all"
+  />
+</Layout>
