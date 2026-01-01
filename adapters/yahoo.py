@@ -133,7 +133,8 @@ class YahooAdapter(BaseAdapter):
         if price is None:
             raise DataError.missing(self.source_name, field="regularMarketPrice")
 
-        prev_close = meta.get("previousClose", price)
+        # Try previousClose first, then chartPreviousClose as fallback
+        prev_close = meta.get("previousClose") or meta.get("chartPreviousClose") or price
 
         price_data = PriceData(
             symbol=meta.get("symbol", ticker),
