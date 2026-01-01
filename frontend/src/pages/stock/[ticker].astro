@@ -127,7 +127,7 @@ function _formatLargeNumber(num: number | undefined): string {
       <!-- 3. Price chart -->
       <Card title="Price Chart">
         <div class="h-[350px]">
-          <PriceChart ticker={pick.ticker} height={350} client:visible />
+          <PriceChart ticker={pick.ticker} data={stockDetail?.priceHistory} height={350} client:visible />
         </div>
       </Card>
 
