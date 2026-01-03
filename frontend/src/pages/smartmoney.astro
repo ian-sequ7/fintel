@@ -6,8 +6,14 @@ import SmartMoneyCard from "../components/composed/SmartMoneyCard.astro";
 import MetricCard from "../components/primitives/MetricCard.astro";
 import { getSmartMoneySignals, getSmartMoneySummary } from "../data/report";
 
-// Get all signals and summary
-const allSignals = getSmartMoneySignals("all");
+// Get filter from URL query param
+const url = Astro.url;
+const filterParam = url.searchParams.get("filter") || "all";
+const validFilters = ["all", "congress", "options", "13f"] as const;
+const currentFilter = validFilters.includes(filterParam as any) ? filterParam : "all";
+
+// Get signals based on filter and summary
+const allSignals = getSmartMoneySignals(currentFilter as any);
 const summary = getSmartMoneySummary();
 
 // Filter tabs
@@ -105,7 +111,7 @@ const sentimentBg = getSentimentBg(sentimentRatio);
   <div class="mb-6">
     <FilterBar
       tabs={filterTabs}
-      currentValue="all"
+      currentValue={currentFilter}
     />
   </div>
 
