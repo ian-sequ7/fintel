@@ -15,6 +15,7 @@ from .models import (
     MacroIndicator,
     MacroRisk,
     NewsItem,
+    PickPerformance,
 )
 
 __all__ = [
@@ -29,4 +30,5 @@ __all__ = [
     "MacroIndicator",
     "MacroRisk",
     "NewsItem",
+    "PickPerformance",
 ]

@@ -21,6 +21,7 @@ from .models import (
     MacroIndicator,
     MacroRisk,
     NewsItem,
+    PickPerformance,
 )
 
 logger = logging.getLogger(__name__)
@@ -192,6 +193,36 @@ class Database:
     );
 
     CREATE INDEX IF NOT EXISTS idx_scrape_source ON scrape_runs(source);
+
+    -- Pick performance tracking
+    CREATE TABLE IF NOT EXISTS pick_performance (
+        id TEXT PRIMARY KEY,
+        pick_id TEXT NOT NULL,
+        ticker TEXT NOT NULL,
+        timeframe TEXT NOT NULL,
+        entry_price REAL NOT NULL,
+        entry_date DATE NOT NULL,
+        target_price REAL,
+        stop_loss REAL,
+        price_7d REAL,
+        return_7d REAL,
+        price_30d REAL,
+        return_30d REAL,
+        price_90d REAL,
+        return_90d REAL,
+        target_hit INTEGER DEFAULT 0,
+        target_hit_date DATE,
+        stop_hit INTEGER DEFAULT 0,
+        stop_hit_date DATE,
+        status TEXT DEFAULT 'active',
+        final_return REAL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_perf_ticker ON pick_performance(ticker);
+    CREATE INDEX IF NOT EXISTS idx_perf_timeframe ON pick_performance(timeframe);
+    CREATE INDEX IF NOT EXISTS idx_perf_status ON pick_performance(status);
+    CREATE INDEX IF NOT EXISTS idx_perf_entry_date ON pick_performance(entry_date);
     """
 
     def __init__(self, db_path: Optional[Path] = None):
@@ -893,6 +924,221 @@ class Database:
         )
 
     # =========================================================================
+    # Pick Performance
+    # =========================================================================
+
+    def upsert_pick_performance(self, perf: PickPerformance) -> bool:
+        """Insert or update pick performance. Returns True if inserted."""
+        with self._connection() as conn:
+            existing = conn.execute(
+                "SELECT id FROM pick_performance WHERE id = ?", (perf.id,)
+            ).fetchone()
+
+            if existing:
+                conn.execute(
+                    """
+                    UPDATE pick_performance SET
+                        price_7d=?, return_7d=?, price_30d=?, return_30d=?,
+                        price_90d=?, return_90d=?, target_hit=?, target_hit_date=?,
+                        stop_hit=?, stop_hit_date=?, status=?, final_return=?,
+                        updated_at=CURRENT_TIMESTAMP
+                    WHERE id=?
+                    """,
+                    (perf.price_7d, perf.return_7d, perf.price_30d, perf.return_30d,
+                     perf.price_90d, perf.return_90d, perf.target_hit, perf.target_hit_date,
+                     perf.stop_hit, perf.stop_hit_date, perf.status, perf.final_return,
+                     perf.id)
+                )
+                return False
+
+            conn.execute(
+                """
+                INSERT INTO pick_performance
+                (id, pick_id, ticker, timeframe, entry_price, entry_date,
+                 target_price, stop_loss, price_7d, return_7d, price_30d, return_30d,
+                 price_90d, return_90d, target_hit, target_hit_date, stop_hit,
+                 stop_hit_date, status, final_return)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (perf.id, perf.pick_id, perf.ticker, perf.timeframe, perf.entry_price,
+                 perf.entry_date, perf.target_price, perf.stop_loss, perf.price_7d,
+                 perf.return_7d, perf.price_30d, perf.return_30d, perf.price_90d,
+                 perf.return_90d, perf.target_hit, perf.target_hit_date, perf.stop_hit,
+                 perf.stop_hit_date, perf.status, perf.final_return)
+            )
+            return True
+
+    def get_pick_performance(self, pick_id: str) -> Optional[PickPerformance]:
+        """Get performance for a specific pick."""
+        with self._connection() as conn:
+            row = conn.execute(
+                "SELECT * FROM pick_performance WHERE pick_id = ?", (pick_id,)
+            ).fetchone()
+            return self._row_to_pick_performance(row) if row else None
+
+    def get_all_performance(
+        self,
+        timeframe: Optional[str] = None,
+        status: Optional[str] = None,
+        limit: int = 500
+    ) -> list[PickPerformance]:
+        """Get all pick performance records."""
+        query = "SELECT * FROM pick_performance WHERE 1=1"
+        params = []
+
+        if timeframe:
+            query += " AND timeframe = ?"
+            params.append(timeframe)
+
+        if status:
+            query += " AND status = ?"
+            params.append(status)
+
+        query += " ORDER BY entry_date DESC LIMIT ?"
+        params.append(limit)
+
+        with self._connection() as conn:
+            rows = conn.execute(query, params).fetchall()
+            return [self._row_to_pick_performance(row) for row in rows]
+
+    def get_active_picks_for_update(self) -> list[PickPerformance]:
+        """Get active picks that need performance updates."""
+        with self._connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT * FROM pick_performance
+                WHERE status = 'active'
+                ORDER BY entry_date ASC
+                """
+            ).fetchall()
+            return [self._row_to_pick_performance(row) for row in rows]
+
+    def _row_to_pick_performance(self, row: sqlite3.Row) -> PickPerformance:
+        return PickPerformance(
+            id=row["id"],
+            pick_id=row["pick_id"],
+            ticker=row["ticker"],
+            timeframe=row["timeframe"],
+            entry_price=row["entry_price"],
+            entry_date=row["entry_date"],
+            target_price=row["target_price"],
+            stop_loss=row["stop_loss"],
+            price_7d=row["price_7d"],
+            return_7d=row["return_7d"],
+            price_30d=row["price_30d"],
+            return_30d=row["return_30d"],
+            price_90d=row["price_90d"],
+            return_90d=row["return_90d"],
+            target_hit=bool(row["target_hit"]),
+            target_hit_date=row["target_hit_date"],
+            stop_hit=bool(row["stop_hit"]),
+            stop_hit_date=row["stop_hit_date"],
+            status=row["status"],
+            final_return=row["final_return"],
+            updated_at=row["updated_at"] or datetime.now(),
+        )
+
+    def get_performance_summary(self, timeframe: Optional[str] = None) -> dict:
+        """Get aggregate performance statistics."""
+        with self._connection() as conn:
+            where = "WHERE 1=1"
+            params = []
+
+            if timeframe:
+                where += " AND timeframe = ?"
+                params.append(timeframe)
+
+            # Total picks tracked
+            total = conn.execute(
+                f"SELECT COUNT(*) FROM pick_performance {where}", params
+            ).fetchone()[0]
+
+            if total == 0:
+                return {
+                    "total_picks": 0,
+                    "win_rate": 0,
+                    "avg_return_7d": 0,
+                    "avg_return_30d": 0,
+                    "avg_return_90d": 0,
+                    "best_pick": None,
+                    "worst_pick": None,
+                    "active": 0,
+                    "won": 0,
+                    "lost": 0,
+                }
+
+            # Win rate (positive return or target hit)
+            winners = conn.execute(
+                f"""
+                SELECT COUNT(*) FROM pick_performance
+                {where} AND (target_hit = 1 OR
+                    COALESCE(return_90d, return_30d, return_7d, 0) > 0)
+                """, params
+            ).fetchone()[0]
+
+            # Average returns
+            avg_7d = conn.execute(
+                f"SELECT AVG(return_7d) FROM pick_performance {where} AND return_7d IS NOT NULL",
+                params
+            ).fetchone()[0] or 0
+
+            avg_30d = conn.execute(
+                f"SELECT AVG(return_30d) FROM pick_performance {where} AND return_30d IS NOT NULL",
+                params
+            ).fetchone()[0] or 0
+
+            avg_90d = conn.execute(
+                f"SELECT AVG(return_90d) FROM pick_performance {where} AND return_90d IS NOT NULL",
+                params
+            ).fetchone()[0] or 0
+
+            # Best and worst picks
+            best = conn.execute(
+                f"""
+                SELECT ticker, COALESCE(return_90d, return_30d, return_7d) as ret
+                FROM pick_performance {where}
+                ORDER BY ret DESC LIMIT 1
+                """, params
+            ).fetchone()
+
+            worst = conn.execute(
+                f"""
+                SELECT ticker, COALESCE(return_90d, return_30d, return_7d) as ret
+                FROM pick_performance {where}
+                ORDER BY ret ASC LIMIT 1
+                """, params
+            ).fetchone()
+
+            # Status counts
+            active = conn.execute(
+                f"SELECT COUNT(*) FROM pick_performance {where} AND status = 'active'",
+                params
+            ).fetchone()[0]
+
+            won = conn.execute(
+                f"SELECT COUNT(*) FROM pick_performance {where} AND status = 'won'",
+                params
+            ).fetchone()[0]
+
+            lost = conn.execute(
+                f"SELECT COUNT(*) FROM pick_performance {where} AND status = 'lost'",
+                params
+            ).fetchone()[0]
+
+            return {
+                "total_picks": total,
+                "win_rate": round(winners / total * 100, 1) if total > 0 else 0,
+                "avg_return_7d": round(avg_7d, 2),
+                "avg_return_30d": round(avg_30d, 2),
+                "avg_return_90d": round(avg_90d, 2),
+                "best_pick": {"ticker": best[0], "return": round(best[1], 2)} if best and best[1] else None,
+                "worst_pick": {"ticker": worst[0], "return": round(worst[1], 2)} if worst and worst[1] else None,
+                "active": active,
+                "won": won,
+                "lost": lost,
+            }
+
+    # =========================================================================
     # Stats
     # =========================================================================
 
@@ -910,6 +1156,7 @@ class Database:
                 "macro_indicators": count("macro_indicators"),
                 "macro_risks": count("macro_risks"),
                 "news_items": count("news_items"),
+                "pick_performance": count("pick_performance"),
                 "scrape_runs": conn.execute(
                     "SELECT COUNT(*) FROM scrape_runs WHERE completed_at IS NOT NULL"
                 ).fetchone()[0],

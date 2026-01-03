@@ -610,8 +610,17 @@ def main():
     print(f"  Macro indicators: {stats['macro_indicators']}")
     print(f"  Macro risks: {stats['macro_risks']}")
     print(f"  News items: {stats['news_items']}")
+    print(f"  Pick performance: {stats['pick_performance']}")
     print(f"  Pipeline runs: {stats['scrape_runs']}")
     print(f"  DB size: {stats['db_size_mb']} MB")
+
+    # Show performance summary if tracking exists
+    perf_summary = db.get_performance_summary()
+    if perf_summary['total_picks'] > 0:
+        print(f"\nPerformance tracking:")
+        print(f"  Picks tracked: {perf_summary['total_picks']}")
+        print(f"  Win rate: {perf_summary['win_rate']}%")
+        print(f"  Active: {perf_summary['active']} | Won: {perf_summary['won']} | Lost: {perf_summary['lost']}")
 
 
 if __name__ == "__main__":

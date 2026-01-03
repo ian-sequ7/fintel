@@ -128,6 +128,51 @@ class NewsItem:
 
 
 @dataclass
+class PickPerformance:
+    """Track pick performance over time."""
+    id: str
+    pick_id: str
+    ticker: str
+    timeframe: str  # short/medium/long
+    entry_price: float
+    entry_date: date
+    target_price: Optional[float] = None
+    stop_loss: Optional[float] = None
+    # 7-day performance
+    price_7d: Optional[float] = None
+    return_7d: Optional[float] = None
+    # 30-day performance
+    price_30d: Optional[float] = None
+    return_30d: Optional[float] = None
+    # 90-day performance
+    price_90d: Optional[float] = None
+    return_90d: Optional[float] = None
+    # Outcomes
+    target_hit: bool = False
+    target_hit_date: Optional[date] = None
+    stop_hit: bool = False
+    stop_hit_date: Optional[date] = None
+    # Status
+    status: str = "active"  # active/won/lost/expired
+    final_return: Optional[float] = None
+    updated_at: datetime = field(default_factory=datetime.now)
+
+    @property
+    def is_winner(self) -> bool:
+        """Check if this pick is a winner based on available data."""
+        if self.target_hit:
+            return True
+        # Use best available return
+        best_return = self.return_90d or self.return_30d or self.return_7d
+        return best_return is not None and best_return > 0
+
+    @property
+    def current_return(self) -> Optional[float]:
+        """Get the most recent return value."""
+        return self.return_90d or self.return_30d or self.return_7d
+
+
+@dataclass
 class CongressTrade:
     """Congressional stock trade from Capitol Trades."""
     id: str
