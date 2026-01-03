@@ -8,13 +8,14 @@ Most reliable free source for:
 - Analyst recommendations
 
 Uses yfinance library for fundamentals as the raw API now requires auth.
+Uses persistent cache to reduce API calls for expensive operations.
 """
 
 import hashlib
 import logging
 import math
 from dataclasses import dataclass
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from typing import Any
 
 import yfinance as yf
@@ -24,6 +25,7 @@ from ports import FetchError, DataError, ValidationError
 from db import get_db, OptionsActivity as DBOptionsActivity
 
 from .base import BaseAdapter
+from .cache import get_cache
 
 logger = logging.getLogger(__name__)
 
@@ -171,11 +173,32 @@ class YahooAdapter(BaseAdapter):
         )]
 
     def _fetch_fundamentals(self, ticker: str) -> list[Observation]:
-        """Fetch fundamental data (PE, growth, etc.) using yfinance library."""
-        try:
-            stock = yf.Ticker(ticker)
-            info = stock.info
+        """Fetch fundamental data (PE, growth, etc.) using yfinance library.
 
+        Uses persistent cache to avoid redundant API calls - fundamentals
+        don't change frequently, so caching for 24h is safe.
+        """
+        cache = get_cache()
+        cache_ttl = timedelta(hours=24)  # Fundamentals are stable
+
+        # Check persistent cache first
+        cached_info = cache.get("yahoo_fundamentals", ticker=ticker)
+        if cached_info is not None:
+            logger.debug(f"Using cached fundamentals for {ticker}")
+            info = cached_info
+        else:
+            try:
+                stock = yf.Ticker(ticker)
+                info = stock.info
+
+                # Cache successful response
+                if info and info.get("regularMarketPrice") is not None:
+                    cache.set("yahoo_fundamentals", info, cache_ttl, ticker=ticker)
+            except Exception as e:
+                logger.warning(f"Failed to fetch fundamentals for {ticker}: {e}")
+                info = None
+
+        try:
             if not info or info.get("regularMarketPrice") is None:
                 raise DataError.empty(
                     source=self.source_name,
@@ -305,7 +328,28 @@ class YahooAdapter(BaseAdapter):
         return observations
 
     def _fetch_price_history(self, ticker: str, days: int = 30) -> list[Observation]:
-        """Fetch historical price data for charting."""
+        """Fetch historical price data for charting.
+
+        Uses persistent cache to reduce API calls. Price history is cached
+        for 4 hours since it only changes once per trading day.
+        """
+        cache = get_cache()
+        cache_ttl = timedelta(hours=4)  # Update a few times per day
+
+        # Check persistent cache first
+        cache_key = f"{ticker}:{days}"
+        cached_history = cache.get("yahoo_price_history", key=cache_key)
+        if cached_history is not None:
+            logger.debug(f"Using cached price history for {ticker}")
+            return [Observation(
+                source=self.source_name,
+                timestamp=datetime.now(),
+                category=Category.PRICE,
+                data={"price_history": cached_history},
+                ticker=ticker,
+                reliability=self.reliability,
+            )]
+
         try:
             stock = yf.Ticker(ticker)
             hist = stock.history(period=f"{days}d")
@@ -315,15 +359,19 @@ class YahooAdapter(BaseAdapter):
                 return []
 
             price_points = []
-            for date, row in hist.iterrows():
+            for dt, row in hist.iterrows():
                 price_points.append({
-                    "time": date.strftime("%Y-%m-%d"),
+                    "time": dt.strftime("%Y-%m-%d"),
                     "open": round(row["Open"], 2),
                     "high": round(row["High"], 2),
                     "low": round(row["Low"], 2),
                     "close": round(row["Close"], 2),
                     "volume": int(row["Volume"]),
                 })
+
+            # Cache the result
+            if price_points:
+                cache.set("yahoo_price_history", price_points, cache_ttl, key=cache_key)
 
             logger.debug(f"Fetched {len(price_points)} price points for {ticker}")
 
