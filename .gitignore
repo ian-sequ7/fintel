@@ -19,3 +19,4 @@ fintel.toml
 
 # Database
 data/*.db
+data/cache/
