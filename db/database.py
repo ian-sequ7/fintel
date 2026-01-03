@@ -22,6 +22,8 @@ from .models import (
     MacroRisk,
     NewsItem,
     PickPerformance,
+    HedgeFund,
+    HedgeFundHolding,
 )
 
 logger = logging.getLogger(__name__)
@@ -223,6 +225,51 @@ class Database:
     CREATE INDEX IF NOT EXISTS idx_perf_timeframe ON pick_performance(timeframe);
     CREATE INDEX IF NOT EXISTS idx_perf_status ON pick_performance(status);
     CREATE INDEX IF NOT EXISTS idx_perf_entry_date ON pick_performance(entry_date);
+
+    -- Hedge funds tracked for 13F filings
+    CREATE TABLE IF NOT EXISTS hedge_funds (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        cik TEXT NOT NULL UNIQUE,
+        manager TEXT NOT NULL,
+        aum REAL,
+        style TEXT,
+        is_active INTEGER DEFAULT 1,
+        last_filing_date DATE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_hf_cik ON hedge_funds(cik);
+    CREATE INDEX IF NOT EXISTS idx_hf_manager ON hedge_funds(manager);
+
+    -- Hedge fund holdings from 13F filings
+    CREATE TABLE IF NOT EXISTS hedge_fund_holdings (
+        id TEXT PRIMARY KEY,
+        fund_id TEXT NOT NULL,
+        ticker TEXT NOT NULL,
+        cusip TEXT NOT NULL,
+        issuer_name TEXT NOT NULL,
+        shares INTEGER NOT NULL,
+        value INTEGER NOT NULL,
+        filing_date DATE NOT NULL,
+        report_date DATE NOT NULL,
+        prev_shares INTEGER,
+        prev_value INTEGER,
+        shares_change INTEGER,
+        shares_change_pct REAL,
+        action TEXT DEFAULT 'hold',
+        portfolio_pct REAL,
+        rank INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (fund_id) REFERENCES hedge_funds(id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_hfh_fund ON hedge_fund_holdings(fund_id);
+    CREATE INDEX IF NOT EXISTS idx_hfh_ticker ON hedge_fund_holdings(ticker);
+    CREATE INDEX IF NOT EXISTS idx_hfh_filing ON hedge_fund_holdings(filing_date);
+    CREATE INDEX IF NOT EXISTS idx_hfh_action ON hedge_fund_holdings(action);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_hfh_fund_cusip_report ON hedge_fund_holdings(fund_id, cusip, report_date);
     """
 
     def __init__(self, db_path: Optional[Path] = None):
@@ -1139,6 +1186,270 @@ class Database:
             }
 
     # =========================================================================
+    # Hedge Funds
+    # =========================================================================
+
+    def upsert_hedge_fund(self, fund: HedgeFund) -> bool:
+        """Insert or update a hedge fund. Returns True if inserted."""
+        with self._connection() as conn:
+            existing = conn.execute(
+                "SELECT id FROM hedge_funds WHERE id = ?", (fund.id,)
+            ).fetchone()
+
+            if existing:
+                conn.execute(
+                    """
+                    UPDATE hedge_funds SET
+                        name=?, cik=?, manager=?, aum=?, style=?,
+                        is_active=?, last_filing_date=?, updated_at=CURRENT_TIMESTAMP
+                    WHERE id=?
+                    """,
+                    (fund.name, fund.cik, fund.manager, fund.aum, fund.style,
+                     fund.is_active, fund.last_filing_date, fund.id)
+                )
+                return False
+
+            conn.execute(
+                """
+                INSERT INTO hedge_funds
+                (id, name, cik, manager, aum, style, is_active, last_filing_date)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (fund.id, fund.name, fund.cik, fund.manager, fund.aum,
+                 fund.style, fund.is_active, fund.last_filing_date)
+            )
+            return True
+
+    def get_hedge_fund(self, fund_id: str) -> Optional[HedgeFund]:
+        """Get a hedge fund by ID."""
+        with self._connection() as conn:
+            row = conn.execute(
+                "SELECT * FROM hedge_funds WHERE id = ?", (fund_id,)
+            ).fetchone()
+            return self._row_to_hedge_fund(row) if row else None
+
+    def get_hedge_fund_by_cik(self, cik: str) -> Optional[HedgeFund]:
+        """Get a hedge fund by CIK."""
+        with self._connection() as conn:
+            row = conn.execute(
+                "SELECT * FROM hedge_funds WHERE cik = ?", (cik.zfill(10),)
+            ).fetchone()
+            return self._row_to_hedge_fund(row) if row else None
+
+    def get_all_hedge_funds(self, active_only: bool = True) -> list[HedgeFund]:
+        """Get all tracked hedge funds."""
+        query = "SELECT * FROM hedge_funds"
+        if active_only:
+            query += " WHERE is_active = 1"
+        query += " ORDER BY name"
+
+        with self._connection() as conn:
+            rows = conn.execute(query).fetchall()
+            return [self._row_to_hedge_fund(row) for row in rows]
+
+    def _row_to_hedge_fund(self, row: sqlite3.Row) -> HedgeFund:
+        return HedgeFund(
+            id=row["id"],
+            name=row["name"],
+            cik=row["cik"],
+            manager=row["manager"],
+            aum=row["aum"],
+            style=row["style"] or "",
+            is_active=bool(row["is_active"]),
+            last_filing_date=row["last_filing_date"],
+            created_at=row["created_at"] or datetime.now(),
+            updated_at=row["updated_at"] or datetime.now(),
+        )
+
+    # =========================================================================
+    # Hedge Fund Holdings
+    # =========================================================================
+
+    def upsert_hedge_fund_holding(self, holding: HedgeFundHolding) -> bool:
+        """Insert or update a hedge fund holding. Returns True if inserted."""
+        with self._connection() as conn:
+            existing = conn.execute(
+                "SELECT id FROM hedge_fund_holdings WHERE id = ?", (holding.id,)
+            ).fetchone()
+
+            if existing:
+                conn.execute(
+                    """
+                    UPDATE hedge_fund_holdings SET
+                        shares=?, value=?, prev_shares=?, prev_value=?,
+                        shares_change=?, shares_change_pct=?, action=?,
+                        portfolio_pct=?, rank=?
+                    WHERE id=?
+                    """,
+                    (holding.shares, holding.value, holding.prev_shares,
+                     holding.prev_value, holding.shares_change, holding.shares_change_pct,
+                     holding.action, holding.portfolio_pct, holding.rank, holding.id)
+                )
+                return False
+
+            conn.execute(
+                """
+                INSERT INTO hedge_fund_holdings
+                (id, fund_id, ticker, cusip, issuer_name, shares, value,
+                 filing_date, report_date, prev_shares, prev_value, shares_change,
+                 shares_change_pct, action, portfolio_pct, rank)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (holding.id, holding.fund_id, holding.ticker, holding.cusip,
+                 holding.issuer_name, holding.shares, holding.value, holding.filing_date,
+                 holding.report_date, holding.prev_shares, holding.prev_value,
+                 holding.shares_change, holding.shares_change_pct, holding.action,
+                 holding.portfolio_pct, holding.rank)
+            )
+            return True
+
+    def get_holdings_for_fund(
+        self,
+        fund_id: str,
+        report_date: Optional[date] = None,
+        limit: int = 100
+    ) -> list[HedgeFundHolding]:
+        """Get holdings for a specific fund, optionally for a specific quarter."""
+        query = "SELECT * FROM hedge_fund_holdings WHERE fund_id = ?"
+        params: list = [fund_id]
+
+        if report_date:
+            query += " AND report_date = ?"
+            params.append(report_date)
+        else:
+            # Get latest report date
+            query += " AND report_date = (SELECT MAX(report_date) FROM hedge_fund_holdings WHERE fund_id = ?)"
+            params.append(fund_id)
+
+        query += " ORDER BY value DESC LIMIT ?"
+        params.append(limit)
+
+        with self._connection() as conn:
+            rows = conn.execute(query, params).fetchall()
+            return [self._row_to_hedge_fund_holding(row) for row in rows]
+
+    def get_holdings_for_ticker(self, ticker: str, limit: int = 50) -> list[HedgeFundHolding]:
+        """Get all hedge fund holdings for a specific ticker."""
+        with self._connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT h.*, f.name as fund_name, f.manager
+                FROM hedge_fund_holdings h
+                JOIN hedge_funds f ON h.fund_id = f.id
+                WHERE h.ticker = ?
+                AND h.report_date = (
+                    SELECT MAX(report_date) FROM hedge_fund_holdings WHERE fund_id = h.fund_id
+                )
+                ORDER BY h.value DESC LIMIT ?
+                """,
+                (ticker.upper(), limit)
+            ).fetchall()
+            return [self._row_to_hedge_fund_holding(row) for row in rows]
+
+    def get_recent_hedge_fund_activity(
+        self,
+        action: Optional[str] = None,
+        limit: int = 100
+    ) -> list[HedgeFundHolding]:
+        """Get recent hedge fund activity (new positions, increases, decreases)."""
+        query = """
+            SELECT h.*, f.name as fund_name, f.manager
+            FROM hedge_fund_holdings h
+            JOIN hedge_funds f ON h.fund_id = f.id
+            WHERE h.action != 'hold'
+        """
+        params: list = []
+
+        if action:
+            query += " AND h.action = ?"
+            params.append(action)
+
+        query += " ORDER BY h.filing_date DESC, h.value DESC LIMIT ?"
+        params.append(limit)
+
+        with self._connection() as conn:
+            rows = conn.execute(query, params).fetchall()
+            return [self._row_to_hedge_fund_holding(row) for row in rows]
+
+    def get_previous_holding(
+        self,
+        fund_id: str,
+        ticker: str,
+        before_date: date
+    ) -> Optional[HedgeFundHolding]:
+        """Get the previous quarter's holding for comparison."""
+        with self._connection() as conn:
+            row = conn.execute(
+                """
+                SELECT * FROM hedge_fund_holdings
+                WHERE fund_id = ? AND ticker = ? AND report_date < ?
+                ORDER BY report_date DESC LIMIT 1
+                """,
+                (fund_id, ticker, before_date)
+            ).fetchone()
+            return self._row_to_hedge_fund_holding(row) if row else None
+
+    def _row_to_hedge_fund_holding(self, row: sqlite3.Row) -> HedgeFundHolding:
+        return HedgeFundHolding(
+            id=row["id"],
+            fund_id=row["fund_id"],
+            ticker=row["ticker"],
+            cusip=row["cusip"],
+            issuer_name=row["issuer_name"],
+            shares=row["shares"],
+            value=row["value"],
+            filing_date=row["filing_date"],
+            report_date=row["report_date"],
+            prev_shares=row["prev_shares"],
+            prev_value=row["prev_value"],
+            shares_change=row["shares_change"],
+            shares_change_pct=row["shares_change_pct"],
+            action=row["action"] or "hold",
+            portfolio_pct=row["portfolio_pct"],
+            rank=row["rank"],
+            created_at=row["created_at"] or datetime.now(),
+        )
+
+    def get_hedge_fund_summary(self) -> dict:
+        """Get summary statistics for hedge fund tracking."""
+        with self._connection() as conn:
+            funds = conn.execute("SELECT COUNT(*) FROM hedge_funds WHERE is_active = 1").fetchone()[0]
+
+            # Get unique tickers across all funds
+            tickers = conn.execute(
+                """
+                SELECT COUNT(DISTINCT ticker) FROM hedge_fund_holdings
+                WHERE report_date = (SELECT MAX(report_date) FROM hedge_fund_holdings)
+                """
+            ).fetchone()[0]
+
+            # Recent activity
+            new_positions = conn.execute(
+                "SELECT COUNT(*) FROM hedge_fund_holdings WHERE action = 'new'"
+            ).fetchone()[0]
+
+            increased = conn.execute(
+                "SELECT COUNT(*) FROM hedge_fund_holdings WHERE action = 'increased'"
+            ).fetchone()[0]
+
+            decreased = conn.execute(
+                "SELECT COUNT(*) FROM hedge_fund_holdings WHERE action = 'decreased'"
+            ).fetchone()[0]
+
+            sold = conn.execute(
+                "SELECT COUNT(*) FROM hedge_fund_holdings WHERE action = 'sold'"
+            ).fetchone()[0]
+
+            return {
+                "funds_tracked": funds,
+                "unique_tickers": tickers,
+                "new_positions": new_positions,
+                "increased": increased,
+                "decreased": decreased,
+                "sold": sold,
+            }
+
+    # =========================================================================
     # Stats
     # =========================================================================
 
@@ -1157,6 +1468,8 @@ class Database:
                 "macro_risks": count("macro_risks"),
                 "news_items": count("news_items"),
                 "pick_performance": count("pick_performance"),
+                "hedge_funds": count("hedge_funds"),
+                "hedge_fund_holdings": count("hedge_fund_holdings"),
                 "scrape_runs": conn.execute(
                     "SELECT COUNT(*) FROM scrape_runs WHERE completed_at IS NOT NULL"
                 ).fetchone()[0],

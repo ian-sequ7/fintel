@@ -267,3 +267,79 @@ class ScrapeRun:
         if self.completed_at and self.started_at:
             return (self.completed_at - self.started_at).total_seconds()
         return None
+
+
+@dataclass
+class HedgeFund:
+    """Hedge fund tracked for 13F filings."""
+    id: str
+    name: str
+    cik: str  # SEC Central Index Key (10 digits, zero-padded)
+    manager: str  # Fund manager name (e.g., "Warren Buffett")
+    aum: Optional[float] = None  # Assets under management
+    style: str = ""  # value/growth/quant/activist/macro
+    is_active: bool = True
+    last_filing_date: Optional[date] = None
+    created_at: datetime = field(default_factory=datetime.now)
+    updated_at: datetime = field(default_factory=datetime.now)
+
+    @property
+    def cik_padded(self) -> str:
+        """Return CIK with leading zeros (10 digits)."""
+        return self.cik.zfill(10)
+
+
+@dataclass
+class HedgeFundHolding:
+    """Individual holding from a 13F filing."""
+    id: str
+    fund_id: str
+    ticker: str
+    cusip: str
+    issuer_name: str
+    shares: int
+    value: int  # Value in dollars (as reported, may be in thousands)
+    filing_date: date
+    report_date: date  # Quarter end date
+    # Change tracking
+    prev_shares: Optional[int] = None
+    prev_value: Optional[int] = None
+    shares_change: Optional[int] = None
+    shares_change_pct: Optional[float] = None
+    action: str = "hold"  # new/increased/decreased/sold/hold
+    # Position info
+    portfolio_pct: Optional[float] = None
+    rank: Optional[int] = None  # Position rank by value
+    created_at: datetime = field(default_factory=datetime.now)
+
+    @property
+    def is_new_position(self) -> bool:
+        """Check if this is a new position."""
+        return self.action == "new"
+
+    @property
+    def is_increased(self) -> bool:
+        """Check if position was increased."""
+        return self.action == "increased"
+
+    @property
+    def is_decreased(self) -> bool:
+        """Check if position was decreased."""
+        return self.action == "decreased"
+
+    @property
+    def is_sold(self) -> bool:
+        """Check if position was fully sold."""
+        return self.action == "sold"
+
+    @property
+    def summary(self) -> str:
+        """Human-readable summary."""
+        action_str = {
+            "new": "NEW POSITION",
+            "increased": f"+{self.shares_change_pct:.1f}%" if self.shares_change_pct else "INCREASED",
+            "decreased": f"{self.shares_change_pct:.1f}%" if self.shares_change_pct else "DECREASED",
+            "sold": "SOLD OUT",
+            "hold": "NO CHANGE",
+        }.get(self.action, self.action.upper())
+        return f"{self.ticker}: {self.shares:,} shares (${self.value:,}) - {action_str}"

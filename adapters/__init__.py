@@ -4,6 +4,7 @@ from .fred import FredAdapter
 from .reddit import RedditAdapter
 from .rss import RssAdapter
 from .congress import CongressAdapter
+from .sec_13f import SEC13FAdapter
 from .universe import (
     UniverseProvider,
     StockInfo,
@@ -19,6 +20,7 @@ __all__ = [
     "RedditAdapter",
     "RssAdapter",
     "CongressAdapter",
+    "SEC13FAdapter",
     "UniverseProvider",
     "StockInfo",
     "get_universe_provider",
