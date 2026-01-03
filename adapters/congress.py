@@ -2,10 +2,10 @@
 Congress trading adapter.
 
 Fetches congressional stock transactions from public disclosure data.
-Uses House Stock Watcher JSON feed (no API key required).
+Primary source: Capitol Trades (capitoltrades.com) - scraped via Playwright
+Fallback: House/Senate Stock Watcher JSON feeds
 
-Source: https://housestockwatcher.com
-Data: https://house-stock-watcher-data.s3-us-west-2.amazonaws.com/data/all_transactions.json
+Source: https://capitoltrades.com
 """
 
 import hashlib
@@ -17,6 +17,7 @@ from domain import Observation, Category
 from ports import FetchError, ParseError
 
 from .base import BaseAdapter
+from .capitol_trades_scraper import scrape_capitol_trades, ScrapedTrade
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +107,14 @@ class CongressAdapter(BaseAdapter):
 
         logger.info(f"Fetching congress trades (days_back={days_back}, limit={limit})")
 
-        # Try each data source until one works
+        # Try Capitol Trades scraper first (most reliable, real-time data)
+        scraped_trades = self._fetch_from_capitol_trades(limit=limit * 2, tickers=tickers)
+        if scraped_trades:
+            logger.info(f"Found {len(scraped_trades)} trades from Capitol Trades")
+            return scraped_trades[:limit]
+
+        # Fallback to S3 JSON feeds
+        logger.info("Capitol Trades unavailable, trying S3 feeds...")
         data = None
         last_error = None
         for url in self.DATA_SOURCES:
@@ -134,7 +142,7 @@ class CongressAdapter(BaseAdapter):
                 raw_content=str(data)[:200],
             )
 
-        # Filter and process trades
+        # Filter and process trades from S3 feed
         cutoff_date = datetime.now() - timedelta(days=days_back)
         trades = []
 
@@ -163,7 +171,7 @@ class CongressAdapter(BaseAdapter):
         # Apply limit
         trades = trades[:limit]
 
-        logger.info(f"Found {len(trades)} congress trades")
+        logger.info(f"Found {len(trades)} congress trades from S3 feeds")
 
         # Convert to observations
         observations = []
@@ -172,6 +180,99 @@ class CongressAdapter(BaseAdapter):
             observations.append(obs)
 
         return observations
+
+    def _fetch_from_capitol_trades(
+        self, limit: int = 50, tickers: list[str] | None = None
+    ) -> list[Observation]:
+        """Fetch trades from Capitol Trades via web scraping."""
+        try:
+            scraped = scrape_capitol_trades(limit=limit)
+            if not scraped:
+                return []
+
+            observations = []
+            for trade in scraped:
+                # Filter by ticker if specified
+                if tickers and trade.ticker and trade.ticker not in tickers:
+                    continue
+
+                # Skip trades without tickers (non-stock assets)
+                if not trade.ticker:
+                    continue
+
+                obs = self._scraped_to_observation(trade)
+                observations.append(obs)
+
+            return observations
+
+        except Exception as e:
+            logger.warning(f"Capitol Trades scraping failed: {e}")
+            return []
+
+    def _scraped_to_observation(self, trade: ScrapedTrade) -> Observation:
+        """Convert scraped trade to observation."""
+        # Generate unique ID
+        date_str = trade.published_date.isoformat() if trade.published_date else datetime.now().isoformat()
+        id_str = f"{trade.politician}:{trade.ticker}:{date_str}"
+        trade_id = hashlib.md5(id_str.encode()).hexdigest()[:12]
+
+        # Calculate signal strength based on amount
+        strength = self._calculate_strength_from_range(trade.amount_range)
+
+        # Generate summary
+        action = "bought" if trade.transaction_type == "buy" else "sold"
+        amount_str = f"${trade.amount_range[0]:,} - ${trade.amount_range[1]:,}"
+
+        summary = (
+            f"{trade.politician} ({trade.party}-{trade.chamber}) {action} "
+            f"{trade.ticker} ({amount_str})"
+        )
+
+        return Observation(
+            source=self.source_name,
+            timestamp=trade.published_date or datetime.now(),
+            category=Category.SENTIMENT,
+            data={
+                "id": trade_id,
+                "signal_type": "congress",
+                "ticker": trade.ticker,
+                "direction": trade.transaction_type,
+                "strength": strength,
+                "summary": summary,
+                "details": {
+                    "politician": trade.politician,
+                    "party": trade.party,
+                    "chamber": trade.chamber,
+                    "amount_low": trade.amount_range[0],
+                    "amount_high": trade.amount_range[1],
+                    "asset_description": trade.issuer,
+                    "transaction_date": trade.traded_date.isoformat() if trade.traded_date else None,
+                    "disclosure_date": trade.published_date.isoformat() if trade.published_date else None,
+                },
+            },
+            ticker=trade.ticker,
+            reliability=self.reliability,
+        )
+
+    def _calculate_strength_from_range(self, amount_range: tuple[int, int]) -> float:
+        """Calculate signal strength from amount range."""
+        low, high = amount_range
+        mid = (low + high) / 2
+
+        if mid <= 15000:
+            return 0.3
+        elif mid <= 50000:
+            return 0.4
+        elif mid <= 100000:
+            return 0.5
+        elif mid <= 250000:
+            return 0.6
+        elif mid <= 500000:
+            return 0.7
+        elif mid <= 1000000:
+            return 0.8
+        else:
+            return 0.9
 
     def _parse_trade(self, item: dict) -> CongressTrade | None:
         """Parse a single trade from raw JSON."""
