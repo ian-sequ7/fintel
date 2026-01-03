@@ -15,6 +15,15 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from orchestration.pipeline import Pipeline, PipelineConfig
 from domain import Timeframe, Trend, Impact
+from db import (
+    get_db,
+    StockPick as DBStockPick,
+    StockMetrics as DBStockMetrics,
+    PricePoint as DBPricePoint,
+    MacroIndicator as DBMacroIndicator,
+    MacroRisk as DBMacroRisk,
+    NewsItem as DBNewsItem,
+)
 
 
 def map_sector(sector: str | None) -> str:
@@ -151,6 +160,154 @@ def news_to_frontend(item, idx: int, fallback_category: str) -> dict:
         "tickersMentioned": item.tickers_mentioned[:5] if item.tickers_mentioned else [],
         "excerpt": item.title[:200] if item.title else "",
     }
+
+
+def store_pipeline_data_in_db(result, stock_details: dict):
+    """Store all pipeline data in SQLite database."""
+    import hashlib
+    import json
+
+    db = get_db()
+    run = db.start_scrape_run("pipeline")
+
+    added = 0
+    total = 0
+
+    # Clear old picks (regenerate each run)
+    db.clear_stock_picks()
+
+    # Store stock picks
+    for timeframe, picks in [
+        ("short", result.short_term_picks),
+        ("medium", result.medium_term_picks),
+        ("long", result.long_term_picks),
+    ]:
+        for pick in picks:
+            total += 1
+            pick_id = hashlib.md5(f"{pick.ticker}:{timeframe}".encode()).hexdigest()[:12]
+            db_pick = DBStockPick(
+                id=pick_id,
+                ticker=pick.ticker,
+                timeframe=timeframe,
+                conviction_score=pick.conviction_score,
+                thesis=pick.thesis,
+                entry_price=pick.entry_price,
+                target_price=pick.target_price,
+                stop_loss=pick.stop_loss,
+                risk_factors=json.dumps(pick.risk_factors[:5] if pick.risk_factors else []),
+            )
+            if db.upsert_stock_pick(db_pick):
+                added += 1
+
+    # Store stock metrics and price history
+    for ticker, details in stock_details.items():
+        total += 1
+        db_metrics = DBStockMetrics(
+            ticker=ticker,
+            name=details.get("company_name") or ticker,
+            sector=details.get("sector"),
+            industry=None,
+            price=details.get("price"),
+            previous_close=details.get("previous_close"),
+            change=details.get("change"),
+            change_percent=details.get("change_percent"),
+            volume=details.get("volume"),
+            market_cap=details.get("market_cap"),
+            pe_trailing=details.get("pe_trailing"),
+            pe_forward=details.get("pe_forward"),
+            peg_ratio=details.get("peg_ratio"),
+            price_to_book=details.get("price_to_book"),
+            revenue_growth=details.get("revenue_growth"),
+            profit_margin=details.get("profit_margin"),
+            dividend_yield=details.get("dividend_yield"),
+            beta=details.get("beta"),
+            fifty_two_week_high=details.get("fifty_two_week_high"),
+            fifty_two_week_low=details.get("fifty_two_week_low"),
+            avg_volume=details.get("avg_volume"),
+        )
+        if db.upsert_stock_metrics(db_metrics):
+            added += 1
+
+        # Store price history
+        for point in details.get("price_history", []):
+            point_id = hashlib.md5(f"{ticker}:{point['time']}".encode()).hexdigest()[:12]
+            try:
+                point_date = datetime.strptime(point["time"], "%Y-%m-%d").date()
+                db_point = DBPricePoint(
+                    id=point_id,
+                    ticker=ticker,
+                    date=point_date,
+                    open=point["open"],
+                    high=point["high"],
+                    low=point["low"],
+                    close=point["close"],
+                    volume=point["volume"],
+                )
+                db.upsert_price_point(db_point)
+            except Exception:
+                pass
+
+    # Store macro indicators
+    for ind in result.macro_indicators:
+        total += 1
+        ind_id = ind.series_id or ind.name.lower().replace(" ", "_")
+        trend_str = {Trend.RISING: "up", Trend.FALLING: "down", Trend.STABLE: "flat"}.get(ind.trend, "flat")
+        db_ind = DBMacroIndicator(
+            id=ind_id,
+            series_id=ind.series_id or ind_id,
+            name=ind.name,
+            value=ind.current_value or 0,
+            previous_value=ind.previous_value,
+            unit=ind.unit or "",
+            trend=trend_str,
+            source="FRED",
+        )
+        if db.upsert_macro_indicator(db_ind):
+            added += 1
+
+    # Store macro risks
+    db.clear_macro_risks()
+    for risk in result.macro_risks:
+        total += 1
+        risk_id = risk.name.lower().replace(" ", "_")
+        severity = "low"
+        if risk.severity >= 0.7:
+            severity = "high"
+        elif risk.severity >= 0.4:
+            severity = "medium"
+
+        db_risk = DBMacroRisk(
+            id=risk_id,
+            name=risk.name,
+            severity=severity,
+            description=risk.description,
+            likelihood=risk.probability,
+            affected_sectors=json.dumps(["technology", "finance"]),
+        )
+        if db.upsert_macro_risk(db_risk):
+            added += 1
+
+    # Store news items
+    for category, news_list in [("market", result.market_news), ("company", result.company_news)]:
+        for i, item in enumerate(news_list[:50]):
+            total += 1
+            news_id = hashlib.md5(f"{item.url or item.title}".encode()).hexdigest()[:12]
+            db_news = DBNewsItem(
+                id=news_id,
+                headline=item.title,
+                source=item.source or "Unknown",
+                url=item.url or "",
+                category=category,
+                published_at=item.published,
+                relevance_score=item.relevance_score,
+                tickers_mentioned=json.dumps(item.tickers_mentioned[:5] if item.tickers_mentioned else []),
+                excerpt=item.title[:200] if item.title else "",
+            )
+            if db.upsert_news_item(db_news):
+                added += 1
+
+    db.complete_scrape_run(run, records_added=added, records_skipped=total - added)
+    print(f"Stored {added} new records in database (skipped {total - added} existing)")
 
 
 def smart_money_to_frontend(signal: dict) -> dict:
@@ -412,6 +569,10 @@ def main():
     # Fetch detailed stock data (price history, fundamentals)
     stock_details = fetch_stock_details(list(all_tickers))
 
+    # Store all data in SQLite database
+    print("\nStoring data in SQLite database...")
+    store_pipeline_data_in_db(result, stock_details)
+
     # Convert to frontend format
     report = generate_report_json(result, config, stock_details)
 
@@ -436,6 +597,21 @@ def main():
         print(f"  Price history points: {len(detail.get('priceHistory', []))}")
         print(f"  52W High: {detail['fundamentals'].get('fiftyTwoWeekHigh')}")
         print(f"  52W Low: {detail['fundamentals'].get('fiftyTwoWeekLow')}")
+
+    # Show database stats
+    db = get_db()
+    stats = db.get_stats()
+    print(f"\nDatabase stats ({stats['db_path']}):")
+    print(f"  Stock picks: {stats['stock_picks']}")
+    print(f"  Stock metrics: {stats['stock_metrics']}")
+    print(f"  Price history: {stats['price_history']}")
+    print(f"  Congress trades: {stats['congress_trades']}")
+    print(f"  Options activity: {stats['options_activity']}")
+    print(f"  Macro indicators: {stats['macro_indicators']}")
+    print(f"  Macro risks: {stats['macro_risks']}")
+    print(f"  News items: {stats['news_items']}")
+    print(f"  Pipeline runs: {stats['scrape_runs']}")
+    print(f"  DB size: {stats['db_size_mb']} MB")
 
 
 if __name__ == "__main__":

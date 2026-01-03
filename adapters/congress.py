@@ -5,6 +5,8 @@ Fetches congressional stock transactions from public disclosure data.
 Primary source: Capitol Trades (capitoltrades.com) - scraped via Playwright
 Fallback: House/Senate Stock Watcher JSON feeds
 
+Data is persisted to SQLite for historical tracking and faster access.
+
 Source: https://capitoltrades.com
 """
 
@@ -15,6 +17,7 @@ from datetime import datetime, timedelta
 
 from domain import Observation, Category
 from ports import FetchError, ParseError
+from db import get_db, CongressTrade as DBCongressTrade
 
 from .base import BaseAdapter
 from .capitol_trades_scraper import scrape_capitol_trades, ScrapedTrade
@@ -184,30 +187,130 @@ class CongressAdapter(BaseAdapter):
     def _fetch_from_capitol_trades(
         self, limit: int = 50, tickers: list[str] | None = None
     ) -> list[Observation]:
-        """Fetch trades from Capitol Trades via web scraping."""
+        """Fetch trades from Capitol Trades via web scraping and store in database."""
         try:
+            db = get_db()
+            run = db.start_scrape_run("congress")
+
             scraped = scrape_capitol_trades(limit=limit)
             if not scraped:
-                return []
+                db.complete_scrape_run(run, records_added=0)
+                # Fall back to database if scraping returned nothing
+                return self._fetch_from_database(limit=limit, tickers=tickers)
 
             observations = []
-            for trade in scraped:
-                # Filter by ticker if specified
-                if tickers and trade.ticker and trade.ticker not in tickers:
-                    continue
+            added = 0
+            skipped = 0
 
+            for trade in scraped:
                 # Skip trades without tickers (non-stock assets)
                 if not trade.ticker:
                     continue
 
+                # Filter by ticker if specified
+                if tickers and trade.ticker not in tickers:
+                    continue
+
+                # Store in database
+                db_trade = self._scraped_to_db_trade(trade)
+                if db.upsert_congress_trade(db_trade):
+                    added += 1
+                else:
+                    skipped += 1
+
                 obs = self._scraped_to_observation(trade)
                 observations.append(obs)
+
+            db.complete_scrape_run(run, records_added=added, records_skipped=skipped)
+            logger.info(f"Stored {added} new congress trades, skipped {skipped} duplicates")
 
             return observations
 
         except Exception as e:
             logger.warning(f"Capitol Trades scraping failed: {e}")
+            # Fall back to database
+            return self._fetch_from_database(limit=limit, tickers=tickers)
+
+    def _fetch_from_database(
+        self, limit: int = 50, tickers: list[str] | None = None
+    ) -> list[Observation]:
+        """Fetch trades from local database."""
+        try:
+            db = get_db()
+
+            if tickers:
+                # Get trades for specific tickers
+                trades = []
+                for ticker in tickers:
+                    trades.extend(db.get_congress_trades(ticker=ticker, limit=limit))
+            else:
+                trades = db.get_all_congress_trades(limit=limit)
+
+            if not trades:
+                logger.debug("No congress trades in database")
+                return []
+
+            logger.info(f"Loaded {len(trades)} congress trades from database")
+
+            observations = []
+            for trade in trades:
+                obs = self._db_trade_to_observation(trade)
+                observations.append(obs)
+
+            return observations
+
+        except Exception as e:
+            logger.warning(f"Failed to read from database: {e}")
             return []
+
+    def _scraped_to_db_trade(self, trade: ScrapedTrade) -> DBCongressTrade:
+        """Convert scraped trade to database model."""
+        date_str = trade.published_date.isoformat() if trade.published_date else datetime.now().isoformat()
+        id_str = f"{trade.politician}:{trade.ticker}:{date_str}"
+        trade_id = hashlib.md5(id_str.encode()).hexdigest()[:12]
+
+        return DBCongressTrade(
+            id=trade_id,
+            politician=trade.politician,
+            party=trade.party,
+            chamber=trade.chamber,
+            state=trade.state,
+            ticker=trade.ticker,
+            issuer=trade.issuer,
+            transaction_type=trade.transaction_type,
+            amount_low=trade.amount_range[0],
+            amount_high=trade.amount_range[1],
+            traded_date=trade.traded_date.date() if trade.traded_date else None,
+            disclosed_date=trade.published_date.date() if trade.published_date else None,
+        )
+
+    def _db_trade_to_observation(self, trade: DBCongressTrade) -> Observation:
+        """Convert database trade to observation."""
+        return Observation(
+            source=self.source_name,
+            timestamp=datetime.combine(trade.disclosed_date, datetime.min.time()) if trade.disclosed_date else datetime.now(),
+            category=Category.SENTIMENT,
+            data={
+                "id": trade.id,
+                "signal_type": "congress",
+                "ticker": trade.ticker,
+                "direction": trade.transaction_type,
+                "strength": trade.strength,
+                "summary": trade.summary,
+                "details": {
+                    "politician": trade.politician,
+                    "party": trade.party,
+                    "chamber": trade.chamber,
+                    "amount_low": trade.amount_low,
+                    "amount_high": trade.amount_high,
+                    "asset_description": trade.issuer,
+                    "transaction_date": trade.traded_date.isoformat() if trade.traded_date else None,
+                    "disclosure_date": trade.disclosed_date.isoformat() if trade.disclosed_date else None,
+                },
+            },
+            ticker=trade.ticker,
+            reliability=self.reliability,
+        )
 
     def _scraped_to_observation(self, trade: ScrapedTrade) -> Observation:
         """Convert scraped trade to observation."""

@@ -10,15 +10,18 @@ Most reliable free source for:
 Uses yfinance library for fundamentals as the raw API now requires auth.
 """
 
+import hashlib
 import logging
+import math
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, date
 from typing import Any
 
 import yfinance as yf
 
 from domain import Observation, Category
 from ports import FetchError, DataError, ValidationError
+from db import get_db, OptionsActivity as DBOptionsActivity
 
 from .base import BaseAdapter
 
@@ -366,6 +369,7 @@ class YahooAdapter(BaseAdapter):
         ticker: str,
         threshold: float = 3.0,
         min_volume: int = 100,
+        store_in_db: bool = True,
     ) -> list[Observation]:
         """
         Detect unusual options activity for a ticker.
@@ -377,13 +381,14 @@ class YahooAdapter(BaseAdapter):
             ticker: Stock ticker symbol
             threshold: Volume/OI ratio threshold (default 3.0)
             min_volume: Minimum volume to consider (default 100)
+            store_in_db: Whether to store results in database (default True)
 
         Returns:
             List of Observations for unusual options
         """
-        import hashlib
-
         ticker = self._validate_ticker(ticker)
+        db = get_db() if store_in_db else None
+        run = db.start_scrape_run("options") if db else None
 
         try:
             stock = yf.Ticker(ticker)
@@ -392,9 +397,13 @@ class YahooAdapter(BaseAdapter):
             expirations = stock.options
             if not expirations:
                 logger.debug(f"No options data for {ticker}")
+                if run:
+                    db.complete_scrape_run(run)
                 return []
 
             unusual_options = []
+            added = 0
+            skipped = 0
 
             # Check first 3 expiration dates (near-term activity is most relevant)
             for expiry in expirations[:3]:
@@ -411,6 +420,13 @@ class YahooAdapter(BaseAdapter):
                     )
                     if unusual:
                         unusual_options.append(unusual)
+                        # Store in database
+                        if db:
+                            db_activity = self._observation_to_db_options(unusual)
+                            if db.upsert_options_activity(db_activity):
+                                added += 1
+                            else:
+                                skipped += 1
 
                 # Check puts
                 for _, row in chain.puts.iterrows():
@@ -419,6 +435,13 @@ class YahooAdapter(BaseAdapter):
                     )
                     if unusual:
                         unusual_options.append(unusual)
+                        # Store in database
+                        if db:
+                            db_activity = self._observation_to_db_options(unusual)
+                            if db.upsert_options_activity(db_activity):
+                                added += 1
+                            else:
+                                skipped += 1
 
             # Sort by volume/OI ratio (most unusual first) and limit
             unusual_options.sort(
@@ -426,12 +449,100 @@ class YahooAdapter(BaseAdapter):
                 reverse=True,
             )
 
-            logger.info(f"Found {len(unusual_options)} unusual options for {ticker}")
+            if run:
+                db.complete_scrape_run(run, records_added=added, records_skipped=skipped)
+
+            logger.info(f"Found {len(unusual_options)} unusual options for {ticker} (added={added}, skipped={skipped})")
             return unusual_options[:10]  # Limit to top 10 most unusual
 
         except Exception as e:
             logger.warning(f"Failed to get options for {ticker}: {e}")
+            if run:
+                db.complete_scrape_run(run, error=str(e))
             return []
+
+    def get_options_from_database(self, ticker: str | None = None, hours: int = 24, limit: int = 100) -> list[Observation]:
+        """
+        Fetch options activity from database.
+
+        Args:
+            ticker: Optional ticker to filter by
+            hours: Look back this many hours (default 24)
+            limit: Maximum records to return
+
+        Returns:
+            List of Observations from stored options activity
+        """
+        db = get_db()
+        activities = db.get_options_activity(ticker=ticker, hours=hours, limit=limit)
+
+        observations = []
+        for activity in activities:
+            observations.append(self._db_options_to_observation(activity))
+
+        logger.info(f"Loaded {len(observations)} options activities from database")
+        return observations
+
+    def _observation_to_db_options(self, obs: Observation) -> DBOptionsActivity:
+        """Convert Observation to database OptionsActivity model."""
+        details = obs.data.get("details", {})
+        expiry_str = details.get("expiry", "")
+
+        # Parse expiry date
+        if expiry_str:
+            expiry = datetime.strptime(expiry_str, "%Y-%m-%d").date()
+        else:
+            expiry = date.today()
+
+        return DBOptionsActivity(
+            id=obs.data.get("id", ""),
+            ticker=obs.ticker,
+            option_type=details.get("option_type", "call"),
+            strike=details.get("strike", 0.0),
+            expiry=expiry,
+            volume=details.get("volume", 0),
+            open_interest=details.get("open_interest", 0),
+            volume_oi_ratio=details.get("volume_oi_ratio", 0.0),
+            implied_volatility=details.get("implied_volatility"),
+            premium_total=details.get("premium_total"),
+            direction=obs.data.get("direction", "buy"),
+            strength=obs.data.get("strength", 0.5),
+        )
+
+    def _db_options_to_observation(self, activity: DBOptionsActivity) -> Observation:
+        """Convert database OptionsActivity to Observation."""
+        summary = (
+            f"Unusual {activity.option_type.upper()} activity on {activity.ticker}: "
+            f"${activity.strike:.0f} {activity.expiry}, Volume/OI={activity.volume_oi_ratio:.1f}x"
+        )
+        if activity.premium_total:
+            summary += f", ${activity.premium_total/1000:.0f}K premium"
+
+        return Observation(
+            source=self.source_name,
+            timestamp=activity.created_at,
+            category=Category.SENTIMENT,
+            data={
+                "id": activity.id,
+                "signal_type": "options",
+                "ticker": activity.ticker,
+                "direction": activity.direction,
+                "strength": activity.strength,
+                "summary": summary,
+                "details": {
+                    "option_type": activity.option_type,
+                    "strike": activity.strike,
+                    "expiry": activity.expiry.isoformat() if activity.expiry else None,
+                    "volume": activity.volume,
+                    "open_interest": activity.open_interest,
+                    "volume_oi_ratio": activity.volume_oi_ratio,
+                    "implied_volatility": activity.implied_volatility,
+                    "premium_total": activity.premium_total,
+                },
+            },
+            ticker=activity.ticker,
+            reliability=0.7,
+        )
 
     def _check_unusual_option(
         self,
@@ -443,8 +554,6 @@ class YahooAdapter(BaseAdapter):
         min_volume: int,
     ) -> Observation | None:
         """Check if an option contract shows unusual activity."""
-        import hashlib
-        import math
 
         # Safely convert volume and OI, handling NaN values
         volume_raw = row.get("volume", 0)
