@@ -23,6 +23,7 @@ from db import (
     MacroIndicator as DBMacroIndicator,
     MacroRisk as DBMacroRisk,
     NewsItem as DBNewsItem,
+    HedgeFundHolding,
 )
 
 
@@ -327,6 +328,79 @@ def smart_money_to_frontend(signal: dict) -> dict:
     }
 
 
+def hedge_fund_holding_to_frontend(holding: HedgeFundHolding, fund_name: str, manager: str) -> dict:
+    """Convert HedgeFundHolding to frontend SmartMoneySignal format."""
+    # Determine direction based on action
+    direction = "buy"
+    if holding.action in ("sold", "decreased"):
+        direction = "sell"
+
+    # Calculate strength based on action and magnitude
+    strength = 0.5
+    if holding.action == "new":
+        strength = 0.85
+    elif holding.action == "increased" and holding.shares_change_pct:
+        strength = min(0.9, 0.6 + abs(holding.shares_change_pct) / 200)
+    elif holding.action == "decreased" and holding.shares_change_pct:
+        strength = min(0.8, 0.5 + abs(holding.shares_change_pct) / 200)
+    elif holding.action == "sold":
+        strength = 0.75
+
+    # Build summary
+    ticker = holding.ticker or holding.issuer_name[:12]
+    value_str = f"${holding.value / 1e6:.1f}M" if holding.value >= 1e6 else f"${holding.value / 1e3:.0f}K"
+
+    if holding.action == "new":
+        summary = f"{fund_name} opened new position in {ticker} ({value_str})"
+    elif holding.action == "increased":
+        pct = f"+{holding.shares_change_pct:.1f}%" if holding.shares_change_pct else ""
+        summary = f"{fund_name} increased {ticker} {pct} ({value_str})"
+    elif holding.action == "decreased":
+        pct = f"{holding.shares_change_pct:.1f}%" if holding.shares_change_pct else ""
+        summary = f"{fund_name} reduced {ticker} {pct} ({value_str})"
+    elif holding.action == "sold":
+        summary = f"{fund_name} sold entire position in {ticker}"
+    else:
+        summary = f"{fund_name} holds {ticker} ({value_str})"
+
+    # Get quarter string
+    report_date = holding.report_date
+    if isinstance(report_date, str):
+        try:
+            report_date = datetime.strptime(report_date, "%Y-%m-%d").date()
+        except Exception:
+            report_date = None
+
+    if report_date:
+        quarter = f"Q{(report_date.month - 1) // 3 + 1} {report_date.year}"
+    else:
+        quarter = "N/A"
+
+    return {
+        "id": f"13f_{holding.id}",
+        "type": "13f",
+        "ticker": holding.ticker or "",
+        "direction": direction,
+        "strength": round(strength, 2),
+        "summary": summary,
+        "timestamp": holding.filing_date.isoformat() if hasattr(holding.filing_date, 'isoformat') else str(holding.filing_date),
+        "source": "sec_13f",
+        "details": {
+            "fund_name": fund_name,
+            "manager": manager,
+            "shares": holding.shares,
+            "value": holding.value,
+            "action": holding.action,
+            "shares_change": holding.shares_change,
+            "shares_change_pct": holding.shares_change_pct,
+            "value_change": (holding.value - holding.prev_value) if holding.prev_value else None,
+            "portfolio_pct": holding.portfolio_pct,
+            "filing_date": holding.filing_date.isoformat() if hasattr(holding.filing_date, 'isoformat') else str(holding.filing_date),
+            "quarter": quarter,
+        },
+    }
+
+
 def fetch_stock_details(tickers: list[str]) -> dict:
     """Fetch detailed stock data including price history and fundamentals."""
     from adapters.yahoo import YahooAdapter
@@ -449,6 +523,24 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict) ->
     congress_signals = [s for s in smart_money_signals if s["type"] == "congress"]
     options_signals = [s for s in smart_money_signals if s["type"] == "options"]
 
+    # Fetch 13F hedge fund holdings from database
+    db = get_db()
+    hedge_fund_holdings = db.get_recent_hedge_fund_activity(limit=100)
+    funds_cache = {}  # Cache fund info lookups
+
+    hedge_fund_signals = []
+    for holding in hedge_fund_holdings:
+        if holding.fund_id not in funds_cache:
+            fund = db.get_hedge_fund(holding.fund_id)
+            funds_cache[holding.fund_id] = (fund.name, fund.manager) if fund else ("Unknown Fund", "Unknown")
+        fund_name, manager = funds_cache[holding.fund_id]
+        hedge_fund_signals.append(hedge_fund_holding_to_frontend(holding, fund_name, manager))
+
+    # Add 13F signals to all smart money signals
+    smart_money_signals = smart_money_signals + hedge_fund_signals
+    # Sort by strength
+    smart_money_signals.sort(key=lambda x: x["strength"], reverse=True)
+
     # Build stock details with price history and fundamentals
     stock_details_export = {}
     all_picks = short_picks + medium_picks + long_picks
@@ -524,6 +616,7 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict) ->
             "signals": smart_money_signals,
             "congress": congress_signals,
             "options": options_signals,
+            "hedgeFunds": hedge_fund_signals,
             "lastUpdated": now,
         },
         "summary": {
@@ -536,12 +629,16 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict) ->
             "smartMoneySignals": len(smart_money_signals),
             "congressTrades": len(congress_signals),
             "unusualOptions": len(options_signals),
+            "hedgeFundSignals": len(hedge_fund_signals),
         },
     }
 
 
 def main():
     print("Running fintel pipeline...")
+
+    # Get database reference
+    db = get_db()
 
     # Configure pipeline
     config = PipelineConfig(
@@ -560,6 +657,10 @@ def main():
     print(f"Collected {len(result.macro_indicators)} macro indicators")
     print(f"Found {len(result.market_news) + len(result.company_news)} news items")
     print(f"Found {len(result.smart_money_signals)} smart money signals")
+
+    # Count 13F holdings
+    hedge_fund_holdings_count = len(db.get_recent_hedge_fund_activity(limit=100))
+    print(f"Found {hedge_fund_holdings_count} 13F hedge fund holdings")
 
     # Get unique tickers from all picks
     all_tickers = set()

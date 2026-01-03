@@ -134,8 +134,9 @@ export interface NewsItem {
 // Smart Money Types
 // =============================================================================
 
-export type SmartMoneySignalType = "congress" | "options" | "darkpool";
+export type SmartMoneySignalType = "congress" | "options" | "darkpool" | "13f";
 export type TradeDirection = "buy" | "sell" | "exchange";
+export type HedgeFundAction = "new" | "increased" | "decreased" | "sold" | "unchanged";
 export type PoliticalParty = "D" | "R" | "I";
 export type Chamber = "House" | "Senate";
 export type OptionType = "call" | "put";
@@ -170,7 +171,21 @@ export interface DarkPoolDetails {
   source_venue?: string;
 }
 
-export type SmartMoneyDetails = CongressDetails | OptionsDetails | DarkPoolDetails;
+export interface HedgeFundDetails {
+  fund_name: string;
+  manager: string;
+  shares: number;
+  value: number;
+  action: HedgeFundAction;
+  shares_change?: number;
+  shares_change_pct?: number;
+  value_change?: number;
+  portfolio_pct?: number;
+  filing_date: string;
+  quarter: string;
+}
+
+export type SmartMoneyDetails = CongressDetails | OptionsDetails | DarkPoolDetails | HedgeFundDetails;
 
 export interface SmartMoneySignal {
   id: string;
@@ -188,6 +203,7 @@ export interface SmartMoneyContext {
   signals: SmartMoneySignal[];
   congress: SmartMoneySignal[];
   options: SmartMoneySignal[];
+  hedgeFunds: SmartMoneySignal[];
   lastUpdated: string;
 }
 
@@ -236,6 +252,7 @@ export interface ReportSummary {
   smartMoneySignals?: number;
   congressTrades?: number;
   unusualOptions?: number;
+  hedgeFundSignals?: number;
 }
 
 // =============================================================================

@@ -19,6 +19,7 @@ import type {
   SmartMoneySignal,
   SmartMoneyContext,
   SmartMoneySignalType,
+  HedgeFundDetails,
 } from "./types";
 
 // =============================================================================
@@ -275,7 +276,7 @@ export function getLatestNews(limit: number = 10): NewsItem[] {
  */
 export function getSmartMoneyData(): SmartMoneyContext {
   const report = getReportSync();
-  return report.smartMoney ?? { signals: [], congress: [], options: [], lastUpdated: new Date().toISOString() };
+  return report.smartMoney ?? { signals: [], congress: [], options: [], hedgeFunds: [], lastUpdated: new Date().toISOString() };
 }
 
 /**
@@ -308,6 +309,7 @@ export function getSmartMoneySummary(): {
   total: number;
   congress: number;
   options: number;
+  hedgeFunds: number;
   buySignals: number;
   sellSignals: number;
 } {
@@ -319,6 +321,7 @@ export function getSmartMoneySummary(): {
     total: data.signals.length,
     congress: data.congress.length,
     options: data.options.length,
+    hedgeFunds: data.hedgeFunds?.length ?? 0,
     buySignals,
     sellSignals,
   };
@@ -348,6 +351,60 @@ export function getSignalStrengthLevel(strength: number): "strong" | "moderate" 
   if (strength >= 0.7) return "strong";
   if (strength >= 0.4) return "moderate";
   return "weak";
+}
+
+/**
+ * Get hedge fund holdings signals.
+ */
+export function getHedgeFundSignals(): SmartMoneySignal[] {
+  return getSmartMoneySignals("13f");
+}
+
+/**
+ * Get hedge fund signals grouped by fund.
+ */
+export function getHedgeFundsByFund(): Map<string, SmartMoneySignal[]> {
+  const signals = getHedgeFundSignals();
+  const byFund = new Map<string, SmartMoneySignal[]>();
+
+  for (const signal of signals) {
+    const details = signal.details as HedgeFundDetails;
+    const fundName = details.fund_name;
+    if (!byFund.has(fundName)) {
+      byFund.set(fundName, []);
+    }
+    byFund.get(fundName)!.push(signal);
+  }
+
+  return byFund;
+}
+
+/**
+ * Format shares for display.
+ */
+export function formatShares(shares: number): string {
+  if (shares >= 1e9) return `${(shares / 1e9).toFixed(2)}B`;
+  if (shares >= 1e6) return `${(shares / 1e6).toFixed(2)}M`;
+  if (shares >= 1e3) return `${(shares / 1e3).toFixed(1)}K`;
+  return shares.toLocaleString();
+}
+
+/**
+ * Format hedge fund action for display.
+ */
+export function formatHedgeFundAction(action: string): { label: string; color: string; icon: string } {
+  switch (action) {
+    case "new":
+      return { label: "New Position", color: "text-success", icon: "🆕" };
+    case "increased":
+      return { label: "Increased", color: "text-success", icon: "📈" };
+    case "decreased":
+      return { label: "Decreased", color: "text-danger", icon: "📉" };
+    case "sold":
+      return { label: "Sold", color: "text-danger", icon: "🚫" };
+    default:
+      return { label: "Unchanged", color: "text-text-secondary", icon: "➡️" };
+  }
 }
 
 /**

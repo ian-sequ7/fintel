@@ -15,6 +15,7 @@ const filterTabs = [
   { value: "all", label: "All Signals", href: "/smartmoney" },
   { value: "congress", label: `Congress (${summary.congress})`, href: "/smartmoney?filter=congress" },
   { value: "options", label: `Options (${summary.options})`, href: "/smartmoney?filter=options" },
+  { value: "13f", label: `13F Holdings (${summary.hedgeFunds})`, href: "/smartmoney?filter=13f" },
 ];
 
 // Calculate sentiment (more buys than sells = bullish)
@@ -47,18 +48,18 @@ const sentimentColor = getSentimentColor(sentimentRatio);
 const sentimentBg = getSentimentBg(sentimentRatio);
 ---
 
-<Layout title="Smart Money Radar" description="Track institutional activity including Congress trades and unusual options activity.">
+<Layout title="Smart Money Radar" description="Track institutional activity including Congress trades, unusual options activity, and hedge fund 13F filings.">
   <!-- Page header -->
   <div class="mb-6">
     <h1 class="text-2xl font-bold text-text-primary">Smart Money Radar</h1>
     <p class="text-text-secondary">
-      Track institutional activity: Congress trades & unusual options
+      Track institutional activity: Congress trades, unusual options & hedge fund 13F filings
     </p>
   </div>
 
   <!-- Summary cards row -->
   <section class="mb-8">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
       <!-- Sentiment overview card -->
       <div class:list={["rounded-lg border p-4", sentimentBg]}>
         <div class="text-sm text-text-secondary mb-1">Net Sentiment</div>
@@ -74,7 +75,7 @@ const sentimentBg = getSentimentBg(sentimentRatio);
       <MetricCard
         title="Total Signals"
         value={summary.total.toString()}
-        subtitle="Last 60 days"
+        subtitle="All sources"
       />
 
       <!-- Congress trades -->
@@ -89,6 +90,13 @@ const sentimentBg = getSentimentBg(sentimentRatio);
         title="Unusual Options"
         value={summary.options.toString()}
         subtitle="High volume/OI ratio"
+      />
+
+      <!-- 13F hedge fund holdings -->
+      <MetricCard
+        title="13F Holdings"
+        value={summary.hedgeFunds.toString()}
+        subtitle="Hedge fund activity"
       />
     </div>
   </section>
@@ -127,7 +135,8 @@ const sentimentBg = getSentimentBg(sentimentRatio);
     <p class="text-xs text-text-secondary">
       <strong>Disclaimer:</strong> Smart money signals are for informational purposes only.
       Congress trades are disclosed 45 days after transaction. Unusual options activity
-      may reflect hedging rather than directional bets. Always do your own research.
+      may reflect hedging rather than directional bets. 13F filings are released quarterly
+      and may be 45+ days delayed. Always do your own research.
     </p>
   </div>
 </Layout>

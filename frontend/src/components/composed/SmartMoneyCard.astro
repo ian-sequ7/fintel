@@ -1,7 +1,7 @@
 ---
 import Badge from "../primitives/Badge.astro";
-import { formatRelativeTime, formatAmountRange } from "../../data/report";
-import type { SmartMoneySignal, CongressDetails, OptionsDetails } from "../../data/types";
+import { formatRelativeTime, formatAmountRange, formatShares, formatLargeNumber } from "../../data/report";
+import type { SmartMoneySignal, CongressDetails, OptionsDetails, HedgeFundDetails } from "../../data/types";
 
 interface Props {
   signal: SmartMoneySignal;
@@ -12,10 +12,11 @@ interface Props {
 const { signal, compact = false, class: className = "" } = Astro.props;
 
 // Type icons
-const typeIcons = {
+const typeIcons: Record<string, string> = {
   congress: "🏛️",
   options: "📊",
   darkpool: "🌑",
+  "13f": "🏦",
 };
 
 // Direction badge variants
@@ -32,16 +33,18 @@ const directionLabels = {
 };
 
 // Type badge variants
-const typeVariants = {
-  congress: "info" as const,
-  options: "caution" as const,
-  darkpool: "neutral" as const,
+const typeVariants: Record<string, "info" | "caution" | "neutral" | "bullish"> = {
+  congress: "info",
+  options: "caution",
+  darkpool: "neutral",
+  "13f": "bullish",
 };
 
-const typeLabels = {
+const typeLabels: Record<string, string> = {
   congress: "Congress",
   options: "Options",
   darkpool: "Dark Pool",
+  "13f": "13F Filing",
 };
 
 // Check if congress details
@@ -54,6 +57,22 @@ function isOptionsDetails(d: unknown): d is OptionsDetails {
   return typeof d === "object" && d !== null && "strike" in d;
 }
 
+// Check if hedge fund details
+function isHedgeFundDetails(d: unknown): d is HedgeFundDetails {
+  return typeof d === "object" && d !== null && "fund_name" in d;
+}
+
+// Get action badge for 13F
+function getActionBadge(action: string): { text: string; variant: "bullish" | "bearish" | "neutral" | "info" } {
+  switch (action) {
+    case "new": return { text: "NEW", variant: "bullish" };
+    case "increased": return { text: "↑ UP", variant: "bullish" };
+    case "decreased": return { text: "↓ DOWN", variant: "bearish" };
+    case "sold": return { text: "SOLD", variant: "bearish" };
+    default: return { text: "HOLD", variant: "neutral" };
+  }
+}
+
 // Get strength color class
 function getStrengthClass(strength: number): string {
   if (strength >= 0.7) return "bg-success/15 text-success";
@@ -63,6 +82,7 @@ function getStrengthClass(strength: number): string {
 
 const congressDetails = isCongressDetails(signal.details) ? signal.details : null;
 const optionsDetails = isOptionsDetails(signal.details) ? signal.details : null;
+const hedgeFundDetails = isHedgeFundDetails(signal.details) ? signal.details : null;
 ---
 
 <div
@@ -140,6 +160,42 @@ const optionsDetails = isOptionsDetails(signal.details) ? signal.details : null;
                   <span class="text-xs text-text-secondary">·</span>
                   <span class="text-xs text-text-secondary">
                     ${(optionsDetails.premium_total / 1000).toFixed(0)}K premium
+                  </span>
+                </>
+              )}
+            </>
+          )}
+
+          {/* Hedge fund-specific details */}
+          {hedgeFundDetails && (
+            <>
+              <span class="text-xs font-medium text-text-secondary bg-bg-elevated px-2 py-0.5 rounded">
+                {hedgeFundDetails.manager}
+              </span>
+              <span class="text-xs text-text-secondary">·</span>
+              <span class="text-xs text-text-secondary">
+                {formatShares(hedgeFundDetails.shares)} shares
+              </span>
+              <span class="text-xs text-text-secondary">·</span>
+              <span class="text-xs text-text-secondary">
+                {formatLargeNumber(hedgeFundDetails.value)}
+              </span>
+              {hedgeFundDetails.shares_change_pct && (
+                <>
+                  <span class="text-xs text-text-secondary">·</span>
+                  <span class:list={[
+                    "text-xs font-medium",
+                    hedgeFundDetails.shares_change_pct > 0 ? "text-success" : "text-danger"
+                  ]}>
+                    {hedgeFundDetails.shares_change_pct > 0 ? "+" : ""}{hedgeFundDetails.shares_change_pct.toFixed(1)}%
+                  </span>
+                </>
+              )}
+              {hedgeFundDetails.quarter && (
+                <>
+                  <span class="text-xs text-text-secondary">·</span>
+                  <span class="text-xs text-text-muted">
+                    {hedgeFundDetails.quarter}
                   </span>
                 </>
               )}
