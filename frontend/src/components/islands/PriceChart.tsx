@@ -293,6 +293,28 @@ export default function PriceChart({ ticker, data, height = 400, companyName }: 
       borderVisible: false,
     });
 
+    // Set initial data immediately after chart creation
+    const filteredData = _filterDataByRange(fullData, timeRange);
+    const candleData: CandlestickData<Time>[] = filteredData.map((d) => ({
+      time: d.time as Time,
+      open: d.open,
+      high: d.high,
+      low: d.low,
+      close: d.close,
+    }));
+    const volumeData = filteredData.map((d, i) => {
+      const prevClose = i > 0 ? filteredData[i - 1].close : d.open;
+      const isUp = d.close >= prevClose;
+      return {
+        time: d.time as Time,
+        value: d.volume ?? 0,
+        color: isUp ? theme.volumeUp : theme.volumeDown,
+      };
+    });
+    candlestickSeries.setData(candleData);
+    volumeSeries.setData(volumeData);
+    chart.timeScale().fitContent();
+
     // Subscribe to crosshair move for tooltip
     chart.subscribeCrosshairMove((param) => {
       if (!param.time || !param.seriesData) {
@@ -372,7 +394,7 @@ export default function PriceChart({ ticker, data, height = 400, companyName }: 
       themeObserver.disconnect();
       chart.remove();
     };
-  }, [mounted, height, fullData]);
+  }, [mounted, height, fullData, timeRange]);
 
   // Update chart when time range changes
   useEffect(() => {
