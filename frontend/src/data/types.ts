@@ -304,3 +304,45 @@ export interface StockMetrics {
   revenue_growth?: number;
   profit_margin?: number;
 }
+
+// =============================================================================
+// Paper Trading Types
+// =============================================================================
+
+export type TradeStatus = "open" | "closed";
+
+export interface PaperTrade {
+  id: string;
+  ticker: string;
+  companyName: string;
+  shares: number;
+  entryPrice: number;
+  entryDate: string; // ISO date string
+  exitPrice?: number;
+  exitDate?: string; // ISO date string
+  status: TradeStatus;
+  notes?: string;
+}
+
+export interface TradePerformance {
+  trade: PaperTrade;
+  currentPrice: number;
+  marketValue: number;
+  costBasis: number;
+  pnl: number;
+  pnlPercent: number;
+  dayChange?: number;
+  dayChangePercent?: number;
+}
+
+export interface PortfolioSummary {
+  totalValue: number;
+  totalCost: number;
+  totalPnL: number;
+  totalPnLPercent: number;
+  openPositions: number;
+  closedPositions: number;
+  winRate: number; // % of closed trades with positive P&L
+  bestTrade?: TradePerformance;
+  worstTrade?: TradePerformance;
+}

@@ -7,8 +7,12 @@ import NewsCard from "../../components/composed/NewsCard.astro";
 import PriceChart from "../../components/islands/PriceChart";
 import { WatchlistButton } from "../../components/islands/WatchlistManager";
 import { CompareButton } from "../../components/islands/CompareManager";
+import PaperTradeButton from "../../components/islands/PaperTradeButton";
 import { getPicks, getStockDetail, getNewsForStock, formatChange, formatPrice, formatLargeNumber } from "../../data/report";
 import type { StockPick, StockDetail } from "../../data/types";
+
+// Prerender this page statically at build time
+export const prerender = true;
 
 export function getStaticPaths() {
   const allPicks = getPicks("all");
@@ -106,6 +110,7 @@ const tradeProgress = _calculateTradeProgress();
             <Badge text={timeframeLabels[pick.timeframe]} variant={timeframeColors[pick.timeframe]} />
           </div>
           <div class="flex items-center gap-2">
+            <PaperTradeButton client:load ticker={pick.ticker} companyName={pick.companyName} currentPrice={pick.currentPrice} size="md" variant="secondary" />
             <WatchlistButton client:load ticker={pick.ticker} companyName={pick.companyName} size="md" variant="icon" />
             <CompareButton client:load ticker={pick.ticker} companyName={pick.companyName} size="md" />
           </div>
