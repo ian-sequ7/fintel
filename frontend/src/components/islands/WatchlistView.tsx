@@ -96,7 +96,7 @@ export default function WatchlistView({ stockDetails }: Props) {
         </p>
         <a
           href="/picks"
-          className="inline-block bg-accent text-white px-4 py-2 rounded font-medium hover:bg-accent/90 transition-colors"
+          className="inline-block bg-text-primary text-bg-base px-4 py-2 rounded font-medium hover:opacity-90 transition-opacity"
         >
           Browse Picks
         </a>

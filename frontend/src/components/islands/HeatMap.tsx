@@ -205,7 +205,7 @@ export default function HeatMap({
                   onClick={() => setView(option.value)}
                   className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                     view === option.value
-                      ? "bg-accent text-white"
+                      ? "bg-text-primary text-bg-base"
                       : "bg-bg-surface text-text-secondary hover:bg-bg-elevated"
                   }`}
                 >
@@ -230,7 +230,7 @@ export default function HeatMap({
                   onClick={() => setSizeBy(option.value)}
                   className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                     sizeBy === option.value
-                      ? "bg-accent text-white"
+                      ? "bg-text-primary text-bg-base"
                       : "bg-bg-surface text-text-secondary hover:bg-bg-elevated"
                   }`}
                 >

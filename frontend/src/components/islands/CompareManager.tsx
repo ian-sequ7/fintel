@@ -105,7 +105,7 @@ export function CompareButton({ ticker, companyName, size = "md" }: CompareButto
       onClick={handleClick}
       className={`${sizeClasses} rounded font-medium transition-colors ${
         inCompare
-          ? "bg-accent text-white hover:bg-accent/80"
+          ? "bg-text-primary text-bg-base hover:opacity-80"
           : "bg-bg-elevated text-text-secondary hover:text-text-primary hover:bg-bg-surface border border-border"
       }`}
       title={inCompare ? "Remove from comparison" : "Add to comparison"}
@@ -165,7 +165,7 @@ export function CompareBar() {
       <div className="flex items-center gap-2 ml-2">
         <a
           href="/compare"
-          className="bg-accent text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-accent/90 transition-colors"
+          className="bg-text-primary text-bg-base px-4 py-1.5 rounded text-sm font-medium hover:opacity-90 transition-opacity"
         >
           Compare {stocks.length}
         </a>

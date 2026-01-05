@@ -23,9 +23,10 @@
   --color-warning: var(--warning);
   --color-danger: var(--danger);
 
-  /* Font families */
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* Font families - CNN Business editorial style */
+  --font-serif: "Libre Baskerville", Georgia, "Times New Roman", serif;
+  --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, monospace;
 
   /* Spacing scale */
   --spacing-px: 1px;
@@ -83,28 +84,42 @@
    ============================================================================= */
 
 :root {
-  /* Background colors */
+  /* Background colors - cleaner white */
   --bg-base: #ffffff;
-  --bg-surface: #f8fafc;
-  --bg-elevated: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f5f5f5;
 
-  /* Text colors */
-  --text-primary: #0f172a;
-  --text-secondary: #64748b;
+  /* Text colors - true black for editorial authority */
+  --text-primary: #000000;
+  --text-secondary: #5c5c5c;
 
-  /* Border color */
-  --border: #e2e8f0;
+  /* Border color - more visible */
+  --border: #d9d9d9;
 
-  /* Semantic colors */
-  --accent: #3b82f6;
-  --success: #22c55e;
-  --warning: #eab308;
-  --danger: #ef4444;
+  /* Semantic colors - CNN Business inspired, no blue accent */
+  --accent: #000000;
+  --accent-hover: #333333;
+  --success: #00a651;
+  --warning: #5c5c5c;
+  --danger: #cc0000;
+
+  /* Active tab indicator */
+  --tab-active: #cc0000;
+
+  /* Market session colors */
+  --market-premarket: #b45309;
+  --market-premarket-bg: #fef3c7;
+  --market-open: #166534;
+  --market-open-bg: #dcfce7;
+  --market-afterhours: #1e3a5f;
+  --market-afterhours-bg: #dbeafe;
+  --market-closed: #6b7280;
+  --market-closed-bg: #f3f4f6;
 
   /* Chart colors */
-  --chart-up: #22c55e;
-  --chart-down: #ef4444;
-  --chart-grid: #e2e8f0;
+  --chart-up: #00a651;
+  --chart-down: #cc0000;
+  --chart-grid: #e5e5e5;
 }
 
 /* =============================================================================
@@ -112,46 +127,62 @@
    ============================================================================= */
 
 [data-theme="dark"] {
-  /* Background colors */
-  --bg-base: #0f172a;
-  --bg-surface: #1e293b;
-  --bg-elevated: #334155;
+  /* Background colors - dark editorial */
+  --bg-base: #111111;
+  --bg-surface: #1a1a1a;
+  --bg-elevated: #2a2a2a;
 
   /* Text colors */
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
+  --text-primary: #f5f5f5;
+  --text-secondary: #999999;
 
   /* Border color */
-  --border: #334155;
+  --border: #333333;
 
-  /* Semantic colors (slightly adjusted for dark bg) */
-  --accent: #60a5fa;
+  /* Semantic colors (adjusted for dark bg) */
+  --accent: #ffffff;
+  --accent-hover: #cccccc;
   --success: #4ade80;
-  --warning: #facc15;
-  --danger: #f87171;
+  --warning: #999999;
+  --danger: #ff6b6b;
+
+  /* Active tab indicator */
+  --tab-active: #cc0000;
+
+  /* Market session colors (dark mode) */
+  --market-premarket: #fbbf24;
+  --market-premarket-bg: #422006;
+  --market-open: #4ade80;
+  --market-open-bg: #052e16;
+  --market-afterhours: #60a5fa;
+  --market-afterhours-bg: #172554;
+  --market-closed: #9ca3af;
+  --market-closed-bg: #1f2937;
 
   /* Chart colors */
   --chart-up: #4ade80;
-  --chart-down: #f87171;
-  --chart-grid: #334155;
+  --chart-down: #ff6b6b;
+  --chart-grid: #333333;
 }
 
 /* System preference dark mode (fallback) */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg-base: #0f172a;
-    --bg-surface: #1e293b;
-    --bg-elevated: #334155;
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --border: #334155;
-    --accent: #60a5fa;
+    --bg-base: #111111;
+    --bg-surface: #1a1a1a;
+    --bg-elevated: #2a2a2a;
+    --text-primary: #f5f5f5;
+    --text-secondary: #999999;
+    --border: #333333;
+    --accent: #ffffff;
+    --accent-hover: #cccccc;
     --success: #4ade80;
-    --warning: #facc15;
-    --danger: #f87171;
+    --warning: #999999;
+    --danger: #ff6b6b;
+    --tab-active: #cc0000;
     --chart-up: #4ade80;
-    --chart-down: #f87171;
-    --chart-grid: #334155;
+    --chart-down: #ff6b6b;
+    --chart-grid: #333333;
   }
 }
 
@@ -178,8 +209,9 @@ body {
    ============================================================================= */
 
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  line-height: 1.25;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  line-height: 1.2;
   color: var(--text-primary);
 }
 
@@ -195,12 +227,27 @@ p {
 }
 
 a {
-  color: var(--accent);
   text-decoration: none;
 }
 
 a:hover {
   text-decoration: underline;
+}
+
+/* Primary button styling for links styled as buttons */
+.btn-primary {
+  display: inline-block;
+  background-color: var(--text-primary);
+  color: var(--bg-base) !important;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  text-decoration: none;
 }
 
 /* =============================================================================

@@ -470,7 +470,7 @@ export default function PriceChart({ ticker, data, height = 400, companyName }: 
               onClick={() => setTimeRange(range)}
               className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
                 timeRange === range
-                  ? "bg-accent text-white"
+                  ? "bg-text-primary text-bg-base"
                   : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated"
               }`}
             >

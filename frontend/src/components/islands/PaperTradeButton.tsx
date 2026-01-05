@@ -25,7 +25,7 @@ export default function PaperTradeButton({
   };
 
   const variantClasses = {
-    primary: "bg-accent text-white hover:bg-accent/90",
+    primary: "bg-text-primary text-bg-base hover:opacity-90",
     secondary: "bg-bg-elevated border border-border text-text-primary hover:border-accent",
     icon: "p-2 bg-bg-elevated border border-border text-text-secondary hover:text-accent hover:border-accent",
   };

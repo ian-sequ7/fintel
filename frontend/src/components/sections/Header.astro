@@ -28,35 +28,22 @@ function _isActive(href: string): boolean {
 <header class="bg-bg-surface border-b border-border sticky top-0 z-50">
   <div class="container mx-auto px-4 max-w-7xl">
     <div class="flex items-center justify-between h-16">
-      <!-- Logo -->
-      <a href="/" class="flex items-center gap-2 font-bold text-xl text-text-primary hover:text-accent transition-colors">
-        <svg
-          class="w-8 h-8 text-accent"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-          />
-        </svg>
-        <span>Financial Intel</span>
+      <!-- Logo - CNN Business editorial style -->
+      <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <span class="font-serif font-bold text-2xl text-text-primary tracking-tight">Fintel</span>
       </a>
 
-      <!-- Navigation -->
-      <nav class="hidden md:flex items-center gap-1">
+      <!-- Navigation - CNN Business style with red underline -->
+      <nav class="hidden md:flex items-center gap-0">
         {
           navItems.map((item) => (
             <a
               href={item.href}
               class:list={[
-                "px-3 py-2 text-sm font-medium rounded-lg transition-colors relative",
+                "px-4 py-4 text-sm font-medium transition-colors relative border-b-2",
                 _isActive(item.href)
-                  ? "bg-accent/10 text-accent"
-                  : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated",
+                  ? "text-text-primary border-[var(--tab-active)]"
+                  : "text-text-secondary hover:text-text-primary border-transparent hover:border-border",
               ]}
             >
               {item.label}
@@ -108,10 +95,10 @@ function _isActive(href: string): boolean {
           <a
             href={item.href}
             class:list={[
-              "block px-3 py-2 text-sm font-medium rounded-lg transition-colors relative",
+              "block px-3 py-3 text-sm font-medium transition-colors relative border-l-2",
               _isActive(item.href)
-                ? "bg-accent/10 text-accent"
-                : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated",
+                ? "text-text-primary border-[var(--tab-active)] bg-bg-elevated"
+                : "text-text-secondary hover:text-text-primary border-transparent",
             ]}
           >
             <span class="inline-flex items-center gap-2">
