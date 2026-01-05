@@ -425,6 +425,13 @@ def fetch_sp500_batch_prices() -> dict[str, dict]:
     # Batch fetch prices
     yahoo = YahooAdapter()
     prices = yahoo.get_prices_batch(tickers)
+    price_time = time.time() - start
+
+    # Batch fetch market caps (threaded, ~10s for 500 tickers)
+    print(f"  Fetched {len(prices)} prices in {price_time:.1f}s, fetching market caps...")
+    cap_start = time.time()
+    market_caps = yahoo.get_market_caps_batch(tickers)
+    cap_time = time.time() - cap_start
 
     # Merge with sector info from universe
     result = {}
@@ -438,12 +445,14 @@ def fetch_sp500_batch_prices() -> dict[str, dict]:
             "priceChange": price_data["change"],
             "priceChangePercent": price_data["change_percent"],
             "volume": price_data.get("volume"),
+            "marketCap": market_caps.get(ticker),
             # Flag that this is lite data (no fundamentals)
             "isLite": True,
         }
 
     elapsed = time.time() - start
-    print(f"  Fetched {len(result)} prices in {elapsed:.1f}s")
+    caps_found = sum(1 for v in market_caps.values() if v is not None)
+    print(f"  Fetched {len(result)} stocks ({caps_found} with market cap) in {elapsed:.1f}s")
 
     return result
 

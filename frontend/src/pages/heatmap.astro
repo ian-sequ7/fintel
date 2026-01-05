@@ -40,6 +40,7 @@ const mergedStocks: StockPick[] = allStocks.map((stock: LiteStock) => {
     riskFactors: [],
     sector: (stock.sector as Sector) || "technology",
     volume: stock.volume,
+    marketCap: stock.marketCap,
   };
 });
 

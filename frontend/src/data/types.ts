@@ -92,6 +92,7 @@ export interface LiteStock {
   priceChange: number;
   priceChangePercent: number;
   volume?: number;
+  marketCap?: number;
   isLite: true;
 }
 

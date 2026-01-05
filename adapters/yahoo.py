@@ -517,6 +517,52 @@ class YahooAdapter(BaseAdapter):
 
         return results
 
+    def get_market_caps_batch(self, tickers: list[str], max_workers: int = 20) -> dict[str, int | None]:
+        """
+        Fetch market caps for multiple tickers using threaded parallel requests.
+
+        This uses yfinance's fast_info which is more efficient than full .info.
+        With threading, 500 tickers takes ~10 seconds.
+
+        Args:
+            tickers: List of ticker symbols
+            max_workers: Number of parallel threads (default 20)
+
+        Returns:
+            Dict of ticker -> market cap (int) or None if unavailable
+        """
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        if not tickers:
+            return {}
+
+        tickers = [t.upper().strip() for t in tickers]
+        results: dict[str, int | None] = {}
+
+        def _fetch_market_cap(ticker: str) -> tuple[str, int | None]:
+            try:
+                info = yf.Ticker(ticker).fast_info
+                cap = info.get("marketCap")
+                return ticker, int(cap) if cap else None
+            except Exception as e:
+                logger.debug(f"Market cap fetch failed for {ticker}: {e}")
+                return ticker, None
+
+        try:
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                futures = {executor.submit(_fetch_market_cap, t): t for t in tickers}
+                for future in as_completed(futures):
+                    ticker, cap = future.result()
+                    results[ticker] = cap
+
+            success_count = sum(1 for v in results.values() if v is not None)
+            logger.info(f"Batch fetched market caps for {success_count}/{len(tickers)} tickers")
+
+        except Exception as e:
+            logger.error(f"Batch market cap fetch failed: {e}")
+
+        return results
+
     # ========================================================================
     # Unusual Options Activity Detection
     # ========================================================================
