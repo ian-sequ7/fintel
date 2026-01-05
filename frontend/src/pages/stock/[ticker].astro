@@ -8,32 +8,50 @@ import PriceChart from "../../components/islands/PriceChart";
 import { WatchlistButton } from "../../components/islands/WatchlistManager";
 import { CompareButton } from "../../components/islands/CompareManager";
 import PaperTradeButton from "../../components/islands/PaperTradeButton";
-import { getPicks, getStockDetail, getNewsForStock, formatChange, formatPrice, formatLargeNumber } from "../../data/report";
-import type { StockPick, StockDetail } from "../../data/types";
+import { getPicks, getAllStocks, getStockDetail, getNewsForStock, formatChange, formatPrice, formatLargeNumber } from "../../data/report";
+import type { StockPick, StockDetail, LiteStock } from "../../data/types";
 
 // Prerender this page statically at build time
 export const prerender = true;
 
 export function getStaticPaths() {
   const allPicks = getPicks("all");
+  const allStocks = getAllStocks();
 
-  return allPicks.map((pick) => ({
+  // Create a set of pick tickers for quick lookup
+  const pickTickers = new Set(allPicks.map((p) => p.ticker));
+
+  // Map picks to paths (full data)
+  const pickPaths = allPicks.map((pick) => ({
     params: { ticker: pick.ticker },
-    props: { pick },
+    props: { stock: pick, isPick: true },
   }));
+
+  // Map lite stocks (non-picks) to paths
+  const litePaths = allStocks
+    .filter((stock) => !pickTickers.has(stock.ticker))
+    .map((stock) => ({
+      params: { ticker: stock.ticker },
+      props: { stock, isPick: false },
+    }));
+
+  return [...pickPaths, ...litePaths];
 }
 
 interface Props {
-  pick: StockPick;
+  stock: StockPick | LiteStock;
+  isPick: boolean;
 }
 
-const { pick } = Astro.props;
+const { stock, isPick } = Astro.props;
+// Cast to StockPick for pick-specific fields (only accessed when isPick is true)
+const pick = stock as StockPick;
 
-// Get detailed stock data
-const stockDetail = getStockDetail(pick.ticker);
+// Get detailed stock data (only available for picks)
+const stockDetail = isPick ? getStockDetail(stock.ticker) : null;
 
 // Get company news for this ticker
-const companyNews = getNewsForStock(pick.ticker);
+const companyNews = getNewsForStock(stock.ticker);
 
 const timeframeLabels = {
   short: "Short-term",
@@ -87,16 +105,16 @@ function _calculateTradeProgress() {
   };
 }
 
-const tradeProgress = _calculateTradeProgress();
+const tradeProgress = isPick ? _calculateTradeProgress() : null;
 ---
 
-<Layout title={`${pick.ticker} - ${pick.companyName}`} description={`${pick.companyName} (${pick.ticker}) analysis with price chart, investment thesis, risk factors, and key metrics.`}>
+<Layout title={`${stock.ticker} - ${stock.companyName}`} description={`${stock.companyName} (${stock.ticker}) stock analysis${isPick ? " with investment thesis, risk factors, and key metrics" : ""}.`}>
   <!-- 1. Back link -->
   <a
-    href="/picks"
+    href={isPick ? "/picks" : "/heatmap"}
     class="inline-flex items-center gap-1 text-sm text-text-secondary hover:text-accent transition-colors mb-6"
   >
-    ← Back to Picks
+    ← Back to {isPick ? "Picks" : "Heat Map"}
   </a>
 
   <!-- 2. Stock header -->
@@ -106,63 +124,68 @@ const tradeProgress = _calculateTradeProgress();
       <div class="flex-1">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-3">
-            <h1 class="text-3xl font-bold text-text-primary font-mono">{pick.ticker}</h1>
-            <Badge text={timeframeLabels[pick.timeframe]} variant={timeframeColors[pick.timeframe]} />
+            <h1 class="text-3xl font-bold text-text-primary font-mono">{stock.ticker}</h1>
+            {isPick && <Badge text={timeframeLabels[pick.timeframe]} variant={timeframeColors[pick.timeframe]} />}
+            {!isPick && <Badge text="S&P 500" variant="default" />}
           </div>
           <div class="flex items-center gap-2">
-            <PaperTradeButton client:load ticker={pick.ticker} companyName={pick.companyName} currentPrice={pick.currentPrice} size="md" variant="secondary" />
-            <WatchlistButton client:load ticker={pick.ticker} companyName={pick.companyName} size="md" variant="icon" />
-            <CompareButton client:load ticker={pick.ticker} companyName={pick.companyName} size="md" />
+            <PaperTradeButton client:load ticker={stock.ticker} companyName={stock.companyName} currentPrice={stock.currentPrice} size="md" variant="secondary" />
+            <WatchlistButton client:load ticker={stock.ticker} companyName={stock.companyName} size="md" variant="icon" />
+            <CompareButton client:load ticker={stock.ticker} companyName={stock.companyName} size="md" />
           </div>
         </div>
-        <p class="text-lg text-text-secondary mb-4">{pick.companyName}</p>
+        <p class="text-lg text-text-secondary mb-4">{stock.companyName}</p>
 
         <!-- Price and change -->
         <div class="flex items-baseline gap-3 mb-4">
           <span class="text-4xl font-bold text-text-primary">
-            {_formatPrice(pick.currentPrice)}
+            {_formatPrice(stock.currentPrice)}
           </span>
           <span
             class:list={[
               "text-lg font-medium flex items-center gap-1",
-              pick.priceChange >= 0 ? "text-success" : "text-danger",
+              stock.priceChange >= 0 ? "text-success" : "text-danger",
             ]}
           >
-            <span>{pick.priceChange >= 0 ? "↑" : "↓"}</span>
-            {formatChange(pick.priceChange)} ({formatChange(pick.priceChangePercent, true)})
+            <span>{stock.priceChange >= 0 ? "↑" : "↓"}</span>
+            {formatChange(stock.priceChange)} ({formatChange(stock.priceChangePercent, true)})
           </span>
         </div>
 
-        <!-- Conviction bar -->
-        <div class="max-w-xs">
-          <p class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">
-            Conviction Score
-          </p>
-          <ConvictionBar score={pick.convictionScore} showLabel />
-        </div>
+        <!-- Conviction bar (picks only) -->
+        {isPick && (
+          <div class="max-w-xs">
+            <p class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">
+              Conviction Score
+            </p>
+            <ConvictionBar score={pick.convictionScore} showLabel />
+          </div>
+        )}
       </div>
 
-      <!-- Right: Entry/Target/Stop prices -->
-      <div class="flex gap-6 lg:gap-8">
-        {pick.entryPrice && (
-          <div class="text-center">
-            <p class="text-xs text-text-secondary uppercase tracking-wide mb-1">Entry</p>
-            <p class="text-xl font-semibold text-text-primary">{_formatPrice(pick.entryPrice)}</p>
-          </div>
-        )}
-        {pick.targetPrice && (
-          <div class="text-center">
-            <p class="text-xs text-text-secondary uppercase tracking-wide mb-1">Target</p>
-            <p class="text-xl font-semibold text-success">{_formatPrice(pick.targetPrice)}</p>
-          </div>
-        )}
-        {pick.stopLoss && (
-          <div class="text-center">
-            <p class="text-xs text-text-secondary uppercase tracking-wide mb-1">Stop</p>
-            <p class="text-xl font-semibold text-danger">{_formatPrice(pick.stopLoss)}</p>
-          </div>
-        )}
-      </div>
+      <!-- Right: Entry/Target/Stop prices (picks only) -->
+      {isPick && (
+        <div class="flex gap-6 lg:gap-8">
+          {pick.entryPrice && (
+            <div class="text-center">
+              <p class="text-xs text-text-secondary uppercase tracking-wide mb-1">Entry</p>
+              <p class="text-xl font-semibold text-text-primary">{_formatPrice(pick.entryPrice)}</p>
+            </div>
+          )}
+          {pick.targetPrice && (
+            <div class="text-center">
+              <p class="text-xs text-text-secondary uppercase tracking-wide mb-1">Target</p>
+              <p class="text-xl font-semibold text-success">{_formatPrice(pick.targetPrice)}</p>
+            </div>
+          )}
+          {pick.stopLoss && (
+            <div class="text-center">
+              <p class="text-xs text-text-secondary uppercase tracking-wide mb-1">Stop</p>
+              <p class="text-xl font-semibold text-danger">{_formatPrice(pick.stopLoss)}</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   </div>
 
@@ -257,30 +280,57 @@ const tradeProgress = _calculateTradeProgress();
       <!-- 3. Price chart -->
       <Card title="Price Chart">
         <div class="h-[350px]">
-          <PriceChart ticker={pick.ticker} data={stockDetail?.priceHistory} height={350} client:visible />
+          {stockDetail?.priceHistory ? (
+            <PriceChart ticker={stock.ticker} data={stockDetail.priceHistory} height={350} client:visible />
+          ) : (
+            <div class="h-full flex items-center justify-center text-text-secondary">
+              <div class="text-center">
+                <p class="text-lg mb-2">Historical price data not available</p>
+                <p class="text-sm">Detailed charts available for AI-analyzed picks</p>
+              </div>
+            </div>
+          )}
         </div>
       </Card>
 
-      <!-- 4. Thesis card -->
-      <Card title="Investment Thesis">
-        <p class="text-text-primary leading-relaxed text-base">{pick.thesis}</p>
-      </Card>
+      <!-- 4. Thesis card (picks only) -->
+      {isPick && pick.thesis && (
+        <Card title="Investment Thesis">
+          <p class="text-text-primary leading-relaxed text-base">{pick.thesis}</p>
+        </Card>
+      )}
 
-      <!-- 5. Risk factors card -->
-      <Card title="Risk Factors">
-        {pick.riskFactors.length === 0 ? (
-          <p class="text-text-secondary">No specific risk factors identified.</p>
-        ) : (
-          <ul class="space-y-3">
-            {pick.riskFactors.map((risk) => (
-              <li class="flex items-start gap-3">
-                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-danger/15 text-danger flex items-center justify-center text-sm">!</span>
-                <span class="text-text-primary">{risk}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
+      <!-- 5. Risk factors card (picks only) -->
+      {isPick && (
+        <Card title="Risk Factors">
+          {pick.riskFactors.length === 0 ? (
+            <p class="text-text-secondary">No specific risk factors identified.</p>
+          ) : (
+            <ul class="space-y-3">
+              {pick.riskFactors.map((risk) => (
+                <li class="flex items-start gap-3">
+                  <span class="flex-shrink-0 w-6 h-6 rounded-full bg-danger/15 text-danger flex items-center justify-center text-sm">!</span>
+                  <span class="text-text-primary">{risk}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      )}
+
+      <!-- Lite stock notice -->
+      {!isPick && (
+        <Card title="AI Analysis">
+          <div class="text-center py-6">
+            <p class="text-text-secondary mb-3">
+              This stock is part of the S&P 500 index but hasn't been selected as an AI pick.
+            </p>
+            <a href="/picks" class="text-accent hover:underline">
+              View AI-analyzed picks →
+            </a>
+          </div>
+        </Card>
+      )}
     </div>
 
     <!-- Sidebar (1 col) -->
