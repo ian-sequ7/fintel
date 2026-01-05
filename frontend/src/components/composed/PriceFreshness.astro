@@ -1,0 +1,50 @@
+---
+/**
+ * Price freshness indicator.
+ * Shows how recently prices were updated.
+ */
+import { getPricesUpdatedAt, formatRelativeTime } from "../../data/report";
+
+const updatedAt = getPricesUpdatedAt();
+const relativeTime = formatRelativeTime(updatedAt.toISOString());
+const timestamp = updatedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+// Determine freshness level for styling
+const now = new Date();
+const diffMinutes = Math.floor((now.getTime() - updatedAt.getTime()) / 60000);
+
+let freshnessLevel: "fresh" | "stale" | "old";
+if (diffMinutes < 15) {
+  freshnessLevel = "fresh";
+} else if (diffMinutes < 60) {
+  freshnessLevel = "stale";
+} else {
+  freshnessLevel = "old";
+}
+
+const freshnessColors = {
+  fresh: "text-success",
+  stale: "text-warning",
+  old: "text-danger",
+};
+
+const freshnessIcons = {
+  fresh: "text-success",
+  stale: "text-warning",
+  old: "text-danger",
+};
+---
+
+<div class="flex items-center gap-1.5 text-xs text-text-secondary" title={`Last price update: ${updatedAt.toLocaleString()}`}>
+  <span class={`w-1.5 h-1.5 rounded-full ${freshnessColors[freshnessLevel]}`}
+        style={freshnessLevel === "fresh" ? "animation: pulse 2s infinite" : ""}>
+  </span>
+  <span>Prices {relativeTime}</span>
+</div>
+
+<style>
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+</style>

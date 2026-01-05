@@ -1,6 +1,7 @@
 ---
 import ThemeToggle from "../islands/ThemeToggle";
 import { WatchlistBadge } from "../islands/WatchlistManager";
+import PriceFreshness from "../composed/PriceFreshness.astro";
 
 const navItems = [
   { href: "/", label: "Overview" },
@@ -67,6 +68,9 @@ function _isActive(href: string): boolean {
 
       <!-- Right side -->
       <div class="flex items-center gap-3">
+        <div class="hidden sm:block">
+          <PriceFreshness />
+        </div>
         <ThemeToggle client:load />
 
         <!-- Mobile menu button -->

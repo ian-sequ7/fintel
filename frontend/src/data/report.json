@@ -135410,5 +135410,10 @@
     "congressTrades": 9,
     "unusualOptions": 32,
     "hedgeFundSignals": 100
+  },
+  "pricesUpdatedAt": "2026-01-04T23:18:36.912923",
+  "meta": {
+    "pricesUpdatedAt": "2026-01-04T23:18:36.912923",
+    "priceUpdateMethod": "incremental"
   }
 }

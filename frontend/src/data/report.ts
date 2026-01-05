@@ -440,6 +440,24 @@ export function getGeneratedAt(): Date {
 }
 
 /**
+ * Get the prices last updated timestamp.
+ * Falls back to generatedAt if no incremental update has been done.
+ */
+export function getPricesUpdatedAt(): Date {
+  const report = getReportSync();
+  const pricesTs = (report as any).pricesUpdatedAt || (report as any).meta?.pricesUpdatedAt;
+  return new Date(pricesTs || report.generatedAt);
+}
+
+/**
+ * Check if prices were updated incrementally (vs full pipeline).
+ */
+export function wasPriceUpdateIncremental(): boolean {
+  const report = getReportSync();
+  return (report as any).meta?.priceUpdateMethod === "incremental";
+}
+
+/**
  * Get the watchlist.
  */
 export function getWatchlist(): string[] {
