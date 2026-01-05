@@ -7,6 +7,7 @@ import type {
   FinancialReport,
   StockPick,
   StockDetail,
+  LiteStock,
   MacroIndicator,
   MacroRisk,
   MacroContext,
@@ -156,6 +157,33 @@ export function getTopPicks(): StockPick[] {
 export function getStockDetail(ticker: string): StockDetail | null {
   const report = getReportSync();
   return report.stockDetails[ticker.toUpperCase()] ?? null;
+}
+
+/**
+ * Get all S&P 500 stocks with prices (lite data for heatmap).
+ * Returns ~500 stocks with current price, change, and sector.
+ */
+export function getAllStocks(): LiteStock[] {
+  const report = getReportSync();
+  return report.allStocks || [];
+}
+
+/**
+ * Get all S&P 500 stocks grouped by sector.
+ */
+export function getStocksBySector(): Record<string, LiteStock[]> {
+  const stocks = getAllStocks();
+  const bySector: Record<string, LiteStock[]> = {};
+
+  for (const stock of stocks) {
+    const sector = stock.sector || "other";
+    if (!bySector[sector]) {
+      bySector[sector] = [];
+    }
+    bySector[sector].push(stock);
+  }
+
+  return bySector;
 }
 
 /**

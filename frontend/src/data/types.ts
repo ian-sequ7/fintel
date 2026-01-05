@@ -80,6 +80,21 @@ export interface StockFundamentals {
   avgVolume?: number;
 }
 
+/**
+ * Lite stock data - minimal price info for S&P 500 heatmap display.
+ * Full fundamentals/history only available for scored picks.
+ */
+export interface LiteStock {
+  ticker: string;
+  companyName: string;
+  sector: Sector | string;
+  currentPrice: number;
+  priceChange: number;
+  priceChangePercent: number;
+  volume?: number;
+  isLite: true;
+}
+
 // =============================================================================
 // Macro Types
 // =============================================================================
@@ -226,6 +241,9 @@ export interface FinancialReport {
   // Detailed stock data with price history
   stockDetails: Record<string, StockDetail>;
 
+  // All S&P 500 stocks with prices (for heatmap)
+  allStocks: LiteStock[];
+
   // Macro data
   macro: MacroContext;
 
@@ -244,6 +262,7 @@ export interface FinancialReport {
 
 export interface ReportSummary {
   totalPicks: number;
+  totalStocks: number;
   avgConviction: number;
   topSector: Sector;
   highRiskCount: number;

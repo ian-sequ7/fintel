@@ -401,6 +401,53 @@ def hedge_fund_holding_to_frontend(holding: HedgeFundHolding, fund_name: str, ma
     }
 
 
+def fetch_sp500_batch_prices() -> dict[str, dict]:
+    """
+    Fetch prices for ALL S&P 500 tickers using efficient batch download.
+
+    This is extremely fast (~6 seconds for 500 tickers) and uses only ~2 API calls.
+    Returns minimal price data suitable for heatmap and overview displays.
+    """
+    from adapters.yahoo import YahooAdapter
+    from adapters.universe import get_universe_provider
+    import time
+
+    print("Fetching S&P 500 batch prices...")
+    start = time.time()
+
+    # Get S&P 500 tickers
+    universe = get_universe_provider()
+    sp500_info = universe.get_universe()
+    tickers = list(sp500_info.keys())
+
+    print(f"  Found {len(tickers)} S&P 500 tickers")
+
+    # Batch fetch prices
+    yahoo = YahooAdapter()
+    prices = yahoo.get_prices_batch(tickers)
+
+    # Merge with sector info from universe
+    result = {}
+    for ticker, price_data in prices.items():
+        info = sp500_info.get(ticker)
+        result[ticker] = {
+            "ticker": ticker,
+            "companyName": info.name if info else ticker,
+            "sector": map_sector(info.sector) if info else "other",
+            "currentPrice": price_data["price"],
+            "priceChange": price_data["change"],
+            "priceChangePercent": price_data["change_percent"],
+            "volume": price_data.get("volume"),
+            # Flag that this is lite data (no fundamentals)
+            "isLite": True,
+        }
+
+    elapsed = time.time() - start
+    print(f"  Fetched {len(result)} prices in {elapsed:.1f}s")
+
+    return result
+
+
 def fetch_stock_details(tickers: list[str]) -> dict:
     """Fetch detailed stock data including price history and fundamentals."""
     from adapters.yahoo import YahooAdapter
@@ -460,7 +507,7 @@ def fetch_stock_details(tickers: list[str]) -> dict:
     return details
 
 
-def generate_report_json(result, config: PipelineConfig, stock_details: dict) -> dict:
+def generate_report_json(result, config: PipelineConfig, stock_details: dict, sp500_prices: dict | None = None) -> dict:
     """Convert pipeline ReportData to frontend FinancialReport format."""
     now = datetime.now().isoformat()
 
@@ -602,6 +649,8 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict) ->
             "long": long_picks,
         },
         "stockDetails": stock_details_export,
+        # All S&P 500 stocks with just prices (for heatmap)
+        "allStocks": list(sp500_prices.values()) if sp500_prices else [],
         "macro": {
             "indicators": indicators,
             "risks": risks,
@@ -621,6 +670,7 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict) ->
         },
         "summary": {
             "totalPicks": len(all_picks_list),
+            "totalStocks": len(sp500_prices) if sp500_prices else 0,
             "avgConviction": round(avg_conviction, 3),
             "topSector": top_sector,
             "highRiskCount": len([r for r in risks if r["severity"] == "high"]),
@@ -662,12 +712,15 @@ def main():
     hedge_fund_holdings_count = len(db.get_recent_hedge_fund_activity(limit=100))
     print(f"Found {hedge_fund_holdings_count} 13F hedge fund holdings")
 
+    # Fetch S&P 500 batch prices (fast - ~6 seconds for 500 tickers)
+    sp500_prices = fetch_sp500_batch_prices()
+
     # Get unique tickers from all picks
     all_tickers = set()
     for pick in result.short_term_picks + result.medium_term_picks + result.long_term_picks:
         all_tickers.add(pick.ticker)
 
-    # Fetch detailed stock data (price history, fundamentals)
+    # Fetch detailed stock data (price history, fundamentals) - only for picks
     stock_details = fetch_stock_details(list(all_tickers))
 
     # Store all data in SQLite database
@@ -675,7 +728,7 @@ def main():
     store_pipeline_data_in_db(result, stock_details)
 
     # Convert to frontend format
-    report = generate_report_json(result, config, stock_details)
+    report = generate_report_json(result, config, stock_details, sp500_prices)
 
     # Write to frontend data directory
     output_path = Path(__file__).parent.parent / "frontend" / "src" / "data" / "report.json"
@@ -685,6 +738,7 @@ def main():
         json.dump(report, f, indent=2, default=str)
 
     print(f"\nWrote report to {output_path}")
+    print(f"Total S&P 500 stocks: {report['summary']['totalStocks']}")
     print(f"Total picks: {report['summary']['totalPicks']}")
     print(f"Avg conviction: {report['summary']['avgConviction']:.0%}")
     print(f"Top sector: {report['summary']['topSector']}")

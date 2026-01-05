@@ -1,13 +1,53 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import HeatMap from "../components/islands/HeatMap";
-import { getPicks } from "../data/report";
+import { getPicks, getAllStocks } from "../data/report";
+import type { StockPick, LiteStock, Sector } from "../data/types";
 
-// Get all picks for the heat map
-const allPicks = getPicks("all");
+// Get all S&P 500 stocks and picks
+const allStocks = getAllStocks();
+const picks = getPicks("all");
+
+// Create a map of picks by ticker for quick lookup
+const picksMap = new Map<string, StockPick>();
+for (const pick of picks) {
+  picksMap.set(pick.ticker, pick);
+}
+
+// Merge: all S&P 500 stocks, enriched with pick data if available
+const mergedStocks: StockPick[] = allStocks.map((stock: LiteStock) => {
+  const pick = picksMap.get(stock.ticker);
+  if (pick) {
+    // Use full pick data (has conviction, thesis, etc.)
+    return {
+      ...pick,
+      // Update prices from allStocks (more recent)
+      currentPrice: stock.currentPrice,
+      priceChange: stock.priceChange,
+      priceChangePercent: stock.priceChangePercent,
+    };
+  }
+  // Convert lite stock to StockPick format with defaults
+  return {
+    ticker: stock.ticker,
+    companyName: stock.companyName,
+    currentPrice: stock.currentPrice,
+    priceChange: stock.priceChange,
+    priceChangePercent: stock.priceChangePercent,
+    convictionScore: 0.5, // Neutral
+    timeframe: "medium" as const,
+    thesis: "",
+    riskFactors: [],
+    sector: (stock.sector as Sector) || "technology",
+    volume: stock.volume,
+  };
+});
+
+// Use merged stocks if we have S&P 500 data, otherwise fall back to picks
+const displayStocks = mergedStocks.length > 0 ? mergedStocks : picks;
 
 const pageTitle = "Market Heat Map";
-const pageDescription = "Interactive Finviz-style heat map visualization of stock picks. View stocks grouped by sector, sized by market cap or conviction, colored by daily price change.";
+const pageDescription = "Interactive Finviz-style heat map visualization. View 500+ stocks grouped by sector, sized by market cap, colored by daily price change.";
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
@@ -15,14 +55,14 @@ const pageDescription = "Interactive Finviz-style heat map visualization of stoc
   <div class="mb-6">
     <h1 class="text-2xl font-bold text-text-primary">{pageTitle}</h1>
     <p class="text-text-secondary">
-      Visualize {allPicks.length} stocks by sector, sized by market cap or conviction
+      Visualize {displayStocks.length} S&P 500 stocks by sector, sized by market cap or conviction
     </p>
   </div>
 
   <!-- Heat Map Component -->
   <HeatMap
     client:visible
-    stocks={allPicks}
+    stocks={displayStocks}
     initialSizeBy="marketCap"
     initialView="all"
   />
