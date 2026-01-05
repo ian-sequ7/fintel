@@ -1,0 +1,40 @@
+---
+/**
+ * Staleness warning banner.
+ * Shows prominent warning when data is very old (>4 hours).
+ * Hidden when data is reasonably fresh.
+ */
+import { getPricesUpdatedAt, formatRelativeTime } from "../../data/report";
+
+const updatedAt = getPricesUpdatedAt();
+const now = new Date();
+const diffHours = (now.getTime() - updatedAt.getTime()) / (1000 * 60 * 60);
+
+// Only show banner if data is >4 hours old
+const showBanner = diffHours > 4;
+const relativeTime = formatRelativeTime(updatedAt.toISOString());
+---
+
+{showBanner && (
+  <div class="bg-warning/10 border border-warning/30 rounded-lg px-4 py-3 mb-6">
+    <div class="flex items-center gap-3">
+      <span class="text-warning text-lg">⚠</span>
+      <div class="flex-1">
+        <p class="text-sm font-medium text-warning">
+          Data may be outdated
+        </p>
+        <p class="text-xs text-text-secondary">
+          Last updated {relativeTime}. Run the refresh script to update prices.
+        </p>
+      </div>
+      <a
+        href="https://github.com/ian-sequ7/fintel#refreshing-data"
+        target="_blank"
+        rel="noopener"
+        class="text-xs text-accent hover:underline whitespace-nowrap"
+      >
+        How to refresh →
+      </a>
+    </div>
+  </div>
+)}

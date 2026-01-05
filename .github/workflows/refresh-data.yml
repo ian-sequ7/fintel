@@ -1,0 +1,76 @@
+name: Refresh Market Data
+
+on:
+  # Daily at 6am ET (11:00 UTC) - before market open
+  schedule:
+    - cron: '0 11 * * 1-5'  # Mon-Fri only
+
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual refresh'
+        required: false
+        default: 'Manual refresh'
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run data pipeline
+        run: |
+          PYTHONPATH=. python scripts/generate_frontend_data.py
+        env:
+          # Add any API keys here if needed
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+
+      - name: Check generated data
+        run: |
+          if [ -f "frontend/src/data/report.json" ]; then
+            STOCK_COUNT=$(cat frontend/src/data/report.json | python -c "import sys,json; print(len(json.load(sys.stdin).get('allStocks', [])))")
+            echo "Generated data for $STOCK_COUNT stocks"
+          else
+            echo "ERROR: report.json not found"
+            exit 1
+          fi
+
+      - name: Commit updated data
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # Only commit if there are changes
+          if git diff --quiet frontend/src/data/report.json; then
+            echo "No changes to commit"
+          else
+            git add frontend/src/data/report.json
+            git commit -m "chore: refresh market data [skip ci]
+
+            Automated data refresh via GitHub Actions.
+            Triggered: ${{ github.event_name }}
+            ${{ github.event.inputs.reason }}"
+            git push
+          fi
+
+      # Uncomment below to add deployment step
+      # - name: Deploy to Vercel
+      #   uses: amondnet/vercel-action@v25
+      #   with:
+      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+      #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
