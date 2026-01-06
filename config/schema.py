@@ -51,6 +51,8 @@ class RateLimitsConfig(BaseModel):
     reddit: int = Field(default=30, ge=1, le=60)
     rss: int = Field(default=60, ge=1, le=120)
     finnhub: int = Field(default=60, ge=1, le=120)  # Free tier: 60/min
+    finviz: int = Field(default=30, ge=1, le=60)  # Conservative for scraping
+    sec_8k: int = Field(default=600, ge=1, le=600)  # SEC limit: 10 requests/second = 600/min
 
     # Minimum delay between requests (seconds) - prevents burst requests
     yahoo_delay: float = Field(default=0.5, ge=0.0, le=5.0)
@@ -58,6 +60,8 @@ class RateLimitsConfig(BaseModel):
     reddit_delay: float = Field(default=0.5, ge=0.0, le=5.0)
     rss_delay: float = Field(default=0.1, ge=0.0, le=5.0)
     finnhub_delay: float = Field(default=0.2, ge=0.0, le=5.0)
+    finviz_delay: float = Field(default=1.5, ge=0.5, le=5.0)  # Slower to avoid blocks
+    sec_8k_delay: float = Field(default=0.1, ge=0.1, le=1.0)  # SEC requires max 10 req/sec
 
 
 class HttpConfig(BaseModel):

@@ -33,7 +33,7 @@ class MacroIndicator:
     unit: str
 
 
-# Key FRED series for macro analysis (20 total)
+# Key FRED series for macro analysis (22 total)
 MACRO_SERIES = {
     # Labor market (3)
     "UNRATE": ("Unemployment Rate", "%"),
@@ -62,13 +62,17 @@ MACRO_SERIES = {
     "UMCSENT": ("Consumer Sentiment", "Index"),
     "RSXFS": ("Retail Sales", "Millions USD"),
 
-    # Housing (2)
+    # Housing (3)
     "HOUST": ("Housing Starts", "Thousands"),
     "MORTGAGE30US": ("30-Year Mortgage Rate", "%"),
+    "CSUSHPINSA": ("Case-Shiller Home Price Index", "Index"),
 
     # Commodities (2)
     "DCOILWTICO": ("WTI Crude Oil Price", "USD/Barrel"),
     "GOLDAMGBD228NLBM": ("Gold Price", "USD/Oz"),
+
+    # Debt & Credit (1)
+    "BOGZ1FL073164003Q": ("Household Debt", "Billions USD"),
 
     # Fed Balance Sheet (1)
     "WALCL": ("Fed Balance Sheet", "Millions USD"),

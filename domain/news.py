@@ -71,6 +71,7 @@ SOURCE_CREDIBILITY = {
 
     # Tier 4: Aggregators and misc
     "google news": 0.70,
+    "finviz": 0.70,  # Aggregator with varied sources
     "rss": 0.60,
 
     # Social/user-generated

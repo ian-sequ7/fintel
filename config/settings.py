@@ -49,6 +49,9 @@ class Settings:
             "fred": cfg.fred,
             "reddit": cfg.reddit,
             "rss": cfg.rss,
+            "finnhub": cfg.finnhub,
+            "finviz": cfg.finviz,
+            "sec_8k": cfg.sec_8k,
         }
 
     @property
@@ -60,6 +63,9 @@ class Settings:
             "fred": cfg.fred_delay,
             "reddit": cfg.reddit_delay,
             "rss": cfg.rss_delay,
+            "finnhub": cfg.finnhub_delay,
+            "finviz": cfg.finviz_delay,
+            "sec_8k": cfg.sec_8k_delay,
         }
 
     @property

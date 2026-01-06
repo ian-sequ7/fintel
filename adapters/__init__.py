@@ -5,7 +5,9 @@ from .reddit import RedditAdapter
 from .rss import RssAdapter
 from .congress import CongressAdapter
 from .sec_13f import SEC13FAdapter
+from .sec import SECAdapter
 from .finnhub import FinnhubAdapter
+from .finviz import FinvizAdapter
 from .cache import PersistentCache, get_cache
 from .universe import (
     UniverseProvider,
@@ -23,7 +25,9 @@ __all__ = [
     "RssAdapter",
     "CongressAdapter",
     "SEC13FAdapter",
+    "SECAdapter",
     "FinnhubAdapter",
+    "FinvizAdapter",
     "PersistentCache",
     "get_cache",
     "UniverseProvider",
