@@ -217,68 +217,66 @@ Replace hardcoded 10-stock watchlist with dynamic S&P 500 constituents.
 
 ## Phase 3: Expanded Data Sources
 
+**STATUS: COMPLETE** ✓
+
 ### Goal
-Add 12 more FRED indicators + 3 news sources + deduplication.
+Add more FRED indicators + news sources + deduplication.
 
-### New FRED Indicators (20 total)
-Current (8):
-- UNRATE, CPIAUCSL, GDP, FEDFUNDS, T10Y2Y, UMCSENT, INDPRO, HOUST
+### Implementation (All Done)
 
-Add (12):
-- DGS10 (10-Year Treasury)
-- DGS2 (2-Year Treasury)
-- VIXCLS (VIX)
-- BAMLH0A0HYM2 (High Yield Spread)
-- DCOILWTICO (Oil Price)
-- GOLDAMGBD228NLBM (Gold Price)
-- PAYEMS (Nonfarm Payrolls)
-- RSXFS (Retail Sales)
-- MORTGAGE30US (30-Year Mortgage Rate)
-- CSUSHPINSA (Case-Shiller Home Price)
-- BOGZ1FL073164003Q (Household Debt)
-- WALCL (Fed Balance Sheet)
+1. ✓ **FRED Indicators** (22 total):
+   - PLAN.md was outdated - already had 20 indicators implemented
+   - Added final 2: CSUSHPINSA (Case-Shiller), BOGZ1FL073164003Q (Household Debt)
 
-### New News Sources
-- SEC EDGAR (8-K filings, earnings)
-- Finviz news feed
-- Yahoo Finance company news (already partial)
+2. ✓ **SEC EDGAR Adapter** (`adapters/sec.py`):
+   - Fetches 8-K filings (material events, earnings, M&A)
+   - Rate limited at 10 req/sec per SEC requirements
+   - Includes tests and example script
 
-### Deduplication
-- Hash-based dedup on (title + source)
-- Similarity check for near-duplicates
+3. ✓ **Finviz Adapter** (`adapters/finviz.py`):
+   - Scrapes ticker-specific news from Finviz quote pages
+   - 1.5s delay to avoid blocks
+   - Converts to RawNewsItem for aggregation
 
-### Files to Modify
-- MODIFY: `adapters/fred.py` - Add 12 indicators
-- CREATE: `adapters/sec.py` - SEC EDGAR adapter
-- CREATE: `adapters/finviz.py` - Finviz news adapter
-- MODIFY: `domain/news.py` - Add deduplication logic
+4. ✓ **News Deduplication** (already existed in `domain/news.py`):
+   - Hash-based exact match deduplication
+   - Jaccard similarity for fuzzy matching (0.8 threshold)
+   - Keeps highest-scored version when duplicates found
 
 ---
 
 ## Phase 4: Config Limits + Frontend Pagination
 
+**STATUS: COMPLETE** ✓
+
 ### Goal
 Update limits and add frontend pagination support.
 
-### Config Changes
-```python
-# config/schema.py
-max_picks_per_timeframe: int = 15  # was 5
-max_news_items: int = 100          # was 50
-max_macro_indicators: int = 20     # was 8
-max_risks_displayed: int = 10      # was 5
-```
+### Implementation (All Done)
 
-### Pagination Support
-- Add `offset` and `limit` to report generation
-- Frontend already has pagination components (verify)
-- API responses include total counts
+1. ✓ **Config Limits** (already at production values):
+   - `max_picks_per_timeframe: 15`
+   - `max_news_items: 100`
+   - `max_macro_indicators: 20`
+   - `max_risks_displayed: 10`
 
-### Files to Modify
-- MODIFY: `config/schema.py`
-- MODIFY: `orchestration/pipeline.py`
-- MODIFY: `presentation/report.py`
-- MODIFY: `presentation/json_api.py`
+2. ✓ **Pipeline Pagination** (`orchestration/pipeline.py`):
+   - `fetch_all(offset, limit)` - paginated data fetching
+   - `run(offset, limit)` - pass pagination through pipeline
+   - `run_pipeline(offset, limit)` - convenience function updated
+
+3. ✓ **Presentation Pagination** (`presentation/`):
+   - `PaginationMetadata` - total, offset, limit, has_more
+   - `PaginatedPicksResponse` - paginated stock picks
+   - `PaginatedNewsResponse` - paginated news
+   - `get_paginated_picks(data, timeframe, offset, limit)`
+   - `get_paginated_news(data, category, offset, limit)`
+   - `generate_picks_section()` and `generate_news_section()` support offset/limit
+
+4. ✓ **Frontend Pagination** (verified):
+   - No dedicated pagination components exist yet
+   - Basic slicing utilities exist in `frontend/src/data/report.ts`
+   - UI pagination components can be added when needed
 
 ---
 

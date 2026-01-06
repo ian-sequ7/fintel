@@ -170,8 +170,19 @@ def generate_picks_section(
     picks: list[StockPick],
     timeframe_label: str,
     timeframe_desc: str,
+    offset: int = 0,
+    limit: int = 15,
 ) -> str:
-    """Generate stock picks section for a timeframe."""
+    """
+    Generate stock picks section for a timeframe.
+
+    Args:
+        picks: List of stock picks
+        timeframe_label: Display label for timeframe
+        timeframe_desc: Description of timeframe
+        offset: Number of picks to skip (default: 0)
+        limit: Maximum picks to show (default: 15)
+    """
     lines = [
         f"## {timeframe_label} ({timeframe_desc})",
         "",
@@ -182,7 +193,10 @@ def generate_picks_section(
         lines.append("")
         return "\n".join(lines)
 
-    for i, pick in enumerate(picks[:15], 1):  # Show up to 15 picks per timeframe
+    # Apply pagination
+    paginated_picks = picks[offset:offset + limit]
+
+    for i, pick in enumerate(paginated_picks, 1):
         conviction = _conviction_bar(pick.conviction_score)
 
         lines.append(f"### {i}. {pick.ticker}")
@@ -215,8 +229,19 @@ def generate_news_section(
     news: list[ScoredNewsItem],
     title: str,
     show_tickers: bool = False,
+    offset: int = 0,
+    limit: int = 10,
 ) -> str:
-    """Generate news section."""
+    """
+    Generate news section.
+
+    Args:
+        news: List of news items
+        title: Section title
+        show_tickers: Whether to show ticker mentions
+        offset: Number of news items to skip (default: 0)
+        limit: Maximum news items to show (default: 10)
+    """
     lines = [
         f"## {title}",
         "",
@@ -227,7 +252,10 @@ def generate_news_section(
         lines.append("")
         return "\n".join(lines)
 
-    for item in news[:10]:
+    # Apply pagination
+    paginated_news = news[offset:offset + limit]
+
+    for item in paginated_news:
         badge = _priority_badge(item.priority.value)
         age = _format_relative_time(item.published)
 

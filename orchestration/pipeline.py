@@ -405,15 +405,23 @@ class DataFetcher:
             logger.info(msg)
             print(f"  [VERBOSE] {msg}")
 
-    def fetch_all(self) -> dict[str, list[Observation]]:
+    def fetch_all(
+        self,
+        offset: int = 0,
+        limit: int | None = None,
+    ) -> dict[str, list[Observation]]:
         """
         Fetch data from all sources.
+
+        Args:
+            offset: Number of items to skip in each result list
+            limit: Maximum number of items to return in each result list (None = all)
 
         Returns dict of source_name -> observations.
         Handles errors gracefully, continues on partial failures.
         """
         if self.dry_run:
-            return self._fetch_mock_data()
+            return self._fetch_mock_data(offset, limit)
 
         results: dict[str, list[Observation]] = {
             "prices": [],
@@ -498,7 +506,14 @@ class DataFetcher:
                     results["smart_money"].extend(result.observations)
 
         self.status.completed_at = datetime.now()
-        return results
+
+        # Apply pagination to all result lists
+        paginated_results = {}
+        for key, obs_list in results.items():
+            end_idx = offset + limit if limit else None
+            paginated_results[key] = obs_list[offset:end_idx]
+
+        return paginated_results
 
     def _fetch_source(
         self,
@@ -544,8 +559,18 @@ class DataFetcher:
         self.status.sources[source_name] = result
         return result
 
-    def _fetch_mock_data(self) -> dict[str, list[Observation]]:
-        """Generate mock observations for dry-run testing."""
+    def _fetch_mock_data(
+        self,
+        offset: int = 0,
+        limit: int | None = None,
+    ) -> dict[str, list[Observation]]:
+        """
+        Generate mock observations for dry-run testing.
+
+        Args:
+            offset: Number of items to skip in each result list
+            limit: Maximum number of items to return in each result list (None = all)
+        """
         self._log("Using mock data (dry-run mode)")
         mock = _generate_mock_data()
         now = datetime.now()
@@ -631,7 +656,14 @@ class DataFetcher:
         )
 
         self.status.completed_at = datetime.now()
-        return results
+
+        # Apply pagination to all result lists
+        paginated_results = {}
+        for key, obs_list in results.items():
+            end_idx = offset + limit if limit else None
+            paginated_results[key] = obs_list[offset:end_idx]
+
+        return paginated_results
 
 
 # ============================================================================
@@ -994,9 +1026,17 @@ class Pipeline:
         if self.config.verbose:
             print(f"[PIPELINE] {msg}")
 
-    def run(self) -> ReportData:
+    def run(
+        self,
+        offset: int = 0,
+        limit: int | None = None,
+    ) -> ReportData:
         """
         Execute the full pipeline.
+
+        Args:
+            offset: Number of items to skip in result lists (stocks, news, etc.)
+            limit: Maximum number of items to return in result lists (None = all)
 
         Returns ReportData ready for presentation layer.
         """
@@ -1004,7 +1044,7 @@ class Pipeline:
 
         # Phase 1: Fetch data
         self._log("Phase 1: Fetching data...")
-        raw_data = self.fetcher.fetch_all()
+        raw_data = self.fetcher.fetch_all(offset, limit)
 
         # Check data health
         status = self.fetcher.status
@@ -1102,6 +1142,8 @@ def run_pipeline(
     dry_run: bool = False,
     verbose: bool = False,
     strategy: Strategy | None = None,
+    offset: int = 0,
+    limit: int | None = None,
 ) -> ReportData:
     """
     Convenience function to run the full pipeline.
@@ -1111,6 +1153,8 @@ def run_pipeline(
         dry_run: Use mock data instead of live
         verbose: Enable debug output
         strategy: Investment strategy
+        offset: Number of items to skip in result lists
+        limit: Maximum number of items to return in result lists (None = all)
 
     Returns:
         ReportData ready for presentation
@@ -1122,4 +1166,4 @@ def run_pipeline(
         config.strategy = strategy
 
     pipeline = Pipeline(config, dry_run=dry_run, verbose=verbose)
-    return pipeline.run()
+    return pipeline.run(offset, limit)

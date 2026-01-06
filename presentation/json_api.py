@@ -24,6 +24,14 @@ from .report import ReportData
 # Response Models
 # ============================================================================
 
+class PaginationMetadata(BaseModel):
+    """Pagination metadata for API responses."""
+    total: int
+    offset: int
+    limit: int
+    has_more: bool
+
+
 class StockPickResponse(BaseModel):
     """API response for a stock pick."""
     ticker: str
@@ -83,6 +91,18 @@ class ConvictionScoreResponse(BaseModel):
     macro_adjustment: float
     confidence: float
     factors_used: list[str]
+
+
+class PaginatedPicksResponse(BaseModel):
+    """Paginated stock picks response."""
+    data: list[StockPickResponse]
+    pagination: PaginationMetadata
+
+
+class PaginatedNewsResponse(BaseModel):
+    """Paginated news response."""
+    data: list[NewsItemResponse]
+    pagination: PaginationMetadata
 
 
 class ReportResponse(BaseModel):
@@ -216,3 +236,91 @@ def to_json(data: ReportData) -> dict[str, Any]:
     """
     response = to_api_response(data)
     return response.model_dump(mode="json")
+
+
+def get_paginated_picks(
+    data: ReportData,
+    timeframe: str,
+    offset: int = 0,
+    limit: int = 20,
+) -> PaginatedPicksResponse:
+    """
+    Get paginated stock picks for a specific timeframe.
+
+    Args:
+        data: Report data
+        timeframe: Timeframe to filter ('short', 'medium', 'long', or 'all')
+        offset: Number of picks to skip (default: 0)
+        limit: Maximum picks to return (default: 20)
+
+    Returns:
+        Paginated picks response with metadata
+    """
+    # Select picks based on timeframe
+    if timeframe == "short":
+        picks = data.short_term_picks
+    elif timeframe == "medium":
+        picks = data.medium_term_picks
+    elif timeframe == "long":
+        picks = data.long_term_picks
+    elif timeframe == "all":
+        picks = data.short_term_picks + data.medium_term_picks + data.long_term_picks
+    else:
+        picks = []
+
+    total = len(picks)
+    paginated_picks = picks[offset:offset + limit]
+    has_more = offset + limit < total
+
+    return PaginatedPicksResponse(
+        data=[_pick_to_response(p) for p in paginated_picks],
+        pagination=PaginationMetadata(
+            total=total,
+            offset=offset,
+            limit=limit,
+            has_more=has_more,
+        ),
+    )
+
+
+def get_paginated_news(
+    data: ReportData,
+    category: str,
+    offset: int = 0,
+    limit: int = 20,
+) -> PaginatedNewsResponse:
+    """
+    Get paginated news items for a specific category.
+
+    Args:
+        data: Report data
+        category: News category ('market', 'company', or 'all')
+        offset: Number of news items to skip (default: 0)
+        limit: Maximum news items to return (default: 20)
+
+    Returns:
+        Paginated news response with metadata
+    """
+    # Select news based on category
+    if category == "market":
+        news = data.market_news
+    elif category == "company":
+        news = data.company_news
+    elif category == "all":
+        news = data.market_news + data.company_news
+    else:
+        news = []
+
+    total = len(news)
+    paginated_news = news[offset:offset + limit]
+    has_more = offset + limit < total
+
+    return PaginatedNewsResponse(
+        data=[_news_to_response(n) for n in paginated_news],
+        pagination=PaginationMetadata(
+            total=total,
+            offset=offset,
+            limit=limit,
+            has_more=has_more,
+        ),
+    )
