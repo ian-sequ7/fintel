@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from datetime import datetime, date, timedelta
 from typing import Any
 
+import pandas as pd
 import yfinance as yf
 
 from domain import Observation, Category
@@ -514,6 +515,122 @@ class YahooAdapter(BaseAdapter):
 
         except Exception as e:
             logger.error(f"Batch price fetch failed: {e}")
+
+        return results
+
+    def get_price_history_batch(self, tickers: list[str], days: int = 365) -> dict[str, list[dict]]:
+        """
+        Fetch historical price data for multiple tickers efficiently using yf.download().
+
+        This is MUCH more efficient than calling get_price_history() individually:
+        - Avoids rate limiting by making a single batch request
+        - 50 tickers in ~5 seconds vs individual calls that get rate-limited
+
+        Args:
+            tickers: List of ticker symbols
+            days: Number of days of history (default 365)
+
+        Returns:
+            Dict of ticker -> list of OHLCV price points:
+            {
+                "AAPL": [
+                    {"time": "2024-01-01", "open": 150.0, "high": 152.0, "low": 149.0, "close": 151.0, "volume": 1000000},
+                    ...
+                ],
+                ...
+            }
+        """
+        if not tickers:
+            return {}
+
+        # Normalize tickers
+        tickers = [t.upper().strip() for t in tickers]
+        results = {}
+
+        # Convert days to yfinance period format
+        if days <= 7:
+            period = "5d"
+        elif days <= 30:
+            period = "1mo"
+        elif days <= 90:
+            period = "3mo"
+        elif days <= 180:
+            period = "6mo"
+        elif days <= 365:
+            period = "1y"
+        elif days <= 730:
+            period = "2y"
+        else:
+            period = "5y"
+
+        try:
+            logger.info(f"Batch fetching {period} price history for {len(tickers)} tickers...")
+
+            # yf.download batches internally - very efficient
+            data = yf.download(
+                tickers,
+                period=period,
+                progress=False,
+                threads=True,
+            )
+
+            if data.empty:
+                logger.warning("No historical data returned from yf.download batch")
+                return {}
+
+            # Handle single vs multiple ticker response format
+            if len(tickers) == 1:
+                ticker = tickers[0]
+                price_points = []
+                for dt, row in data.iterrows():
+                    try:
+                        price_points.append({
+                            "time": dt.strftime("%Y-%m-%d"),
+                            "open": round(float(row["Open"]), 2),
+                            "high": round(float(row["High"]), 2),
+                            "low": round(float(row["Low"]), 2),
+                            "close": round(float(row["Close"]), 2),
+                            "volume": int(row["Volume"]) if row["Volume"] else 0,
+                        })
+                    except Exception:
+                        continue
+                if price_points:
+                    results[ticker] = price_points
+            else:
+                # Multiple tickers: columns are MultiIndex (metric, ticker)
+                for ticker in tickers:
+                    try:
+                        if ticker not in data["Close"].columns:
+                            continue
+
+                        price_points = []
+                        for dt in data.index:
+                            try:
+                                close_val = data["Close"][ticker].loc[dt]
+                                if pd.isna(close_val):
+                                    continue
+
+                                price_points.append({
+                                    "time": dt.strftime("%Y-%m-%d"),
+                                    "open": round(float(data["Open"][ticker].loc[dt]), 2),
+                                    "high": round(float(data["High"][ticker].loc[dt]), 2),
+                                    "low": round(float(data["Low"][ticker].loc[dt]), 2),
+                                    "close": round(float(close_val), 2),
+                                    "volume": int(data["Volume"][ticker].loc[dt]) if not pd.isna(data["Volume"][ticker].loc[dt]) else 0,
+                                })
+                            except Exception:
+                                continue
+
+                        if price_points:
+                            results[ticker] = price_points
+                    except Exception as e:
+                        logger.debug(f"Skipping {ticker} in history batch: {e}")
+                        continue
+
+            logger.info(f"Batch fetched price history for {len(results)}/{len(tickers)} tickers")
+
+        except Exception as e:
+            logger.error(f"Batch price history fetch failed: {e}")
 
         return results
 

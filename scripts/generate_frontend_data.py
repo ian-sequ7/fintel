@@ -467,21 +467,27 @@ def fetch_stock_details(tickers: list[str]) -> dict:
 
     print(f"Fetching detailed data for {len(tickers)} stocks...")
 
+    # Batch fetch price history first (single API call, avoids rate limiting)
+    print("  Fetching price history (batch)...")
+    price_history_batch = yahoo.get_price_history_batch(tickers, days=365)
+    print(f"  Got price history for {len(price_history_batch)}/{len(tickers)} stocks")
+
+    # Fetch fundamentals individually (these are more resilient to rate limits)
     for i, ticker in enumerate(tickers):
         try:
-            # Rate limit
-            time.sleep(0.3)
+            # Rate limit for fundamentals
+            time.sleep(0.2)
 
             # Get fundamentals (includes 52W high/low, PE forward, etc.)
             fund_obs = yahoo.get_fundamentals(ticker)
             fund_data = fund_obs[0].data if fund_obs else {}
 
-            # Get price history for charts
-            price_history = yahoo.get_price_history(ticker, days=365)
-
             # Get current price data
             price_obs = yahoo.get_price(ticker)
             price_data = price_obs[0].data if price_obs else {}
+
+            # Use batch-fetched price history
+            price_history = price_history_batch.get(ticker, [])
 
             details[ticker] = {
                 "price": price_data.get("price") or fund_data.get("current_price"),
@@ -511,7 +517,7 @@ def fetch_stock_details(tickers: list[str]) -> dict:
 
         except Exception as e:
             print(f"  Warning: Could not fetch details for {ticker}: {e}")
-            details[ticker] = {}
+            details[ticker] = {"price_history": price_history_batch.get(ticker, [])}
 
     return details
 
