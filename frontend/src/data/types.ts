@@ -52,9 +52,9 @@ export interface StockPick {
   thesis: string;
   riskFactors: string[];
   sector: Sector;
-  entryPrice?: number;
-  targetPrice?: number;
-  stopLoss?: number;
+  entryPrice?: number | null;
+  targetPrice?: number | null;
+  stopLoss?: number | null;
   marketCap?: number;
   peRatio?: number;
   volume?: number;
@@ -69,12 +69,12 @@ export interface StockDetail extends StockPick {
 export interface StockFundamentals {
   peTrailing?: number;
   peForward?: number;
-  pegRatio?: number;
-  priceToBook?: number;
+  pegRatio?: number | null;
+  priceToBook?: number | null;
   revenueGrowth?: number;
   profitMargin?: number;
-  dividendYield?: number;
-  beta?: number;
+  dividendYield?: number | null;
+  beta?: number | null;
   fiftyTwoWeekHigh?: number;
   fiftyTwoWeekLow?: number;
   avgVolume?: number;
@@ -104,7 +104,7 @@ export interface MacroIndicator {
   id: string;
   name: string;
   value: number;
-  previousValue?: number;
+  previousValue?: number | null;
   unit: string;
   trend: Trend;
   source: string;
@@ -163,9 +163,9 @@ export interface CongressDetails {
   chamber: Chamber;
   amount_low: number;
   amount_high: number;
-  asset_description?: string;
-  transaction_date?: string;
-  disclosure_date: string;
+  asset_description?: string | null;
+  transaction_date?: string | null;
+  disclosure_date: string | null;
 }
 
 export interface OptionsDetails {
@@ -193,10 +193,10 @@ export interface HedgeFundDetails {
   shares: number;
   value: number;
   action: HedgeFundAction;
-  shares_change?: number;
-  shares_change_pct?: number;
-  value_change?: number;
-  portfolio_pct?: number;
+  shares_change?: number | null;
+  shares_change_pct?: number | null;
+  value_change?: number | null;
+  portfolio_pct?: number | null;
   filing_date: string;
   quarter: string;
 }

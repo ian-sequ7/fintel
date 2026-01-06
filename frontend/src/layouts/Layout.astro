@@ -4,6 +4,7 @@ import Header from "../components/sections/Header.astro";
 import Footer from "../components/sections/Footer.astro";
 import StaleDataBanner from "../components/composed/StaleDataBanner.astro";
 import { CompareBar } from "../components/islands/CompareManager";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 interface Props {
   title: string;
@@ -47,7 +48,9 @@ const { title, description = "Financial intelligence dashboard" } = Astro.props;
       <slot />
     </main>
     <Footer />
-    <!-- Floating compare bar -->
-    <CompareBar client:load />
+    <!-- Floating compare bar with error boundary -->
+    <ErrorBoundary client:load>
+      <CompareBar client:load />
+    </ErrorBoundary>
   </body>
 </html>

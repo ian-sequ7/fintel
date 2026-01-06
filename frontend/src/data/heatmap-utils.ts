@@ -19,8 +19,8 @@ export interface HeatMapTileData {
   marketCap: number;
   convictionScore: number;
   timeframe: string;
-  targetPrice?: number;
-  stopLoss?: number;
+  targetPrice?: number | null;
+  stopLoss?: number | null;
   value: number; // Normalized value for sizing (0-1)
   isWatchlist: boolean;
 }

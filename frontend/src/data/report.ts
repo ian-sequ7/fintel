@@ -883,6 +883,7 @@ function _generateMockReport(): FinancialReport {
       long: longPicks,
     },
     stockDetails,
+    allStocks: [],
     macro: {
       indicators,
       risks,
@@ -897,10 +898,12 @@ function _generateMockReport(): FinancialReport {
       signals: allSmartMoneySignals,
       congress: congressSignals,
       options: optionsSignals,
+      hedgeFunds: [],
       lastUpdated: now,
     },
     summary: {
       totalPicks: shortPicks.length + mediumPicks.length + longPicks.length,
+      totalStocks: 0,
       avgConviction:
         [...shortPicks, ...mediumPicks, ...longPicks].reduce(
           (sum, p) => sum + p.convictionScore,
