@@ -50,7 +50,7 @@ from domain import (
 )
 from domain.models import Timeframe
 from domain.analysis_types import RiskCategory
-from adapters import YahooAdapter, FredAdapter, RedditAdapter, RssAdapter, CongressAdapter, get_universe_provider
+from adapters import YahooAdapter, FredAdapter, RedditAdapter, RssAdapter, CongressAdapter, SEC13FAdapter, get_universe_provider
 from ports import FetchError, RateLimitError
 from presentation.report import ReportData
 
@@ -368,6 +368,7 @@ class DataFetcher:
         self._reddit: RedditAdapter | None = None
         self._rss: RssAdapter | None = None
         self._congress: CongressAdapter | None = None
+        self._sec_13f: SEC13FAdapter | None = None
 
     @property
     def yahoo(self) -> YahooAdapter:
@@ -398,6 +399,12 @@ class DataFetcher:
         if self._congress is None:
             self._congress = CongressAdapter()
         return self._congress
+
+    @property
+    def sec_13f(self) -> SEC13FAdapter:
+        if self._sec_13f is None:
+            self._sec_13f = SEC13FAdapter()
+        return self._sec_13f
 
     def _log(self, msg: str) -> None:
         """Log if verbose mode enabled."""
@@ -495,6 +502,15 @@ class DataFetcher:
             )
             if result.status == SourceStatus.OK:
                 results["smart_money"].extend(result.observations)
+
+            # 13F hedge fund holdings
+            result = self._fetch_source(
+                "sec_13f",
+                lambda: self.sec_13f.get_top_holdings(limit=100),
+            )
+            if result.status == SourceStatus.OK:
+                results["smart_money"].extend(result.observations)
+                self._log(f"  sec_13f: {len(result.observations)} observations")
 
             # Unusual options activity (top 10 tickers)
             for ticker in tickers[:10]:
