@@ -68,6 +68,14 @@ from .news import (
     filter_by_ticker,
     filter_by_priority,
 )
+from .briefing import (
+    EventImpact as BriefingEventImpact,
+    EconomicEvent,
+    BriefingNewsItem,
+    DailyBriefing,
+    generate_daily_briefing,
+    briefing_to_dict,
+)
 from .smart_money import (
     SmartMoneySignalType,
     TradeDirection,
@@ -167,4 +175,11 @@ __all__ = [
     "SmartMoneyContext",
     "signal_to_dict",
     "context_to_dict",
+    # Briefing
+    "BriefingEventImpact",
+    "EconomicEvent",
+    "BriefingNewsItem",
+    "DailyBriefing",
+    "generate_daily_briefing",
+    "briefing_to_dict",
 ]

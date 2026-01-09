@@ -224,6 +224,45 @@ export interface SmartMoneyContext {
 }
 
 // =============================================================================
+// Briefing Types
+// =============================================================================
+
+export type EventImpact = "high" | "medium" | "low";
+
+export interface EconomicEvent {
+  event: string;
+  time: string; // ISO datetime
+  impact: EventImpact;
+  actual: number | null;
+  forecast: number | null;
+  previous: number | null;
+  unit: string;
+  isReleased: boolean;
+}
+
+export interface BriefingNewsItem {
+  headline: string;
+  source: string;
+  url: string | null;
+  timestamp: string;
+}
+
+export interface DailyBriefing {
+  date: string; // ISO date
+  generatedAt: string;
+  eventsToday: EconomicEvent[];
+  eventsUpcoming: EconomicEvent[];
+  nextMajorEvent: {
+    event: string;
+    time: string;
+    impact: EventImpact;
+  } | null;
+  marketNews: BriefingNewsItem[];
+  fedNews: BriefingNewsItem[];
+  hasHighImpactToday: boolean;
+}
+
+// =============================================================================
 // Report Types (Root)
 // =============================================================================
 
@@ -256,6 +295,9 @@ export interface FinancialReport {
 
   // Smart Money
   smartMoney: SmartMoneyContext;
+
+  // Daily Briefing
+  briefing?: DailyBriefing;
 
   // Summary metrics
   summary: ReportSummary;

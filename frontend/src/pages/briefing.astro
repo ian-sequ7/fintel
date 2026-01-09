@@ -1,0 +1,287 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/primitives/Card.astro";
+import { getBriefingData, formatTimeUntil, formatEventTime, getLatestNews } from "../data/report";
+
+const briefing = getBriefingData();
+const fallbackNews = getLatestNews(10);
+
+// Format today's date
+const today = new Date();
+const dateOptions: Intl.DateTimeFormatOptions = {
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+};
+const formattedDate = today.toLocaleDateString(undefined, dateOptions);
+
+// Get time zone abbreviation
+const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const tzAbbr = new Date().toLocaleTimeString(undefined, { timeZoneName: "short" }).split(" ").pop();
+
+// Impact color helpers
+function getImpactColor(impact: string): string {
+  switch (impact) {
+    case "high": return "text-danger";
+    case "medium": return "text-warning";
+    default: return "text-text-secondary";
+  }
+}
+
+function getImpactBg(impact: string): string {
+  switch (impact) {
+    case "high": return "bg-danger/15";
+    case "medium": return "bg-warning/15";
+    default: return "bg-bg-elevated";
+  }
+}
+
+function getImpactDot(impact: string): string {
+  switch (impact) {
+    case "high": return "bg-danger";
+    case "medium": return "bg-warning";
+    default: return "bg-text-secondary";
+  }
+}
+---
+
+<Layout title="Daily Briefing" description="Morning market briefing with economic calendar, key numbers, and market-moving news.">
+  <!-- Page header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-text-primary">Daily Market Briefing</h1>
+    <p class="text-text-secondary">
+      {formattedDate} &bull; {tzAbbr}
+    </p>
+  </div>
+
+  {briefing ? (
+    <>
+      <!-- Next Major Event Countdown -->
+      {briefing.nextMajorEvent && (
+        <section class="mb-6">
+          <div class="bg-gradient-to-r from-accent/10 to-transparent border border-accent/30 rounded-lg p-4">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">&#9200;</span>
+              <div>
+                <div class="text-sm text-text-secondary uppercase tracking-wide">Next Major Event</div>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-xl font-bold text-text-primary">{briefing.nextMajorEvent.event}</span>
+                  <span class="text-accent font-mono font-bold">
+                    in {formatTimeUntil(briefing.nextMajorEvent.time)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <!-- Today's Calendar -->
+      <section class="mb-8">
+        <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
+          <span>&#128197;</span> Today's Economic Calendar
+        </h2>
+
+        {briefing.eventsToday.length === 0 ? (
+          <Card>
+            <p class="text-text-secondary text-center py-6">
+              No economic events scheduled for today.
+            </p>
+          </Card>
+        ) : (
+          <div class="space-y-2">
+            {briefing.eventsToday.map((event) => (
+              <div class:list={[
+                "flex items-center gap-4 p-4 rounded-lg border border-border",
+                getImpactBg(event.impact)
+              ]}>
+                {/* Time */}
+                <div class="w-20 flex-shrink-0">
+                  <span class="font-mono text-sm text-text-secondary">
+                    {formatEventTime(event.time)}
+                  </span>
+                </div>
+
+                {/* Impact dot */}
+                <div class="flex-shrink-0">
+                  <span class:list={["w-2.5 h-2.5 rounded-full inline-block", getImpactDot(event.impact)]}></span>
+                </div>
+
+                {/* Event name */}
+                <div class="flex-1">
+                  <span class="font-medium text-text-primary">{event.event}</span>
+                </div>
+
+                {/* Values */}
+                <div class="flex gap-4 text-sm">
+                  {event.isReleased ? (
+                    <>
+                      <div class="text-center">
+                        <div class="text-text-secondary text-xs">Actual</div>
+                        <div class="font-bold text-text-primary">{event.actual}{event.unit}</div>
+                      </div>
+                      <div class="text-center">
+                        <div class="text-text-secondary text-xs">Est.</div>
+                        <div class="text-text-secondary">{event.forecast ?? "-"}{event.forecast ? event.unit : ""}</div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div class="text-center">
+                        <div class="text-text-secondary text-xs">Forecast</div>
+                        <div class="font-medium text-text-primary">{event.forecast ?? "-"}{event.forecast ? event.unit : ""}</div>
+                      </div>
+                      <div class="text-center">
+                        <div class="text-text-secondary text-xs">Prior</div>
+                        <div class="text-text-secondary">{event.previous ?? "-"}{event.previous ? event.unit : ""}</div>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Impact badge */}
+                <div class="flex-shrink-0">
+                  <span class:list={[
+                    "px-2 py-0.5 rounded text-xs font-medium uppercase",
+                    getImpactColor(event.impact),
+                    getImpactBg(event.impact)
+                  ]}>
+                    {event.impact}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <!-- Upcoming HIGH Impact Events -->
+      {briefing.eventsUpcoming.length > 0 && (
+        <section class="mb-8">
+          <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <span>&#128200;</span> Upcoming High-Impact Events
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {briefing.eventsUpcoming.map((event) => (
+              <Card>
+                <div class="flex items-start justify-between mb-2">
+                  <span class="font-medium text-text-primary">{event.event}</span>
+                  <span class:list={["px-2 py-0.5 rounded text-xs font-medium", getImpactColor(event.impact), getImpactBg(event.impact)]}>
+                    {event.impact}
+                  </span>
+                </div>
+                <div class="text-sm text-text-secondary">
+                  {new Date(event.time).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}
+                  {" at "}
+                  {formatEventTime(event.time)}
+                </div>
+                {event.forecast && (
+                  <div class="text-sm text-text-secondary mt-1">
+                    Forecast: {event.forecast}{event.unit}
+                  </div>
+                )}
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- Market News Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Market News -->
+        <section>
+          <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <span>&#128240;</span> Market News
+          </h2>
+          {briefing.marketNews.length === 0 ? (
+            <Card>
+              <p class="text-text-secondary text-center py-4">No market news available.</p>
+            </Card>
+          ) : (
+            <div class="space-y-3">
+              {briefing.marketNews.slice(0, 5).map((news) => (
+                <a
+                  href={news.url || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block p-3 rounded-lg border border-border hover:border-accent/50 hover:bg-bg-elevated transition-colors"
+                >
+                  <div class="font-medium text-text-primary text-sm leading-snug mb-1">
+                    {news.headline}
+                  </div>
+                  <div class="text-xs text-text-secondary">
+                    {news.source}
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <!-- Fed News -->
+        <section>
+          <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <span>&#127974;</span> Fed & Policy
+          </h2>
+          {briefing.fedNews.length === 0 ? (
+            <Card>
+              <p class="text-text-secondary text-center py-4">No Fed news available.</p>
+            </Card>
+          ) : (
+            <div class="space-y-3">
+              {briefing.fedNews.slice(0, 5).map((news) => (
+                <a
+                  href={news.url || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block p-3 rounded-lg border border-border hover:border-accent/50 hover:bg-bg-elevated transition-colors"
+                >
+                  <div class="font-medium text-text-primary text-sm leading-snug mb-1">
+                    {news.headline}
+                  </div>
+                  <div class="text-xs text-text-secondary">
+                    {news.source}
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    </>
+  ) : (
+    <!-- Fallback when no briefing data -->
+    <Card>
+      <div class="text-center py-8">
+        <p class="text-text-secondary mb-4">
+          Briefing data not yet available. Showing latest news instead.
+        </p>
+        <div class="text-left max-w-2xl mx-auto space-y-3">
+          {fallbackNews.slice(0, 8).map((news) => (
+            <a
+              href={news.url || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="block p-3 rounded-lg border border-border hover:border-accent/50 hover:bg-bg-elevated transition-colors"
+            >
+              <div class="font-medium text-text-primary text-sm leading-snug mb-1">
+                {news.headline}
+              </div>
+              <div class="text-xs text-text-secondary">
+                {news.source}
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </Card>
+  )}
+
+  <!-- Generation timestamp -->
+  {briefing && (
+    <div class="mt-8 text-center text-xs text-text-secondary">
+      Generated {new Date(briefing.generatedAt).toLocaleString()}
+    </div>
+  )}
+</Layout>

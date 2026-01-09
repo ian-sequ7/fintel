@@ -11,10 +11,17 @@ from datetime import datetime
 from pathlib import Path
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+# Load environment variables from .env
+from dotenv import load_dotenv
+load_dotenv(project_root / ".env")
 
 from orchestration.pipeline import Pipeline, PipelineConfig
 from domain import Timeframe, Trend, Impact
+from domain.briefing import generate_daily_briefing, briefing_to_dict
+from adapters import CalendarAdapter, RssAdapter
 from db import (
     get_db,
     StockPick as DBStockPick,
@@ -522,7 +529,49 @@ def fetch_stock_details(tickers: list[str]) -> dict:
     return details
 
 
-def generate_report_json(result, config: PipelineConfig, stock_details: dict, sp500_prices: dict | None = None) -> dict:
+def fetch_briefing_data() -> dict | None:
+    """Fetch economic calendar and generate daily briefing."""
+    calendar_obs = []
+    news_obs = []
+
+    # Try to fetch economic calendar from Finnhub (requires paid subscription)
+    try:
+        calendar = CalendarAdapter()
+        calendar_obs = calendar.get_week_events()
+        print(f"  Got {len(calendar_obs)} calendar events")
+    except Exception as e:
+        # Calendar API requires paid Finnhub subscription
+        if "403" in str(e) or "Forbidden" in str(e):
+            print("  Note: Economic calendar requires paid Finnhub subscription (skipping)")
+        else:
+            print(f"  Warning: Calendar fetch failed: {e}")
+
+    # Fetch news from RSS (always available)
+    try:
+        rss = RssAdapter()
+        news_obs = rss.get_all(limit=30)
+        print(f"  Got {len(news_obs)} news items")
+    except Exception as e:
+        print(f"  Warning: News fetch failed: {e}")
+
+    # Generate briefing (works with just news if calendar unavailable)
+    if not calendar_obs and not news_obs:
+        print("  Warning: No briefing data available")
+        return None
+
+    try:
+        briefing = generate_daily_briefing(
+            calendar_observations=calendar_obs,
+            news_observations=news_obs,
+            max_news=10,
+        )
+        return briefing_to_dict(briefing)
+    except Exception as e:
+        print(f"  Warning: Could not generate briefing: {e}")
+        return None
+
+
+def generate_report_json(result, config: PipelineConfig, stock_details: dict, sp500_prices: dict | None = None, briefing_data: dict | None = None) -> dict:
     """Convert pipeline ReportData to frontend FinancialReport format."""
     now = datetime.now().isoformat()
 
@@ -683,6 +732,7 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict, sp
             "hedgeFunds": hedge_fund_signals,
             "lastUpdated": now,
         },
+        "briefing": briefing_data,
         "summary": {
             "totalPicks": len(all_picks_list),
             "totalStocks": len(sp500_prices) if sp500_prices else 0,
@@ -742,8 +792,18 @@ def main():
     print("\nStoring data in SQLite database...")
     store_pipeline_data_in_db(result, stock_details)
 
+    # Fetch daily briefing data (economic calendar + news)
+    print("\nGenerating daily briefing...")
+    briefing_data = fetch_briefing_data()
+    if briefing_data:
+        events_today = len(briefing_data.get("eventsToday", []))
+        events_upcoming = len(briefing_data.get("eventsUpcoming", []))
+        print(f"  {events_today} events today, {events_upcoming} upcoming high-impact")
+    else:
+        print("  Briefing unavailable (check Finnhub API key)")
+
     # Convert to frontend format
-    report = generate_report_json(result, config, stock_details, sp500_prices)
+    report = generate_report_json(result, config, stock_details, sp500_prices, briefing_data)
 
     # Write to frontend data directory
     output_path = Path(__file__).parent.parent / "frontend" / "src" / "data" / "report.json"

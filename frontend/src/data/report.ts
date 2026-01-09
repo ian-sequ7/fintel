@@ -21,6 +21,7 @@ import type {
   SmartMoneyContext,
   SmartMoneySignalType,
   HedgeFundDetails,
+  DailyBriefing,
 } from "./types";
 
 // =============================================================================
@@ -242,6 +243,55 @@ export function getMacroRisks(severity?: "low" | "medium" | "high"): MacroRisk[]
     return risks;
   }
   return risks.filter((risk) => risk.severity === severity);
+}
+
+// =============================================================================
+// Daily Briefing
+// =============================================================================
+
+/**
+ * Get daily briefing data.
+ */
+export function getBriefingData(): DailyBriefing | null {
+  const report = getReportSync();
+  return report.briefing ?? null;
+}
+
+/**
+ * Format time remaining until an event.
+ */
+export function formatTimeUntil(isoDateTime: string): string {
+  const eventTime = new Date(isoDateTime);
+  const now = new Date();
+  const diffMs = eventTime.getTime() - now.getTime();
+
+  if (diffMs < 0) return "Now";
+
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffDays > 0) {
+    const remainingHours = diffHours % 24;
+    return `${diffDays}d ${remainingHours}h`;
+  }
+  if (diffHours > 0) {
+    const remainingMins = diffMins % 60;
+    return `${diffHours}h ${remainingMins}m`;
+  }
+  return `${diffMins}m`;
+}
+
+/**
+ * Format event time for display in user's local timezone.
+ */
+export function formatEventTime(isoDateTime: string): string {
+  const date = new Date(isoDateTime);
+  return date.toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 }
 
 // =============================================================================

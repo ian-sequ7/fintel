@@ -8,6 +8,7 @@ from .sec_13f import SEC13FAdapter
 from .sec import SECAdapter
 from .finnhub import FinnhubAdapter
 from .finviz import FinvizAdapter
+from .calendar import CalendarAdapter, EconomicEvent, EventImpact
 from .cache import PersistentCache, get_cache
 from .universe import (
     UniverseProvider,
@@ -28,6 +29,9 @@ __all__ = [
     "SECAdapter",
     "FinnhubAdapter",
     "FinvizAdapter",
+    "CalendarAdapter",
+    "EconomicEvent",
+    "EventImpact",
     "PersistentCache",
     "get_cache",
     "UniverseProvider",
