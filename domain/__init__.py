@@ -71,6 +71,8 @@ from .news import (
 from .briefing import (
     EventImpact as BriefingEventImpact,
     EconomicEvent,
+    PreMarketMover,
+    EarningsAnnouncement,
     BriefingNewsItem,
     DailyBriefing,
     generate_daily_briefing,
@@ -178,6 +180,8 @@ __all__ = [
     # Briefing
     "BriefingEventImpact",
     "EconomicEvent",
+    "PreMarketMover",
+    "EarningsAnnouncement",
     "BriefingNewsItem",
     "DailyBriefing",
     "generate_daily_briefing",

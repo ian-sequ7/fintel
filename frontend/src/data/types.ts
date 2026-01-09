@@ -240,11 +240,44 @@ export interface EconomicEvent {
   isReleased: boolean;
 }
 
+export type NewsPriority = "critical" | "high" | "medium" | "low";
+export type NewsImpactCategory = "market_wide" | "sector" | "company" | "social" | "fed" | "unknown";
+
 export interface BriefingNewsItem {
   headline: string;
   source: string;
   url: string | null;
   timestamp: string;
+  priority?: NewsPriority;
+  relevanceScore?: number;
+  category?: NewsImpactCategory;
+  keywords?: string[];
+  tickers?: string[];
+}
+
+export interface PreMarketMover {
+  ticker: string;
+  companyName: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  volume: number;
+  previousClose: number;
+  isGainer: boolean;
+}
+
+export interface EarningsAnnouncement {
+  symbol: string;
+  date: string; // ISO date
+  hour: string; // "bmo" (before open), "amc" (after close), "" (TBD)
+  timingDisplay: string; // "Before Open", "After Close", "TBD"
+  year: number;
+  quarter: number;
+  epsEstimate: number | null;
+  epsActual: number | null;
+  revenueEstimate: number | null;
+  revenueActual: number | null;
+  isReported: boolean;
 }
 
 export interface DailyBriefing {
@@ -257,6 +290,12 @@ export interface DailyBriefing {
     time: string;
     impact: EventImpact;
   } | null;
+  premarketGainers: PreMarketMover[];
+  premarketLosers: PreMarketMover[];
+  earningsToday: EarningsAnnouncement[];
+  earningsBeforeOpen: EarningsAnnouncement[];
+  earningsAfterClose: EarningsAnnouncement[];
+  hasEarningsToday: boolean;
   marketNews: BriefingNewsItem[];
   fedNews: BriefingNewsItem[];
   hasHighImpactToday: boolean;

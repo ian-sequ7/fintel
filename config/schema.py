@@ -16,6 +16,7 @@ class ApiKeysConfig(BaseModel):
     # Optional keys - system works without them
     alpha_vantage: str | None = Field(default=None, description="Alpha Vantage API key")
     finnhub: str | None = Field(default=None, description="Finnhub API key")
+    fred: str | None = Field(default=None, description="FRED (Federal Reserve) API key")
 
     # Future expansion
     polygon: str | None = None

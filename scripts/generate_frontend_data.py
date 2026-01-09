@@ -529,22 +529,107 @@ def fetch_stock_details(tickers: list[str]) -> dict:
     return details
 
 
-def fetch_briefing_data() -> dict | None:
-    """Fetch economic calendar and generate daily briefing."""
+def fetch_premarket_movers(tickers: list[str]) -> tuple[list[dict], list[dict]]:
+    """Fetch pre-market movers from a list of tickers."""
+    from adapters.yahoo import YahooAdapter
+
+    try:
+        yahoo = YahooAdapter()
+        gainers, losers = yahoo.get_premarket_movers(
+            tickers,
+            min_change_pct=0.5,  # Lower threshold to capture more movers
+            top_n=10,
+        )
+        return gainers, losers
+    except Exception as e:
+        print(f"  Warning: Pre-market fetch failed: {e}")
+        return [], []
+
+
+def fetch_briefing_data(sp500_tickers: list[str] | None = None) -> dict | None:
+    """Fetch economic calendar, news, earnings, and pre-market movers to generate daily briefing."""
+    from datetime import date, timedelta
+
     calendar_obs = []
     news_obs = []
+    premarket_gainers = []
+    premarket_losers = []
+    earnings_data = {
+        "today": [],
+        "before_open": [],
+        "after_close": [],
+    }
 
-    # Try to fetch economic calendar from Finnhub (requires paid subscription)
+    calendar = CalendarAdapter()
+
+    # Try hybrid calendar (FRED releases + Finnhub earnings, all FREE tier)
+    print("  Fetching hybrid calendar (FRED + earnings)...")
     try:
-        calendar = CalendarAdapter()
-        calendar_obs = calendar.get_week_events()
-        print(f"  Got {len(calendar_obs)} calendar events")
+        today = date.today()
+        hybrid = calendar.get_hybrid_calendar(
+            from_date=today,
+            to_date=today + timedelta(days=7),
+            include_earnings=True,
+            include_ipos=False,
+            include_economic=True,
+        )
+
+        # Convert economic events to observations
+        for event_data in hybrid.get("economic_events", []):
+            from domain import Observation, Category
+            obs = Observation(
+                source="hybrid_calendar",
+                timestamp=datetime.fromisoformat(event_data["time"]),
+                category=Category.MACRO,
+                data=event_data,
+                ticker=None,
+                reliability=0.9,
+            )
+            calendar_obs.append(obs)
+
+        print(f"  Got {len(calendar_obs)} economic events from: {hybrid.get('sources_used', [])}")
+
+        # Process earnings data
+        earnings_list = hybrid.get("earnings", [])
+        if earnings_list:
+            today_str = today.isoformat()
+            for e in earnings_list:
+                # Convert to frontend format
+                earnings_item = {
+                    "symbol": e["symbol"],
+                    "date": e["date"],
+                    "hour": e["hour"],
+                    "timingDisplay": {"bmo": "Before Open", "amc": "After Close", "": "TBD"}.get(e["hour"], "TBD"),
+                    "year": e["year"],
+                    "quarter": e["quarter"],
+                    "epsEstimate": e["eps_estimate"],
+                    "epsActual": e["eps_actual"],
+                    "revenueEstimate": e["revenue_estimate"],
+                    "revenueActual": e["revenue_actual"],
+                    "isReported": e["eps_actual"] is not None,
+                }
+
+                # Categorize by timing for today
+                if e["date"] == today_str:
+                    earnings_data["today"].append(earnings_item)
+                    if e["hour"] == "bmo":
+                        earnings_data["before_open"].append(earnings_item)
+                    elif e["hour"] == "amc":
+                        earnings_data["after_close"].append(earnings_item)
+
+            print(f"  Got {len(earnings_list)} earnings events ({len(earnings_data['today'])} today)")
+
     except Exception as e:
-        # Calendar API requires paid Finnhub subscription
-        if "403" in str(e) or "Forbidden" in str(e):
-            print("  Note: Economic calendar requires paid Finnhub subscription (skipping)")
-        else:
-            print(f"  Warning: Calendar fetch failed: {e}")
+        print(f"  Warning: Hybrid calendar fetch failed: {e}")
+        # Fallback to legacy method
+        try:
+            calendar_obs = calendar.get_week_events()
+            print(f"  Got {len(calendar_obs)} calendar events (legacy)")
+        except Exception as e2:
+            if "403" in str(e2) or "Forbidden" in str(e2):
+                print("  Note: Economic calendar requires paid Finnhub subscription (skipping)")
+            else:
+                print(f"  Warning: Calendar fetch failed: {e2}")
 
     # Fetch news from RSS (always available)
     try:
@@ -554,8 +639,14 @@ def fetch_briefing_data() -> dict | None:
     except Exception as e:
         print(f"  Warning: News fetch failed: {e}")
 
+    # Fetch pre-market movers if we have tickers
+    if sp500_tickers:
+        print("  Fetching pre-market movers...")
+        premarket_gainers, premarket_losers = fetch_premarket_movers(sp500_tickers)
+        print(f"  Got {len(premarket_gainers)} gainers, {len(premarket_losers)} losers")
+
     # Generate briefing (works with just news if calendar unavailable)
-    if not calendar_obs and not news_obs:
+    if not calendar_obs and not news_obs and not earnings_data["today"]:
         print("  Warning: No briefing data available")
         return None
 
@@ -565,7 +656,32 @@ def fetch_briefing_data() -> dict | None:
             news_observations=news_obs,
             max_news=10,
         )
-        return briefing_to_dict(briefing)
+        briefing_dict = briefing_to_dict(briefing)
+
+        # Convert pre-market movers to camelCase for frontend
+        def to_camel_case(mover: dict) -> dict:
+            return {
+                "ticker": mover.get("ticker", ""),
+                "companyName": mover.get("company_name", mover.get("ticker", "")),
+                "price": mover.get("price", 0),
+                "change": mover.get("change", 0),
+                "changePercent": mover.get("change_percent", 0),
+                "volume": mover.get("volume", 0),
+                "previousClose": mover.get("previous_close", 0),
+                "isGainer": mover.get("is_gainer", True),
+            }
+
+        # Add pre-market movers to briefing
+        briefing_dict["premarketGainers"] = [to_camel_case(m) for m in premarket_gainers]
+        briefing_dict["premarketLosers"] = [to_camel_case(m) for m in premarket_losers]
+
+        # Add earnings data to briefing
+        briefing_dict["earningsToday"] = earnings_data["today"]
+        briefing_dict["earningsBeforeOpen"] = earnings_data["before_open"]
+        briefing_dict["earningsAfterClose"] = earnings_data["after_close"]
+        briefing_dict["hasEarningsToday"] = len(earnings_data["today"]) > 0
+
+        return briefing_dict
     except Exception as e:
         print(f"  Warning: Could not generate briefing: {e}")
         return None
@@ -792,9 +908,10 @@ def main():
     print("\nStoring data in SQLite database...")
     store_pipeline_data_in_db(result, stock_details)
 
-    # Fetch daily briefing data (economic calendar + news)
+    # Fetch daily briefing data (economic calendar + news + pre-market movers)
     print("\nGenerating daily briefing...")
-    briefing_data = fetch_briefing_data()
+    sp500_tickers = list(sp500_prices.keys()) if sp500_prices else []
+    briefing_data = fetch_briefing_data(sp500_tickers)
     if briefing_data:
         events_today = len(briefing_data.get("eventsToday", []))
         events_upcoming = len(briefing_data.get("eventsUpcoming", []))

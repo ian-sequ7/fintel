@@ -49,8 +49,36 @@ class EconomicEvent(BaseModel):
         return self.actual - self.forecast
 
 
+class PreMarketMover(BaseModel):
+    """Pre-market stock mover for briefing display."""
+    model_config = {"frozen": True, "extra": "forbid"}
+
+    ticker: str = Field(description="Stock ticker symbol")
+    company_name: str = Field(default="", description="Company name")
+    price: float = Field(description="Current pre-market price")
+    change: float = Field(description="Price change from previous close")
+    change_percent: float = Field(description="Percentage change")
+    volume: int = Field(default=0, description="Pre-market volume")
+    previous_close: float = Field(description="Previous close price")
+    is_gainer: bool = Field(description="True if positive change")
+
+    @property
+    def formatted_change(self) -> str:
+        """Format change with sign and percentage."""
+        sign = "+" if self.change >= 0 else ""
+        return f"{sign}{self.change:.2f} ({sign}{self.change_percent:.2f}%)"
+
+
+class NewsPriority(str, Enum):
+    """Priority level for news items."""
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+
 class BriefingNewsItem(BaseModel):
-    """News item for briefing display."""
+    """News item for briefing display with impact scoring."""
     model_config = {"frozen": True, "extra": "forbid"}
 
     headline: str
@@ -58,6 +86,39 @@ class BriefingNewsItem(BaseModel):
     url: str | None = None
     timestamp: datetime
     category: str = "market"  # market, fed, earnings, geopolitical
+    priority: NewsPriority = NewsPriority.MEDIUM
+    relevance_score: float = Field(default=0.5, ge=0, le=1)
+    keywords: list[str] = Field(default_factory=list)
+    tickers: list[str] = Field(default_factory=list)
+
+
+class EarningsAnnouncement(BaseModel):
+    """Earnings announcement for briefing display."""
+    model_config = {"frozen": True, "extra": "forbid"}
+
+    symbol: str = Field(description="Stock ticker symbol")
+    date: date_type = Field(description="Report date")
+    hour: str = Field(default="", description="bmo (before open), amc (after close), or empty")
+    year: int = Field(default=0, description="Fiscal year")
+    quarter: int = Field(default=0, description="Fiscal quarter (1-4)")
+    eps_estimate: float | None = Field(default=None, description="EPS estimate")
+    eps_actual: float | None = Field(default=None, description="Actual EPS if released")
+    revenue_estimate: float | None = Field(default=None, description="Revenue estimate")
+    revenue_actual: float | None = Field(default=None, description="Actual revenue if released")
+
+    @property
+    def timing_display(self) -> str:
+        """Human-readable timing."""
+        return {
+            "bmo": "Before Open",
+            "amc": "After Close",
+            "": "TBD",
+        }.get(self.hour, "TBD")
+
+    @property
+    def is_reported(self) -> bool:
+        """Check if earnings have been reported."""
+        return self.eps_actual is not None
 
 
 class DailyBriefing(BaseModel):
@@ -81,6 +142,30 @@ class DailyBriefing(BaseModel):
         description="Next HIGH impact event for countdown"
     )
 
+    # Pre-market movers
+    premarket_gainers: list[PreMarketMover] = Field(
+        default_factory=list,
+        description="Top pre-market gainers"
+    )
+    premarket_losers: list[PreMarketMover] = Field(
+        default_factory=list,
+        description="Top pre-market losers"
+    )
+
+    # Earnings calendar
+    earnings_today: list[EarningsAnnouncement] = Field(
+        default_factory=list,
+        description="Today's major earnings announcements"
+    )
+    earnings_before_open: list[EarningsAnnouncement] = Field(
+        default_factory=list,
+        description="Earnings before market open"
+    )
+    earnings_after_close: list[EarningsAnnouncement] = Field(
+        default_factory=list,
+        description="Earnings after market close"
+    )
+
     # Market news
     market_news: list[BriefingNewsItem] = Field(
         default_factory=list,
@@ -90,6 +175,11 @@ class DailyBriefing(BaseModel):
         default_factory=list,
         description="Fed/monetary policy news"
     )
+
+    @property
+    def has_earnings_today(self) -> bool:
+        """Check if there are earnings announcements today."""
+        return len(self.earnings_today) > 0
 
     @property
     def has_high_impact_today(self) -> bool:
@@ -120,9 +210,18 @@ def _observation_to_event(obs: Observation) -> EconomicEvent:
 
 
 def _observation_to_news(obs: Observation) -> BriefingNewsItem:
-    """Convert news Observation to BriefingNewsItem."""
+    """Convert news Observation to BriefingNewsItem with impact scoring."""
+    from .news import (
+        score_source_credibility,
+        score_keywords,
+        extract_tickers,
+        MARKET_KEYWORDS,
+    )
+
     data = obs.data
     headline = data.get("title") or data.get("headline", "")
+    description = data.get("description", "")
+    text = f"{headline} {description}"
 
     # Categorize by keywords
     headline_lower = headline.lower()
@@ -135,12 +234,39 @@ def _observation_to_news(obs: Observation) -> BriefingNewsItem:
     else:
         category = "market"
 
+    # Score the news item
+    source = data.get("source", obs.source)
+    source_score = score_source_credibility(source)
+    keyword_score, keywords = score_keywords(text)
+    tickers = extract_tickers(text)
+
+    # Calculate relevance: weighted combination
+    relevance = (source_score * 0.3) + (keyword_score * 0.5) + (0.2 if tickers else 0)
+    relevance = min(1.0, round(relevance, 3))
+
+    # Determine priority based on keywords and relevance
+    critical_keywords = {"crash", "bankruptcy", "rate cut", "rate hike", "recession", "fomc", "fed"}
+    high_keywords = {"earnings", "merger", "acquisition", "selloff", "rally", "inflation"}
+
+    if any(kw in critical_keywords for kw in keywords) or relevance >= 0.8:
+        priority = NewsPriority.CRITICAL
+    elif any(kw in high_keywords for kw in keywords) or relevance >= 0.6:
+        priority = NewsPriority.HIGH
+    elif relevance >= 0.4:
+        priority = NewsPriority.MEDIUM
+    else:
+        priority = NewsPriority.LOW
+
     return BriefingNewsItem(
         headline=headline,
-        source=data.get("source", obs.source),
+        source=source,
         url=data.get("url"),
         timestamp=obs.timestamp,
         category=category,
+        priority=priority,
+        relevance_score=relevance,
+        keywords=keywords[:5],  # Top 5 keywords
+        tickers=tickers[:3],  # Top 3 tickers
     )
 
 
@@ -253,12 +379,92 @@ def briefing_to_dict(briefing: DailyBriefing) -> dict:
             "time": briefing.next_major_event.time.isoformat(),
             "impact": briefing.next_major_event.impact.value,
         } if briefing.next_major_event else None,
+        "premarketGainers": [
+            {
+                "ticker": m.ticker,
+                "companyName": m.company_name,
+                "price": m.price,
+                "change": m.change,
+                "changePercent": m.change_percent,
+                "volume": m.volume,
+                "previousClose": m.previous_close,
+                "isGainer": m.is_gainer,
+            }
+            for m in briefing.premarket_gainers
+        ],
+        "premarketLosers": [
+            {
+                "ticker": m.ticker,
+                "companyName": m.company_name,
+                "price": m.price,
+                "change": m.change,
+                "changePercent": m.change_percent,
+                "volume": m.volume,
+                "previousClose": m.previous_close,
+                "isGainer": m.is_gainer,
+            }
+            for m in briefing.premarket_losers
+        ],
+        "earningsToday": [
+            {
+                "symbol": e.symbol,
+                "date": e.date.isoformat(),
+                "hour": e.hour,
+                "timingDisplay": e.timing_display,
+                "year": e.year,
+                "quarter": e.quarter,
+                "epsEstimate": e.eps_estimate,
+                "epsActual": e.eps_actual,
+                "revenueEstimate": e.revenue_estimate,
+                "revenueActual": e.revenue_actual,
+                "isReported": e.is_reported,
+            }
+            for e in briefing.earnings_today
+        ],
+        "earningsBeforeOpen": [
+            {
+                "symbol": e.symbol,
+                "date": e.date.isoformat(),
+                "hour": e.hour,
+                "timingDisplay": e.timing_display,
+                "year": e.year,
+                "quarter": e.quarter,
+                "epsEstimate": e.eps_estimate,
+                "epsActual": e.eps_actual,
+                "revenueEstimate": e.revenue_estimate,
+                "revenueActual": e.revenue_actual,
+                "isReported": e.is_reported,
+            }
+            for e in briefing.earnings_before_open
+        ],
+        "earningsAfterClose": [
+            {
+                "symbol": e.symbol,
+                "date": e.date.isoformat(),
+                "hour": e.hour,
+                "timingDisplay": e.timing_display,
+                "year": e.year,
+                "quarter": e.quarter,
+                "epsEstimate": e.eps_estimate,
+                "epsActual": e.eps_actual,
+                "revenueEstimate": e.revenue_estimate,
+                "revenueActual": e.revenue_actual,
+                "isReported": e.is_reported,
+            }
+            for e in briefing.earnings_after_close
+        ],
+        "hasEarningsToday": briefing.has_earnings_today,
         "marketNews": [
             {
                 "headline": n.headline,
                 "source": n.source,
                 "url": n.url,
                 "timestamp": n.timestamp.isoformat(),
+                "priority": n.priority.value,
+                "relevanceScore": n.relevance_score,
+                "category": n.category,
+                "keywords": n.keywords,
+                "tickers": n.tickers,
             }
             for n in briefing.market_news
         ],
@@ -268,6 +474,11 @@ def briefing_to_dict(briefing: DailyBriefing) -> dict:
                 "source": n.source,
                 "url": n.url,
                 "timestamp": n.timestamp.isoformat(),
+                "priority": n.priority.value,
+                "relevanceScore": n.relevance_score,
+                "category": n.category,
+                "keywords": n.keywords,
+                "tickers": n.tickers,
             }
             for n in briefing.fed_news
         ],

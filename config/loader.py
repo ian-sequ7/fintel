@@ -87,6 +87,7 @@ def _load_env_api_keys() -> dict[str, str | None]:
     return {
         "alpha_vantage": os.environ.get(f"{ENV_PREFIX}ALPHA_VANTAGE_KEY"),
         "finnhub": os.environ.get(f"{ENV_PREFIX}FINNHUB_KEY"),
+        "fred": os.environ.get(f"{ENV_PREFIX}FRED_KEY"),
         "polygon": os.environ.get(f"{ENV_PREFIX}POLYGON_KEY"),
         "quandl": os.environ.get(f"{ENV_PREFIX}QUANDL_KEY"),
     }

@@ -681,6 +681,168 @@ class YahooAdapter(BaseAdapter):
         return results
 
     # ========================================================================
+    # Pre-Market Movers Detection
+    # ========================================================================
+
+    def get_premarket_movers(
+        self,
+        tickers: list[str],
+        min_change_pct: float = 1.0,
+        top_n: int = 10,
+    ) -> tuple[list[dict], list[dict]]:
+        """
+        Fetch pre-market movers from a list of tickers.
+
+        Uses yfinance with prepost=True to get extended hours data.
+        Returns top gainers and losers sorted by absolute change %.
+
+        Args:
+            tickers: List of ticker symbols to check
+            min_change_pct: Minimum absolute % change to be considered a mover
+            top_n: Number of top gainers/losers to return
+
+        Returns:
+            Tuple of (gainers, losers) where each is a list of dicts:
+            {
+                "ticker": "AAPL",
+                "company_name": "Apple Inc.",
+                "price": 150.0,
+                "change": 2.5,
+                "change_percent": 1.7,
+                "volume": 50000,
+                "previous_close": 147.5,
+                "is_gainer": True
+            }
+        """
+        if not tickers:
+            return [], []
+
+        tickers = [t.upper().strip() for t in tickers]
+        movers = []
+
+        try:
+            # Batch download with extended hours data
+            # Using 1d period with 1m interval to get pre-market data
+            logger.info(f"Fetching pre-market data for {len(tickers)} tickers...")
+
+            data = yf.download(
+                tickers,
+                period="2d",
+                interval="1m",
+                prepost=True,  # Include pre/post market data
+                progress=False,
+                threads=True,
+            )
+
+            if data.empty:
+                logger.warning("No pre-market data returned")
+                return [], []
+
+            # Get company names (cached from fundamentals)
+            cache = get_cache()
+            company_names = {}
+            for ticker in tickers:
+                cached = cache.get("yahoo_fundamentals", ticker=ticker)
+                if cached:
+                    company_names[ticker] = cached.get("shortName") or cached.get("longName") or ticker
+                else:
+                    company_names[ticker] = ticker
+
+            # Handle single vs multiple ticker response format
+            if len(tickers) == 1:
+                ticker = tickers[0]
+                if len(data) >= 2:
+                    # Get latest price and previous close
+                    latest = data.iloc[-1]
+                    # Find previous trading day close (last row from previous day)
+                    prev_day_data = data[data.index.date < data.index[-1].date()]
+                    if len(prev_day_data) > 0:
+                        prev_close = float(prev_day_data["Close"].iloc[-1])
+                    else:
+                        prev_close = float(data["Close"].iloc[0])
+
+                    price = float(latest["Close"])
+                    change = price - prev_close
+                    change_pct = (change / prev_close * 100) if prev_close else 0
+                    volume = int(latest["Volume"]) if latest["Volume"] else 0
+
+                    if abs(change_pct) >= min_change_pct:
+                        movers.append({
+                            "ticker": ticker,
+                            "company_name": company_names.get(ticker, ticker),
+                            "price": round(price, 2),
+                            "change": round(change, 2),
+                            "change_percent": round(change_pct, 2),
+                            "volume": volume,
+                            "previous_close": round(prev_close, 2),
+                            "is_gainer": change >= 0,
+                        })
+            else:
+                # Multiple tickers: columns are MultiIndex (metric, ticker)
+                for ticker in tickers:
+                    try:
+                        if ticker not in data["Close"].columns:
+                            continue
+
+                        ticker_close = data["Close"][ticker].dropna()
+                        if len(ticker_close) < 2:
+                            continue
+
+                        # Get latest and previous close
+                        price = float(ticker_close.iloc[-1])
+
+                        # Find previous trading day close
+                        prev_day_data = ticker_close[ticker_close.index.date < ticker_close.index[-1].date()]
+                        if len(prev_day_data) > 0:
+                            prev_close = float(prev_day_data.iloc[-1])
+                        else:
+                            prev_close = float(ticker_close.iloc[0])
+
+                        change = price - prev_close
+                        change_pct = (change / prev_close * 100) if prev_close else 0
+
+                        # Get volume
+                        volume = 0
+                        if "Volume" in data.columns.get_level_values(0):
+                            vol_data = data["Volume"][ticker].dropna()
+                            if len(vol_data) >= 1:
+                                volume = int(vol_data.iloc[-1])
+
+                        if abs(change_pct) >= min_change_pct:
+                            movers.append({
+                                "ticker": ticker,
+                                "company_name": company_names.get(ticker, ticker),
+                                "price": round(price, 2),
+                                "change": round(change, 2),
+                                "change_percent": round(change_pct, 2),
+                                "volume": volume,
+                                "previous_close": round(prev_close, 2),
+                                "is_gainer": change >= 0,
+                            })
+                    except Exception as e:
+                        logger.debug(f"Skipping {ticker} in premarket: {e}")
+                        continue
+
+            # Split into gainers and losers, sorted by absolute change
+            gainers = sorted(
+                [m for m in movers if m["is_gainer"]],
+                key=lambda x: x["change_percent"],
+                reverse=True
+            )[:top_n]
+
+            losers = sorted(
+                [m for m in movers if not m["is_gainer"]],
+                key=lambda x: x["change_percent"],
+            )[:top_n]
+
+            logger.info(f"Found {len(gainers)} gainers and {len(losers)} losers in pre-market")
+            return gainers, losers
+
+        except Exception as e:
+            logger.error(f"Pre-market fetch failed: {e}")
+            return [], []
+
+    # ========================================================================
     # Unusual Options Activity Detection
     # ========================================================================
 
