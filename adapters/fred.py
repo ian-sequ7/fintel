@@ -33,39 +33,58 @@ class MacroIndicator:
     unit: str
 
 
-# Key FRED series for macro analysis (22 total)
+# Key FRED series for macro analysis (35 total)
 MACRO_SERIES = {
-    # Labor market (3)
+    # Labor market (4)
     "UNRATE": ("Unemployment Rate", "%"),
     "PAYEMS": ("Nonfarm Payrolls", "Thousands"),
-    "ICSA": ("Initial Jobless Claims", "Thousands"),
+    "ICSA": ("Initial Jobless Claims", "Count"),
+    "JTSJOR": ("Job Openings Rate", "%"),
 
-    # Inflation (2) - Note: These are index values, YoY change calculated separately
+    # Inflation (3) - Note: Index values have YoY change calculated separately
     "CPIAUCSL": ("CPI (Inflation)", "Index"),
     "PCEPI": ("PCE Price Index", "Index"),
+    "T5YIE": ("5-Year Inflation Expectations", "%"),
 
     # GDP & Production (2)
     "GDP": ("Gross Domestic Product", "Billions USD"),
     "INDPRO": ("Industrial Production", "Index"),
 
-    # Interest Rates (4)
+    # Interest Rates & Yield Curve (5)
     "FEDFUNDS": ("Federal Funds Rate", "%"),
     "DGS10": ("10-Year Treasury Yield", "%"),
     "DGS2": ("2-Year Treasury Yield", "%"),
     "T10Y2Y": ("10Y-2Y Treasury Spread", "%"),
+    "T10Y3M": ("10Y-3M Treasury Spread", "%"),
 
-    # Credit & Risk (2)
+    # Credit & Risk Spreads (4)
     "BAMLH0A0HYM2": ("High Yield Spread", "%"),
+    "BAMLC0A4CBBB": ("BBB Corporate Spread", "%"),
+    "TEDRATE": ("TED Spread", "%"),
     "VIXCLS": ("VIX Volatility Index", "Index"),
+
+    # Financial Stress (1)
+    "STLFSI4": ("St. Louis Fed Financial Stress Index", "Index"),
+
+    # Recession Indicators (2)
+    "SAHMREALTIME": ("Sahm Rule Recession Indicator", "Percentage Points"),
+    "RECPROUSM156N": ("Recession Probability", "%"),
 
     # Consumer (2)
     "UMCSENT": ("Consumer Sentiment", "Index"),
     "RSXFS": ("Retail Sales", "Millions USD"),
 
-    # Housing (3)
+    # Consumer Credit Health (1)
+    "DRCCLACBS": ("Credit Card Delinquency Rate", "%"),
+
+    # Housing (4)
     "HOUST": ("Housing Starts", "Thousands"),
     "MORTGAGE30US": ("30-Year Mortgage Rate", "%"),
     "CSUSHPINSA": ("Case-Shiller Home Price Index", "Index"),
+    "DRSFRMACBS": ("Mortgage Delinquency Rate", "%"),
+
+    # Market Valuation (1)
+    "WILL5000PR": ("Wilshire 5000 Price Index", "Index"),
 
     # Commodities (2)
     "DCOILWTICO": ("WTI Crude Oil Price", "USD/Barrel"),
@@ -73,6 +92,10 @@ MACRO_SERIES = {
 
     # Debt & Credit (1)
     "BOGZ1FL073164003Q": ("Household Debt", "Billions USD"),
+
+    # Global & Currency (2)
+    "DTWEXBGS": ("Trade Weighted Dollar Index", "Index"),
+    "BOPGSTB": ("Trade Balance", "Millions USD"),
 
     # Fed Balance Sheet (1)
     "WALCL": ("Fed Balance Sheet", "Millions USD"),

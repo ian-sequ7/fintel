@@ -472,7 +472,7 @@ def identify_headwinds(
     config: ScoringConfig | None = None,
 ) -> list[Risk]:
     """
-    Identify macro headwinds from indicators.
+    Identify macro headwinds from indicators across 8 risk categories.
 
     Pure function - analyzes macro data to find risks.
 
@@ -481,7 +481,7 @@ def identify_headwinds(
         config: Scoring configuration
 
     Returns:
-        List of identified Risk objects
+        List of identified Risk objects sorted by risk score
     """
     config = config or ScoringConfig()
     risks = []
@@ -490,10 +490,438 @@ def identify_headwinds(
     by_name = {ind.name.lower(): ind for ind in indicators}
     by_id = {ind.series_id: ind for ind in indicators if ind.series_id}
 
-    # Check unemployment
+    # Evaluate all risk categories
+    risks.extend(_evaluate_recession_risk(by_id, by_name, config))
+    risks.extend(_evaluate_credit_risk(by_id, by_name, config))
+    risks.extend(_evaluate_housing_risk(by_id, by_name, config))
+    risks.extend(_evaluate_financial_stress_risk(by_id, by_name, config))
+    risks.extend(_evaluate_inflation_risk(by_id, by_name, config))
+    risks.extend(_evaluate_labor_risk(by_id, by_name, config))
+    risks.extend(_evaluate_valuation_risk(by_id, by_name, config))
+    risks.extend(_evaluate_global_risk(by_id, by_name, config))
+
+    return sorted(risks, key=lambda r: r.risk_score, reverse=True)
+
+
+def _evaluate_recession_risk(
+    by_id: dict,
+    by_name: dict,
+    config: ScoringConfig,
+) -> list[Risk]:
+    """Evaluate recession probability indicators."""
+    risks = []
+
+    # Yield curve 10Y-2Y (most watched)
+    spread_2y = by_id.get("T10Y2Y") or by_name.get("10y-2y treasury spread")
+    if spread_2y and spread_2y.current_value < 0:
+        risks.append(Risk(
+            category=RiskCategory.MACRO,
+            name="Inverted Yield Curve (10Y-2Y)",
+            description=f"Yield curve inverted at {spread_2y.current_value:.2f}% - historically precedes 87% of recessions",
+            severity=0.8,
+            probability=0.7,
+            source_indicator="T10Y2Y",
+        ))
+    elif spread_2y and spread_2y.current_value < 0.25:
+        risks.append(Risk(
+            category=RiskCategory.MACRO,
+            name="Flattening Yield Curve",
+            description=f"Yield curve spread at {spread_2y.current_value:.2f}% - approaching inversion",
+            severity=0.4,
+            probability=0.5,
+            source_indicator="T10Y2Y",
+        ))
+
+    # Yield curve 10Y-3M (higher accuracy)
+    spread_3m = by_id.get("T10Y3M") or by_name.get("10y-3m treasury spread")
+    if spread_3m and spread_3m.current_value < 0:
+        risks.append(Risk(
+            category=RiskCategory.MACRO,
+            name="Inverted Yield Curve (10Y-3M)",
+            description=f"10Y-3M spread inverted at {spread_3m.current_value:.2f}% - strongest recession signal",
+            severity=0.85,
+            probability=0.75,
+            source_indicator="T10Y3M",
+        ))
+
+    # Sahm Rule recession indicator
+    sahm = by_id.get("SAHMREALTIME") or by_name.get("sahm rule recession indicator")
+    if sahm:
+        if sahm.current_value >= 0.5:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Sahm Rule Triggered",
+                description=f"Sahm indicator at {sahm.current_value:.2f}pp - recession likely in progress",
+                severity=0.9,
+                probability=0.85,
+                source_indicator="SAHMREALTIME",
+            ))
+        elif sahm.current_value >= 0.3:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Sahm Rule Warning",
+                description=f"Sahm indicator at {sahm.current_value:.2f}pp - approaching recession threshold (0.5)",
+                severity=0.6,
+                probability=0.6,
+                source_indicator="SAHMREALTIME",
+            ))
+
+    # NY Fed recession probability
+    rec_prob = by_id.get("RECPROUSM156N") or by_name.get("recession probability")
+    if rec_prob:
+        if rec_prob.current_value >= 50:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="High Recession Probability",
+                description=f"NY Fed model shows {rec_prob.current_value:.0f}% recession probability",
+                severity=0.85,
+                probability=rec_prob.current_value / 100,
+                source_indicator="RECPROUSM156N",
+            ))
+        elif rec_prob.current_value >= 30:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Elevated Recession Probability",
+                description=f"NY Fed model shows {rec_prob.current_value:.0f}% recession probability",
+                severity=0.55,
+                probability=rec_prob.current_value / 100,
+                source_indicator="RECPROUSM156N",
+            ))
+
+    # GDP growth trend
+    gdp = by_id.get("GDP") or by_name.get("gross domestic product")
+    if gdp and gdp.trend == Trend.FALLING:
+        risks.append(Risk(
+            category=RiskCategory.MACRO,
+            name="Slowing GDP Growth",
+            description="Declining GDP growth indicates economic slowdown",
+            severity=0.7,
+            probability=0.7,
+            source_indicator="GDP",
+        ))
+
+    return risks
+
+
+def _evaluate_credit_risk(
+    by_id: dict,
+    by_name: dict,
+    config: ScoringConfig,
+) -> list[Risk]:
+    """Evaluate credit and debt market risks."""
+    risks = []
+
+    # High yield credit spread (corporate distress signal)
+    hy_spread = by_id.get("BAMLH0A0HYM2") or by_name.get("high yield spread")
+    if hy_spread:
+        if hy_spread.current_value >= 6.0:  # 600bps
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="High Yield Stress",
+                description=f"HY spread at {hy_spread.current_value:.1f}% - elevated corporate default risk",
+                severity=0.8,
+                probability=0.7,
+                source_indicator="BAMLH0A0HYM2",
+            ))
+        elif hy_spread.current_value >= 4.5:  # 450bps
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Elevated Credit Spreads",
+                description=f"HY spread at {hy_spread.current_value:.1f}% - above normal levels",
+                severity=0.5,
+                probability=0.6,
+                source_indicator="BAMLH0A0HYM2",
+            ))
+
+    # BBB investment grade spread (cliff risk - largest segment of IG market)
+    bbb_spread = by_id.get("BAMLC0A4CBBB") or by_name.get("bbb corporate spread")
+    if bbb_spread and bbb_spread.current_value >= 2.5:  # 250bps
+        risks.append(Risk(
+            category=RiskCategory.MACRO,
+            name="Investment Grade Stress",
+            description=f"BBB spread at {bbb_spread.current_value:.1f}% - risk of fallen angels",
+            severity=0.6,
+            probability=0.55,
+            source_indicator="BAMLC0A4CBBB",
+        ))
+
+    # Consumer credit delinquency
+    cc_delinq = by_id.get("DRCCLACBS") or by_name.get("credit card delinquency rate")
+    if cc_delinq:
+        if cc_delinq.current_value >= 4.0:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Consumer Credit Stress",
+                description=f"Credit card delinquency at {cc_delinq.current_value:.1f}% - consumer financial strain",
+                severity=0.7,
+                probability=0.75,
+                source_indicator="DRCCLACBS",
+            ))
+        elif cc_delinq.current_value >= 3.0:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Rising Delinquencies",
+                description=f"Credit card delinquency at {cc_delinq.current_value:.1f}% - above historical average",
+                severity=0.5,
+                probability=0.65,
+                source_indicator="DRCCLACBS",
+            ))
+
+    return risks
+
+
+def _evaluate_housing_risk(
+    by_id: dict,
+    by_name: dict,
+    config: ScoringConfig,
+) -> list[Risk]:
+    """Evaluate housing and mortgage market risks."""
+    risks = []
+
+    # 30-year mortgage rate (affordability)
+    mortgage = by_id.get("MORTGAGE30US") or by_name.get("30-year mortgage rate")
+    if mortgage:
+        if mortgage.current_value >= 7.5:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Mortgage Rate Crisis",
+                description=f"30-year rate at {mortgage.current_value:.2f}% - severe affordability pressure",
+                severity=0.8,
+                probability=0.8,
+                source_indicator="MORTGAGE30US",
+            ))
+        elif mortgage.current_value >= 6.5:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Elevated Mortgage Rates",
+                description=f"30-year rate at {mortgage.current_value:.2f}% - constraining housing demand",
+                severity=0.5,
+                probability=0.7,
+                source_indicator="MORTGAGE30US",
+            ))
+
+    # Mortgage delinquency rate
+    mtg_delinq = by_id.get("DRSFRMACBS") or by_name.get("mortgage delinquency rate")
+    if mtg_delinq:
+        if mtg_delinq.current_value >= 3.0:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Mortgage Delinquency Stress",
+                description=f"Mortgage delinquency at {mtg_delinq.current_value:.1f}% - housing market strain",
+                severity=0.75,
+                probability=0.75,
+                source_indicator="DRSFRMACBS",
+            ))
+        elif mtg_delinq.current_value >= 2.0:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Rising Mortgage Delinquencies",
+                description=f"Mortgage delinquency at {mtg_delinq.current_value:.1f}% - above normal",
+                severity=0.5,
+                probability=0.6,
+                source_indicator="DRSFRMACBS",
+            ))
+
+    # Home price index (bubble/crash detection via trend)
+    hpi = by_id.get("CSUSHPINSA") or by_name.get("case-shiller home price index")
+    if hpi and hpi.trend == Trend.FALLING:
+        risks.append(Risk(
+            category=RiskCategory.MACRO,
+            name="Declining Home Prices",
+            description="Home prices falling - negative wealth effect on consumer spending",
+            severity=0.65,
+            probability=0.7,
+            source_indicator="CSUSHPINSA",
+        ))
+
+    return risks
+
+
+def _evaluate_financial_stress_risk(
+    by_id: dict,
+    by_name: dict,
+    config: ScoringConfig,
+) -> list[Risk]:
+    """Evaluate financial system stress indicators."""
+    risks = []
+
+    # St. Louis Fed Financial Stress Index
+    stlfsi = by_id.get("STLFSI4") or by_name.get("st. louis fed financial stress index")
+    if stlfsi:
+        if stlfsi.current_value >= 1.0:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Financial System Stress",
+                description=f"Financial stress index at {stlfsi.current_value:.2f} - significant market disruption",
+                severity=0.85,
+                probability=0.8,
+                source_indicator="STLFSI4",
+            ))
+        elif stlfsi.current_value >= 0.0:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Above-Normal Financial Stress",
+                description=f"Financial stress index at {stlfsi.current_value:.2f} - above historical average",
+                severity=0.5,
+                probability=0.6,
+                source_indicator="STLFSI4",
+            ))
+
+    # VIX (fear gauge)
+    vix = by_id.get("VIXCLS") or by_name.get("vix volatility index")
+    if vix:
+        if vix.current_value >= 35:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Extreme Market Fear",
+                description=f"VIX at {vix.current_value:.0f} - significant investor anxiety",
+                severity=0.8,
+                probability=0.75,
+                source_indicator="VIXCLS",
+            ))
+        elif vix.current_value >= config.vix_high:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Elevated Volatility",
+                description=f"VIX at {vix.current_value:.0f} - market uncertainty elevated",
+                severity=0.55,
+                probability=0.65,
+                source_indicator="VIXCLS",
+            ))
+
+    # TED spread (interbank lending stress)
+    ted = by_id.get("TEDRATE") or by_name.get("ted spread")
+    if ted:
+        if ted.current_value >= 1.0:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Banking Sector Stress",
+                description=f"TED spread at {ted.current_value:.2f}% - interbank lending concerns",
+                severity=0.8,
+                probability=0.75,
+                source_indicator="TEDRATE",
+            ))
+        elif ted.current_value >= 0.5:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Elevated TED Spread",
+                description=f"TED spread at {ted.current_value:.2f}% - credit market tightening",
+                severity=0.5,
+                probability=0.6,
+                source_indicator="TEDRATE",
+            ))
+
+    return risks
+
+
+def _evaluate_inflation_risk(
+    by_id: dict,
+    by_name: dict,
+    config: ScoringConfig,
+) -> list[Risk]:
+    """Evaluate inflation and monetary policy risks."""
+    risks = []
+
+    # CPI inflation (YoY rate)
+    cpi = by_id.get("CPIAUCSL") or by_name.get("cpi (inflation)")
+    if cpi:
+        inflation_rate = cpi.current_value
+        if inflation_rate > config.inflation_high:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Elevated Inflation",
+                description=f"CPI at {inflation_rate:.1f}% YoY - above Fed's 2% target, policy may stay restrictive",
+                severity=0.7,
+                probability=0.75,
+                source_indicator="CPIAUCSL",
+            ))
+        elif inflation_rate > 3.0:
+            if cpi.trend == Trend.RISING:
+                risks.append(Risk(
+                    category=RiskCategory.MACRO,
+                    name="Rising Inflation",
+                    description=f"Inflation at {inflation_rate:.1f}% and rising - Fed may maintain restrictive policy",
+                    severity=0.6,
+                    probability=0.7,
+                    source_indicator="CPIAUCSL",
+                ))
+            else:
+                risks.append(Risk(
+                    category=RiskCategory.MACRO,
+                    name="Above-Target Inflation",
+                    description=f"Inflation at {inflation_rate:.1f}% YoY remains above Fed's 2% target",
+                    severity=0.5,
+                    probability=0.65,
+                    source_indicator="CPIAUCSL",
+                ))
+        elif inflation_rate > 2.5:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Sticky Inflation",
+                description=f"Inflation at {inflation_rate:.1f}% YoY, slightly above Fed's 2% target",
+                severity=0.3,
+                probability=0.5,
+                source_indicator="CPIAUCSL",
+            ))
+
+    # Inflation expectations (breakeven rate)
+    infl_exp = by_id.get("T5YIE") or by_name.get("5-year inflation expectations")
+    if infl_exp and infl_exp.current_value >= 3.0:
+        risks.append(Risk(
+            category=RiskCategory.MACRO,
+            name="Unanchored Inflation Expectations",
+            description=f"5-year breakeven at {infl_exp.current_value:.1f}% - expectations above target",
+            severity=0.6,
+            probability=0.65,
+            source_indicator="T5YIE",
+        ))
+
+    # Fed Funds rate
+    fed = by_id.get("FEDFUNDS") or by_name.get("federal funds rate")
+    if fed:
+        if fed.current_value > 5.0:
+            if fed.trend == Trend.RISING:
+                risks.append(Risk(
+                    category=RiskCategory.MACRO,
+                    name="Rising Interest Rates",
+                    description="Higher rates increase borrowing costs and reduce equity valuations",
+                    severity=0.7,
+                    probability=0.75,
+                    source_indicator="FEDFUNDS",
+                ))
+            else:
+                risks.append(Risk(
+                    category=RiskCategory.MACRO,
+                    name="Elevated Interest Rates",
+                    description=f"Fed funds rate at {fed.current_value:.2f}% restricts economic growth",
+                    severity=0.6,
+                    probability=0.7,
+                    source_indicator="FEDFUNDS",
+                ))
+        elif fed.trend == Trend.RISING:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Rising Interest Rates",
+                description="Higher rates increase borrowing costs and reduce equity valuations",
+                severity=0.5,
+                probability=0.7,
+                source_indicator="FEDFUNDS",
+            ))
+
+    return risks
+
+
+def _evaluate_labor_risk(
+    by_id: dict,
+    by_name: dict,
+    config: ScoringConfig,
+) -> list[Risk]:
+    """Evaluate labor market risks."""
+    risks = []
+
+    # Unemployment rate
     unemp = by_id.get("UNRATE") or by_name.get("unemployment rate")
     if unemp:
-        # Flag if unemployment is elevated (>4.0%) or rising sharply
         if unemp.current_value > config.unemployment_high:
             risks.append(Risk(
                 category=RiskCategory.MACRO,
@@ -513,122 +941,129 @@ def identify_headwinds(
                 source_indicator="UNRATE",
             ))
 
-    # Check inflation (now using YoY rate, not index value)
-    cpi = by_id.get("CPIAUCSL") or by_name.get("cpi (inflation)")
-    if cpi:
-        inflation_rate = cpi.current_value  # Now this is YoY % change
-        # Flag if inflation is elevated (>3.0%) or rising
-        if inflation_rate > config.inflation_high:
+    # Initial jobless claims (real-time layoff signal)
+    # FRED ICSA returns actual count (e.g., 208000 = 208,000 claims)
+    claims = by_id.get("ICSA") or by_name.get("initial jobless claims")
+    if claims:
+        # Value is actual count, 300000 = 300k claims threshold
+        claims_k = claims.current_value / 1000  # Convert to thousands for display
+        if claims.current_value >= 300000:  # 300k+ claims
             risks.append(Risk(
                 category=RiskCategory.MACRO,
-                name="Elevated Inflation",
-                description=f"Inflation at {inflation_rate:.1f}% YoY, above Fed's 2% target - policy may stay restrictive",
+                name="Elevated Layoffs",
+                description=f"Initial claims at {claims_k:.0f}k - significant job losses",
                 severity=0.7,
                 probability=0.75,
-                source_indicator="CPIAUCSL",
+                source_indicator="ICSA",
             ))
-        elif inflation_rate > 3.0:
-            if cpi.trend == Trend.RISING:
-                risks.append(Risk(
-                    category=RiskCategory.MACRO,
-                    name="Rising Inflation",
-                    description=f"Inflation at {inflation_rate:.1f}% and rising - Fed may maintain restrictive policy",
-                    severity=0.6,
-                    probability=0.7,
-                    source_indicator="CPIAUCSL",
-                ))
-            else:
-                # Even stable inflation above 3% is a risk
-                risks.append(Risk(
-                    category=RiskCategory.MACRO,
-                    name="Above-Target Inflation",
-                    description=f"Inflation at {inflation_rate:.1f}% YoY remains above Fed's 2% target",
-                    severity=0.5,
-                    probability=0.65,
-                    source_indicator="CPIAUCSL",
-                ))
-        elif inflation_rate > 2.5:
-            # Inflation slightly above target, minor risk
+        elif claims.current_value >= 250000:  # 250k+ claims
             risks.append(Risk(
                 category=RiskCategory.MACRO,
-                name="Sticky Inflation",
-                description=f"Inflation at {inflation_rate:.1f}% YoY, slightly above Fed's 2% target",
-                severity=0.3,
-                probability=0.5,
-                source_indicator="CPIAUCSL",
-            ))
-
-    # Check Fed Funds rate trend
-    fed = by_id.get("FEDFUNDS") or by_name.get("federal funds rate")
-    if fed:
-        # Flag if rates are high (>5%) or rising
-        if fed.current_value > 5.0:
-            if fed.trend == Trend.RISING:
-                risks.append(Risk(
-                    category=RiskCategory.MACRO,
-                    name="Rising Interest Rates",
-                    description="Higher rates increase borrowing costs and reduce equity valuations",
-                    severity=0.7,
-                    probability=0.75,
-                    source_indicator="FEDFUNDS",
-                ))
-            else:
-                # Even stable high rates are a risk
-                risks.append(Risk(
-                    category=RiskCategory.MACRO,
-                    name="Elevated Interest Rates",
-                    description=f"Fed funds rate at {fed.current_value}% restricts economic growth",
-                    severity=0.6,
-                    probability=0.7,
-                    source_indicator="FEDFUNDS",
-                ))
-        elif fed.trend == Trend.RISING:
-            risks.append(Risk(
-                category=RiskCategory.MACRO,
-                name="Rising Interest Rates",
-                description="Higher rates increase borrowing costs and reduce equity valuations",
+                name="Rising Jobless Claims",
+                description=f"Initial claims at {claims_k:.0f}k - labor market weakening",
                 severity=0.5,
-                probability=0.7,
-                source_indicator="FEDFUNDS",
+                probability=0.6,
+                source_indicator="ICSA",
             ))
 
-    # Check yield curve (10Y-2Y spread)
-    spread = by_id.get("T10Y2Y") or by_name.get("10y-2y treasury spread")
-    if spread and spread.current_value < 0:
+    # Job openings rate (labor demand)
+    jolt = by_id.get("JTSJOR") or by_name.get("job openings rate")
+    if jolt and jolt.current_value < 4.0:  # Below normal
         risks.append(Risk(
             category=RiskCategory.MACRO,
-            name="Inverted Yield Curve",
-            description="Yield curve inversion historically precedes recessions",
-            severity=0.8,
+            name="Weak Labor Demand",
+            description=f"Job openings rate at {jolt.current_value:.1f}% - employer demand softening",
+            severity=0.5,
             probability=0.6,
-            source_indicator="T10Y2Y",
+            source_indicator="JTSJOR",
         ))
 
-    # Check consumer sentiment
+    # Consumer sentiment (leading indicator of spending)
     sentiment = by_id.get("UMCSENT") or by_name.get("consumer sentiment")
     if sentiment and sentiment.current_value < 70:
         risks.append(Risk(
             category=RiskCategory.MACRO,
             name="Weak Consumer Sentiment",
-            description="Low consumer confidence may reduce spending",
+            description=f"Consumer sentiment at {sentiment.current_value:.0f} - may reduce spending",
             severity=0.5,
             probability=0.65,
             source_indicator="UMCSENT",
         ))
 
-    # Check GDP growth trend
+    return risks
+
+
+def _evaluate_valuation_risk(
+    by_id: dict,
+    by_name: dict,
+    config: ScoringConfig,
+) -> list[Risk]:
+    """Evaluate market valuation risks (Buffett indicator)."""
+    risks = []
+
+    # Wilshire 5000 (for Buffett indicator calculation)
+    # Note: Full Buffett indicator requires Wilshire/GDP ratio
+    # We track Wilshire 5000 trend as a proxy
+    wilshire = by_id.get("WILL5000PR") or by_name.get("wilshire 5000 price index")
+    # GDP for Buffett indicator ratio
     gdp = by_id.get("GDP") or by_name.get("gross domestic product")
-    if gdp and gdp.trend == Trend.FALLING:
+
+    # Calculate Buffett indicator if both available
+    # Wilshire 5000 is in billions when converted from index
+    # This is a simplified calculation - actual requires total market cap
+    if wilshire and gdp and gdp.current_value > 0:
+        # Rough Buffett indicator approximation
+        # Wilshire 5000 price index roughly tracks total market cap in trillions
+        # We need to compare market cap to GDP
+        # Note: This is illustrative - real calc needs total market cap data
+        pass  # TODO: Add when we have proper market cap data
+
+    return risks
+
+
+def _evaluate_global_risk(
+    by_id: dict,
+    by_name: dict,
+    config: ScoringConfig,
+) -> list[Risk]:
+    """Evaluate global and currency risks."""
+    risks = []
+
+    # Dollar index strength (strong dollar hurts exports and EM)
+    dxy = by_id.get("DTWEXBGS") or by_name.get("trade weighted dollar index")
+    if dxy:
+        if dxy.current_value >= 115:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Dollar Strength",
+                description=f"Dollar index at {dxy.current_value:.0f} - pressures multinational earnings and EM",
+                severity=0.6,
+                probability=0.7,
+                source_indicator="DTWEXBGS",
+            ))
+        elif dxy.current_value >= 110 and dxy.trend == Trend.RISING:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Rising Dollar",
+                description=f"Dollar index at {dxy.current_value:.0f} and rising - headwind for exporters",
+                severity=0.45,
+                probability=0.6,
+                source_indicator="DTWEXBGS",
+            ))
+
+    # Trade balance (widening deficit)
+    trade = by_id.get("BOPGSTB") or by_name.get("trade balance")
+    if trade and trade.current_value < -80000 and trade.trend == Trend.FALLING:
         risks.append(Risk(
             category=RiskCategory.MACRO,
-            name="Slowing GDP Growth",
-            description="Declining GDP growth indicates economic slowdown",
-            severity=0.7,
-            probability=0.7,
-            source_indicator="GDP",
+            name="Widening Trade Deficit",
+            description=f"Trade deficit at ${abs(trade.current_value)/1000:.0f}B and widening",
+            severity=0.4,
+            probability=0.55,
+            source_indicator="BOPGSTB",
         ))
 
-    return sorted(risks, key=lambda r: r.risk_score, reverse=True)
+    return risks
 
 
 def identify_stock_risks(
