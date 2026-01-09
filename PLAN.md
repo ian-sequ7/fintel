@@ -296,3 +296,214 @@ Phase 1 is already complete (existing caching/rate limiting).
 - **Data Freshness**: Cache aggressively, background refresh
 - **Partial Failures**: Continue on single-ticker failures (already implemented)
 - **Memory**: Stream large datasets, don't load all 500 stocks at once
+
+---
+
+# Phase 5: Comprehensive Macro Risk Analysis Enhancement
+
+**STATUS: COMPLETE** ✓
+
+## Overview
+
+Enhance the macro analysis page to display a comprehensive, big-picture view of major macro risks. Currently the page shows ~6 indicators with 0 active risks. Goal: expand to 8 well-organized risk categories covering credit, housing, recession probability, financial stress, and market valuation.
+
+## Current State
+
+**Location:** `frontend/src/pages/macro.astro`
+**Data Source:** `frontend/src/data/report.json` → `macro.risks[]` (currently empty)
+**Backend:** `domain/analysis.py` → `identify_headwinds()` function
+**Data Adapter:** `adapters/fred.py` (FRED API integration)
+
+**Current Indicators (6):**
+- Unemployment (UNRATE)
+- Inflation/CPI (CPIAUCSL)
+- Fed Funds Rate (FEDFUNDS)
+- Yield Curve (T10Y2Y)
+- Consumer Sentiment (UMCSENT)
+- GDP growth
+
+**Problem:** Only 6 indicators, risks array returning empty, missing critical categories like credit bubble, housing stress, and market valuation.
+
+---
+
+## Proposed Risk Categories (8)
+
+### 1. Credit & Debt Risk
+| Indicator | FRED Series | Threshold | Why It Matters |
+|-----------|-------------|-----------|----------------|
+| HY Credit Spread | BAMLH0A0HYM2 | >500bps elevated | Corporate distress signal |
+| IG Credit Spread | BAMLC0A4CBBB | >200bps elevated | Investment-grade stress |
+| Consumer Delinquency | DRCCLACBS | >3% stress | Consumer credit health |
+
+### 2. Housing & Mortgage Risk
+| Indicator | FRED Series | Threshold | Why It Matters |
+|-----------|-------------|-----------|----------------|
+| 30Y Mortgage Rate | MORTGAGE30US | >7% stress | Affordability crisis |
+| Mortgage Delinquency | DRSFRMACBS | >2% elevated | Housing market stress |
+| Home Price YoY | CSUSHPINSA | >10% or <0% | Bubble/crash signal |
+
+### 3. Recession Probability
+| Indicator | FRED Series | Threshold | Why It Matters |
+|-----------|-------------|-----------|----------------|
+| Yield Curve 10Y-2Y | T10Y2Y | <0 inverted | 87% recession accuracy |
+| Yield Curve 10Y-3M | T10Y3M | <0 inverted | Higher accuracy |
+| Sahm Rule | SAHMREALTIME | >0.5 triggered | Real-time recession signal |
+| NY Fed Probability | RECPROUSM156N | >30% elevated | Fed recession model |
+
+### 4. Financial Stress
+| Indicator | FRED Series | Threshold | Why It Matters |
+|-----------|-------------|-----------|----------------|
+| St. Louis Fed FSI | STLFSI4 | >0 above-normal | Composite stress index |
+| VIX | VIXCLS | >25 elevated | Market fear gauge |
+| TED Spread | TEDRATE | >0.5% stress | Interbank lending stress |
+
+### 5. Inflation Risk (enhanced)
+| Indicator | FRED Series | Threshold | Why It Matters |
+|-----------|-------------|-----------|----------------|
+| CPI YoY | CPIAUCSL | >3% elevated | Core inflation |
+| PCE YoY | PCEPI | >2.5% above target | Fed preferred measure |
+| Inflation Expectations | T5YIE | >3% unanchored | Market expectations |
+
+### 6. Labor Market Risk (enhanced)
+| Indicator | FRED Series | Threshold | Why It Matters |
+|-----------|-------------|-----------|----------------|
+| Unemployment | UNRATE | >5% elevated | Job market health |
+| Initial Claims | ICSA | >250k weakening | Real-time layoff signal |
+| Job Openings Ratio | JTSJOR | <1.2 slack | Labor demand signal |
+
+### 7. Market Valuation Risk
+| Indicator | Source | Threshold | Why It Matters |
+|-----------|--------|-----------|----------------|
+| Buffett Indicator | FRED WILL5000/GDP | >150% bubble | Market cap vs GDP |
+| (CAPE optional) | Shiller | >30 expensive | Long-term valuation |
+
+### 8. Global & Currency Risk
+| Indicator | FRED Series | Threshold | Why It Matters |
+|-----------|-------------|-----------|----------------|
+| Dollar Index | DTWEXBGS | >110 strong | EM/export pressure |
+| Trade Balance | BOPGSTB | Widening trend | Current account risk |
+
+---
+
+## Implementation Phases
+
+### Phase 5.1: Expand FRED Data Fetching (S)
+**Files:** `adapters/fred.py`
+**Done When:**
+- [ ] FredAdapter fetches all new FRED series listed above
+- [ ] Unit tests pass for each series
+- [ ] Graceful handling of missing data
+
+**New Series to Add:**
+```python
+# Credit
+"BAMLH0A0HYM2", "BAMLC0A4CBBB", "DRCCLACBS",
+# Housing
+"MORTGAGE30US", "DRSFRMACBS",  # CSUSHPINSA already added
+# Recession
+"T10Y3M", "SAHMREALTIME", "RECPROUSM156N",
+# Stress
+"STLFSI4", "VIXCLS", "TEDRATE",
+# Inflation
+"PCEPI", "T5YIE",
+# Labor
+"ICSA", "JTSJOR",
+# Global
+"DTWEXBGS", "BOPGSTB"
+```
+
+### Phase 5.2: Risk Identification Logic (M)
+**Files:** `domain/analysis.py`
+**Done When:**
+- [ ] `identify_headwinds()` evaluates all 8 risk categories
+- [ ] Each risk has: name, description, severity (0-1), category
+- [ ] Thresholds configurable in pipeline
+- [ ] Unit tests for each risk condition
+
+**New Functions:**
+```python
+def _evaluate_credit_risk(indicators: dict) -> list[Risk]
+def _evaluate_housing_risk(indicators: dict) -> list[Risk]
+def _evaluate_recession_risk(indicators: dict) -> list[Risk]
+def _evaluate_stress_risk(indicators: dict) -> list[Risk]
+def _evaluate_valuation_risk(indicators: dict) -> list[Risk]
+def _evaluate_global_risk(indicators: dict) -> list[Risk]
+```
+
+### Phase 5.3: Buffett Indicator Calculation (S)
+**Files:** `domain/analysis.py` or new `domain/valuation.py`
+**Done When:**
+- [ ] Buffett indicator calculated from FRED WILL5000/GDP
+- [ ] Returns market cap to GDP ratio as percentage
+- [ ] Integrated into risk evaluation
+
+### Phase 5.4: Frontend Risk Display (M)
+**Files:** `frontend/src/pages/macro.astro`, `frontend/src/components/composed/RiskCard.astro`
+**Done When:**
+- [ ] Risks grouped by category on macro page
+- [ ] Visual severity indicators (color-coded badges)
+- [ ] Composite risk score (1-10) displayed
+- [ ] Executive summary auto-generated
+- [ ] No console errors, responsive design
+
+### Phase 5.5: Testing & Validation (S)
+**Done When:**
+- [ ] Backend unit tests for risk evaluation
+- [ ] Integration test: pipeline generates risks from data
+- [ ] Frontend visual inspection
+- [ ] `./scripts/refresh_data.sh` populates risks
+
+---
+
+## Parallel Execution Plan
+
+```
+Group 1 (Parallel):
+├── Phase 5.1: FRED data fetching
+└── Phase 5.3: Buffett indicator
+
+Group 2 (After Group 1):
+└── Phase 5.2: Risk identification logic
+
+Group 3 (After Phase 5.2):
+└── Phase 5.4: Frontend display
+
+Group 4 (After Group 3):
+└── Phase 5.5: Testing
+```
+
+---
+
+## Decision Points
+
+1. **CAPE Ratio:** Skip for now. Buffett indicator provides similar valuation insight and uses existing FRED data.
+
+2. **Risk Severity Scale:** Use 0-1 float internally, map to low/medium/high for display:
+   - `< 0.4` → low (green)
+   - `0.4 - 0.7` → medium (yellow)
+   - `> 0.7` → high (red)
+
+---
+
+## E2E Success Criteria
+
+1. Run `./scripts/refresh_data.sh`
+2. `report.json` contains non-empty `macro.risks[]`
+3. Visit `localhost:4321/macro`
+4. See 8 risk categories with active risks
+5. Composite risk score reflects current conditions
+6. Page loads <2s, no console errors
+
+---
+
+## Complexity Summary
+
+| Phase | Complexity | Notes |
+|-------|------------|-------|
+| 5.1 | S | Add FRED series IDs |
+| 5.2 | M | Multiple evaluation functions |
+| 5.3 | S | Simple calculation |
+| 5.4 | M | New components, layout |
+| 5.5 | S | Tests for existing patterns |
+
+**Total: Medium complexity, no decomposition needed.**
