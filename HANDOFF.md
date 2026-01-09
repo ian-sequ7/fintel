@@ -3,95 +3,126 @@
 ## Current Work
 
 ### Goal
-Implement Daily Market Briefing page (`/briefing`) for Fintel - a morning summary with economic calendar events and market news.
+Daily Market Briefing page (`/briefing`) for Fintel - a Bloomberg-style morning summary with economic calendar, pre-market movers, earnings, and news with impact scoring.
 
 ### Context
-Fintel is a financial intelligence dashboard with stock picks, smart money tracking, macro indicators, news, and portfolio features. The briefing page adds a morning summary combining economic calendar + news.
+Fintel is a financial intelligence dashboard with stock picks, smart money tracking, macro indicators, news, and portfolio features. The briefing page provides a morning summary combining multiple data sources.
 
 ### Progress
 
-**Feature: Daily Market Briefing - COMPLETE (news-only mode)**
+**Phase 1: Core Briefing Infrastructure - COMPLETE**
 
 | Subtask | Status |
 |---------|--------|
 | Create `adapters/calendar.py` - Finnhub calendar adapter | complete |
 | Create `domain/briefing.py` - domain models + generation | complete |
-| Update `adapters/__init__.py` exports | complete |
-| Update `domain/__init__.py` exports | complete |
+| Update exports in `adapters/__init__.py`, `domain/__init__.py` | complete |
 | Update `frontend/src/data/types.ts` - briefing types | complete |
-| Update `frontend/src/data/report.ts` - getBriefingData() | complete |
 | Create `frontend/src/pages/briefing.astro` | complete |
 | Update `Header.astro` - add nav link | complete |
 | Update `scripts/generate_frontend_data.py` - pipeline integration | complete |
-| Add `python-dotenv` for .env loading | complete |
-| End-to-end test | tests passed |
+
+**Phase 2A: Pre-Market Movers - COMPLETE**
+
+| Subtask | Status |
+|---------|--------|
+| Add `get_premarket_movers()` to Yahoo adapter | complete |
+| Add `PreMarketMover` model to `domain/briefing.py` | complete |
+| Update `DailyBriefing` with `premarket_gainers`, `premarket_losers` | complete |
+| Update `briefing_to_dict()` serialization | complete |
+| Add `PreMarketMover` TypeScript type | complete |
+| Update `briefing.astro` with pre-market section | complete |
+| Add `to_camel_case()` conversion for frontend compatibility | complete |
+
+**Phase 2B: Enhanced Economic Calendar - COMPLETE**
+
+| Subtask | Status |
+|---------|--------|
+| Add hybrid calendar approach (FRED + Finnhub earnings) | complete |
+| Add `EarningsAnnouncement` model to `domain/briefing.py` | complete |
+| Update `DailyBriefing` with `earnings_today`, `earnings_before_open`, `earnings_after_close` | complete |
+| Add `EarningsAnnouncement` TypeScript type | complete |
+| Update `briefing.astro` with earnings section | complete |
+| Add FRED API key support to `config/schema.py` and `config/loader.py` | complete |
+
+**Phase 2C: News Impact Scoring & Tagging - COMPLETE**
+
+| Subtask | Status |
+|---------|--------|
+| Add `NewsPriority` enum to `domain/briefing.py` | complete |
+| Update `BriefingNewsItem` with priority, relevance_score, keywords, tickers | complete |
+| Implement scoring in `_observation_to_news()` using existing `domain/news.py` functions | complete |
+| Update `briefing_to_dict()` to serialize new fields | complete |
+| Add `NewsPriority`, `NewsImpactCategory` TypeScript types | complete |
+| Update `briefing.astro` with priority badges (ALERT/HIGH tags) | complete |
 
 ### Key Files Created/Modified
 
 **Backend (Python):**
-- `adapters/calendar.py` (NEW) - Finnhub economic calendar adapter with `get_todays_events()`, `get_week_events()`, `get_high_impact_events()`
-- `domain/briefing.py` (NEW) - `EventImpact`, `EconomicEvent`, `BriefingNewsItem`, `DailyBriefing` models + `generate_daily_briefing()`, `briefing_to_dict()`
-- `scripts/generate_frontend_data.py` - Added dotenv loading, `fetch_briefing_data()` function
-- `.env` (NEW) - Contains `FINNHUB_API_KEY`
-- `requirements.txt` - Added `python-dotenv>=1.0.0`
+- `adapters/calendar.py` - Hybrid calendar: FRED release dates + Finnhub earnings
+- `adapters/yahoo.py` - Added `get_premarket_movers()` for top gainers/losers
+- `domain/briefing.py` - Full domain models: `EconomicEvent`, `PreMarketMover`, `EarningsAnnouncement`, `BriefingNewsItem`, `DailyBriefing`, `NewsPriority`
+- `config/schema.py` - Added `fred` API key field
+- `config/loader.py` - Added `FINTEL_FRED_KEY` environment loading
+- `scripts/generate_frontend_data.py` - Added `fetch_briefing_data()`, `to_camel_case()` conversion
 
 **Frontend (Astro/TS):**
-- `frontend/src/pages/briefing.astro` (NEW) - Full briefing page with calendar, news sections
-- `frontend/src/data/types.ts` - Added `EventImpact`, `EconomicEvent`, `BriefingNewsItem`, `DailyBriefing` types
-- `frontend/src/data/report.ts` - Added `getBriefingData()`, `formatTimeUntil()`, `formatEventTime()`
-- `frontend/src/components/sections/Header.astro` - Added "Briefing" to nav
+- `frontend/src/pages/briefing.astro` - Full briefing page with all sections
+- `frontend/src/data/types.ts` - Added all briefing types including `NewsPriority`, `NewsImpactCategory`
+- `frontend/src/data/report.ts` - Added `getBriefingData()`, helper functions
 
-### Decisions Made
+### Key Implementation Details
 
-1. **Finnhub for calendar API** - Selected for its economic calendar endpoint, though discovered it requires paid subscription
-2. **User timezone** - Display times in user's local timezone (browser handles this)
-3. **US-only events** - v1 filters to US economic events only
-4. **Graceful degradation** - Briefing works with just news if calendar unavailable
-5. **News categorization** - Auto-categorize by keywords: fed, earnings, geopolitical, market
-6. **Pre-market movers** - Deferred to Phase 2
+**Pre-Market Movers:**
+- Uses Yahoo Finance `screener/predefined/saved` endpoint
+- Returns top 10 gainers and top 10 losers
+- Fetches company names via batch quotes
+- snake_case → camelCase conversion for frontend
 
-### Important Discovery: Finnhub Calendar Requires Paid Plan
+**Earnings Calendar:**
+- Finnhub FREE tier `/calendar/ipo` and `/calendar/earnings` work (unlike `/calendar/economic` which is PAID)
+- Filters to today's earnings
+- Splits by timing: BMO (before open), AMC (after close)
 
-The Finnhub `/calendar/economic` endpoint returns **403 Forbidden** on free tier. Current implementation gracefully degrades to news-only mode.
-
-**Alternatives for calendar data:**
-1. Upgrade Finnhub (~$30/month for economic data)
-2. [Trading Economics API](https://tradingeconomics.com/api/calendar.aspx)
-3. [FinanceFlowAPI](https://financeflowapi.com/world_economic_calendar)
-4. Web scraping (not recommended)
-
-### Bug Fixes During Implementation
-
-1. **Pydantic field name clash** - `date: date = Field(...)` caused error. Fixed by importing `from datetime import date as date_type`
-2. **Timezone-aware datetime sorting** - RSS feeds have mixed tz-aware/naive timestamps. Fixed with `_sort_key()` normalizer in `generate_daily_briefing()`
-3. **Missing dotenv loading** - Script wasn't loading `.env`. Added `python-dotenv` and explicit load at script start
+**News Impact Scoring:**
+- Relevance = (source_credibility × 0.3) + (keyword_score × 0.5) + (has_tickers × 0.2)
+- Priority levels: CRITICAL (fed/crash/rate keywords or relevance ≥ 0.8), HIGH (earnings/merger keywords or relevance ≥ 0.6), MEDIUM, LOW
+- Display: ALERT badge (red) for critical, HIGH badge (yellow) for high priority
 
 ### Current State
 
 - **Briefing page working** at http://localhost:4321/briefing
-- Shows 4 market news + 1 fed news (news categorization working)
-- Calendar section shows "No economic events scheduled" (paid API required)
-- Build passes, data generation pipeline works
+- **Pre-market movers** showing 10 gainers + 10 losers with % changes
+- **Earnings section** showing 30 earnings today (BMO/AMC split)
+- **News with scoring** showing priority badges and relevance keywords
+- **Economic events** showing "No events" (FRED key not configured, Finnhub economic is PAID)
+- Build passes, pipeline generates data successfully
 
-### Next Steps (if continuing this feature)
+### API Key Status
 
-1. **Add calendar data** - Either upgrade Finnhub or integrate alternative API
-2. **Pre-market movers** - Phase 2: Add section showing overnight/pre-market price moves
-3. **Earnings calendar** - Could add upcoming earnings from existing data
-4. **User preferences** - Let user choose news categories to highlight
+| API | Status | Notes |
+|-----|--------|-------|
+| Finnhub | Configured | FREE tier: earnings/IPO work, economic calendar 403 |
+| FRED | Not configured | Add `FINTEL_FRED_KEY` for release dates |
+| Yahoo Finance | No key needed | Pre-market movers work |
 
-### Uncommitted Changes
+### Next Steps (if continuing)
 
-The briefing feature implementation is complete but not yet committed. Files changed:
-- adapters/calendar.py (new)
-- domain/briefing.py (new)
-- .env (new - contains API key, gitignore it)
-- requirements.txt (modified)
-- scripts/generate_frontend_data.py (modified)
-- frontend/src/data/types.ts (modified)
-- frontend/src/data/report.ts (modified)
-- frontend/src/pages/briefing.astro (new)
-- frontend/src/components/sections/Header.astro (modified)
+1. **Historical comparison** - "last NFP beat → SPY +1.2%" feature from SPEC.md
+2. **FRED API integration** - Configure key for economic release dates
+3. **Fed speech calendar** - Add upcoming Fed speeches
+4. **User preferences** - News category filters, watchlist integration
+
+### Bug Fixes During Implementation
+
+**Phase 1:**
+1. **Pydantic field name clash** - `date: date = Field(...)` shadowed type. Fixed with `from datetime import date as date_type`
+2. **Timezone-aware datetime sorting** - RSS feeds have mixed tz-aware/naive. Fixed with normalizer in sort key
+3. **Missing dotenv loading** - Added `python-dotenv` and explicit load
+
+**Phase 2:**
+4. **ApiKeysConfig missing `fred` attribute** - Config schema didn't have FRED key. Fixed by adding to `config/schema.py` and `config/loader.py`
+5. **Pre-market movers snake_case vs camelCase** - Yahoo adapter returned `company_name`, `change_percent`, etc. but frontend expected camelCase. Fixed with `to_camel_case()` conversion function
 
 ---
 
@@ -101,33 +132,31 @@ The briefing feature implementation is complete but not yet committed. Files cha
 - f7a38b7: fix: integrate SEC 13F adapter for hedge fund holdings
 - 5ea1816: feat: Phase 4 - Add pagination support to pipeline and presentation layer
 - 565a821: feat: Phase 3 - Expanded data sources
-- 8988333: docs: mark Phase 2 as complete (S&P 500 already implemented)
-- 61fcf66: chore: add requirements.txt for GitHub Actions
-- 0561129: chore: schedule data refresh at market open and close
-- b33d806: fix: use Python 3.12 for PEP 695 type syntax
-- 588bf89: fix: grant write permissions to workflow for auto-commit
 
 ---
 
 ## Anti-Patterns
 
 ### 1. Finnhub Economic Calendar Free Tier Assumption
-**Problem:** Assumed Finnhub economic calendar was free (docs say "free" but calendar endpoint requires paid plan)
-**Symptom:** HTTP 403 Forbidden from `/calendar/economic` endpoint
-**Resolution:** Added graceful degradation - briefing generates with news-only when calendar fails
-**Prevention:** Always test API endpoints before full implementation; check pricing pages for endpoint-specific restrictions
+**Problem:** Assumed Finnhub economic calendar was free (docs say "free" but `/calendar/economic` requires paid plan)
+**Symptom:** HTTP 403 Forbidden
+**Resolution:** Graceful degradation to news-only; use earnings calendar (FREE) instead
+**Prevention:** Always test API endpoints; check pricing for endpoint-specific restrictions
 
 ### 2. Pydantic Field Name Shadowing Type
-**Problem:** Used `date: date = Field(...)` which shadows the type with the field name
-**Symptom:** `PydanticUserError: Error when building FieldInfo from annotated attribute`
+**Problem:** `date: date = Field(...)` shadows the type with the field name
+**Symptom:** `PydanticUserError: Error when building FieldInfo`
 **Resolution:** Import as alias: `from datetime import date as date_type`
-**Prevention:** Avoid naming Pydantic fields same as their types
 
-### 3. Mixed Timezone Datetime Comparison
-**Problem:** RSS feeds return datetimes with inconsistent timezone awareness
-**Symptom:** `TypeError: can't compare offset-naive and offset-aware datetimes`
-**Resolution:** Normalize in sort key: `ts.replace(tzinfo=None)` for tz-aware timestamps
-**Prevention:** Always normalize datetimes at ingestion boundaries
+### 3. Config Schema Mismatch
+**Problem:** Added new API key to adapter but not to config schema
+**Symptom:** `AttributeError: 'ApiKeysConfig' object has no attribute 'fred'`
+**Resolution:** Add field to both `config/schema.py` (Pydantic model) and `config/loader.py` (env loading)
+
+### 4. Backend/Frontend Case Convention Mismatch
+**Problem:** Python adapters return snake_case, TypeScript expects camelCase
+**Symptom:** Frontend shows undefined values
+**Resolution:** Add conversion function at serialization boundary (`to_camel_case()`)
 
 ---
 
@@ -135,9 +164,7 @@ The briefing feature implementation is complete but not yet committed. Files cha
 
 | Hash | Pattern | Resolution |
 |------|---------|------------|
-| 61fcf66 | missing requirements.txt | `git show 61fcf66` - created file |
-| b33d806 | Python 3.11 vs 3.12 | `git show b33d806` - version bump |
-| 588bf89 | push permissions | `git show 588bf89` - added permissions block |
-| (current) | Finnhub calendar 403 | Graceful degradation to news-only |
-| (current) | date: date Pydantic | Use `date_type` alias |
-| (current) | Mixed tz sorting | Normalize in sort key |
+| (briefing) | Finnhub calendar 403 | Use earnings calendar (FREE) instead |
+| (briefing) | date: date Pydantic | Use `date_type` alias |
+| (briefing) | Config schema mismatch | Update both schema.py and loader.py |
+| (briefing) | snake_case/camelCase | Conversion at serialization boundary |
