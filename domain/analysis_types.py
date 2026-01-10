@@ -77,8 +77,19 @@ class StockMetrics(BaseModel):
     price_change_1w: float | None = None
     price_change_1m: float | None = None
     price_change_3m: float | None = None
+    price_change_6m: float | None = None
+    price_change_12m: float | None = None  # For 12-1 month momentum (Jegadeesh-Titman)
     volume_avg: float | None = None
     volume_current: float | None = None
+
+    # Short Interest (for Days-to-Cover signal)
+    shares_short: int | None = None
+    short_ratio: float | None = None  # DTC = shares_short / avg_daily_volume
+
+    # Quality factors (Novy-Marx, Fama-French)
+    total_assets: float | None = None
+    gross_profit: float | None = None  # For gross profitability = gross_profit / assets
+    asset_growth_yoy: float | None = None  # Negative predictor (penalize high growth)
 
     # Dividend
     dividend_yield: float | None = None
@@ -100,6 +111,39 @@ class StockMetrics(BaseModel):
         """Current volume vs average (>1 = above average)."""
         if self.volume_current and self.volume_avg and self.volume_avg > 0:
             return self.volume_current / self.volume_avg
+        return None
+
+    @property
+    def momentum_12_1(self) -> float | None:
+        """
+        Jegadeesh-Titman 12-1 month momentum.
+        Returns 12-month return minus 1-month return (skip recent month).
+        Academic evidence shows most recent month has reversal effect.
+        """
+        if self.price_change_12m is not None and self.price_change_1m is not None:
+            return self.price_change_12m - self.price_change_1m
+        return None
+
+    @property
+    def days_to_cover(self) -> float | None:
+        """
+        Days to Cover (DTC) = shares_short / avg_daily_volume.
+        Superior to simple short interest ratio (Hong et al NBER).
+        High DTC (>10) indicates crowded short with squeeze potential.
+        """
+        if self.shares_short and self.volume_avg and self.volume_avg > 0:
+            return self.shares_short / self.volume_avg
+        return None
+
+    @property
+    def gross_profitability(self) -> float | None:
+        """
+        Novy-Marx gross profitability = gross_profit / total_assets.
+        Strongest quality factor per academic research.
+        Higher is better (more profitable per unit of assets).
+        """
+        if self.gross_profit is not None and self.total_assets and self.total_assets > 0:
+            return self.gross_profit / self.total_assets
         return None
 
 

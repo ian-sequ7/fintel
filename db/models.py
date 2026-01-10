@@ -343,3 +343,53 @@ class HedgeFundHolding:
             "hold": "NO CHANGE",
         }.get(self.action, self.action.upper())
         return f"{self.ticker}: {self.shares:,} shares (${self.value:,}) - {action_str}"
+
+
+@dataclass
+class InsiderTransaction:
+    """
+    Insider transaction from SEC Form 4 filings.
+
+    Used for insider cluster detection - 3+ C-suite buys in 30-60 days
+    indicates ~7.8% annual alpha (2IQ Research).
+
+    Data source: Finnhub /stock/insider-transactions
+    """
+    id: str
+    ticker: str
+    insider_name: str
+    transaction_type: str  # buy/sell
+    shares: int  # Absolute number of shares traded
+    shares_after: Optional[int] = None  # Holdings after transaction
+    transaction_date: Optional[date] = None
+    filing_date: Optional[date] = None
+    transaction_code: str = ""  # SEC Form 4 code (P=Purchase, S=Sale)
+    transaction_price: Optional[float] = None
+    officer_title: str = ""  # CEO, CFO, etc. (if available)
+    is_c_suite: bool = False  # True for CEO, CFO, COO, CTO, etc.
+    created_at: datetime = field(default_factory=datetime.now)
+
+    @property
+    def is_buy(self) -> bool:
+        """Check if this is a purchase."""
+        return self.transaction_type == "buy"
+
+    @property
+    def is_sell(self) -> bool:
+        """Check if this is a sale."""
+        return self.transaction_type == "sell"
+
+    @property
+    def dollar_value(self) -> Optional[float]:
+        """Calculate dollar value of transaction."""
+        if self.transaction_price:
+            return self.shares * self.transaction_price
+        return None
+
+    @property
+    def summary(self) -> str:
+        """Human-readable summary."""
+        action = "bought" if self.is_buy else "sold"
+        price_str = f" @ ${self.transaction_price:.2f}" if self.transaction_price else ""
+        title_str = f" ({self.officer_title})" if self.officer_title else ""
+        return f"{self.insider_name}{title_str} {action} {self.shares:,} shares{price_str}"

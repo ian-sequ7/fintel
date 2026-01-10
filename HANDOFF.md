@@ -3,210 +3,133 @@
 ## Current Work
 
 ### Goal
-Daily Market Briefing page (`/briefing`) for Fintel - a Bloomberg-style morning summary with economic calendar, pre-market movers, earnings, and news with impact scoring.
+Improve Fintel's stock picking methodology to institutional-grade standards based on quant audit findings.
 
 ### Context
-Fintel is a financial intelligence dashboard with stock picks, smart money tracking, macro indicators, news, and portfolio features. The briefing page provides a morning summary combining multiple data sources.
+Fintel is a financial intelligence dashboard with stock picks, smart money tracking, macro indicators, news, and portfolio features. A quant audit revealed gaps between current implementation and institutional standards.
 
-### Progress
+### Implementation Status
 
-**Phase 1: Core Briefing Infrastructure - COMPLETE**
+**Completed (January 2026)**:
 
-| Subtask | Status |
-|---------|--------|
-| Create `adapters/calendar.py` - Finnhub calendar adapter | complete |
-| Create `domain/briefing.py` - domain models + generation | complete |
-| Update exports in `adapters/__init__.py`, `domain/__init__.py` | complete |
-| Update `frontend/src/data/types.ts` - briefing types | complete |
-| Create `frontend/src/pages/briefing.astro` | complete |
-| Update `Header.astro` - add nav link | complete |
-| Update `scripts/generate_frontend_data.py` - pipeline integration | complete |
+| Task | Status | Details |
+|------|--------|---------|
+| Multi-period momentum (12-1M) | ✅ DONE | `_score_momentum_12_1()` with Jegadeesh-Titman 50% weight |
+| Gross profitability | ✅ DONE | `_score_gross_profitability()` Novy-Marx factor 35% of quality |
+| Asset growth (negative) | ✅ DONE | `_score_asset_growth()` Fama-French CMA 15% of quality |
+| Days-to-Cover signal | ✅ DONE | `_score_days_to_cover()` 15% of momentum score |
+| 13F ownership changes | ✅ DONE | `_score_13f_holdings()` with fund reputation weights |
+| Sector concentration limits | ✅ DONE | `RiskOverlayConfig.max_picks_per_sector=2` |
+| Liquidity filter | ✅ DONE | `RiskOverlayConfig.min_daily_liquidity=$10M` |
+| DTC risk cap | ✅ DONE | `RiskOverlayConfig.max_days_to_cover=10` |
+| Timeframe-specific weights | ✅ DONE | `TimeframeWeights.for_short/medium/long()` |
+| Signal attribution output | ✅ DONE | `PickSummary`, `format_pick_with_attribution()` |
+| Smart money 13F scoring | ✅ DONE | `InstitutionalHolding`, `FUND_REPUTATION`, `holdings_to_institutional()` |
+| **Insider transactions** | ✅ DONE | Extended FinnhubAdapter with `/stock/insider-transactions` (free tier) |
 
-**Phase 2A: Pre-Market Movers - COMPLETE**
+**Remaining Work**:
 
-| Subtask | Status |
-|---------|--------|
-| Add `get_premarket_movers()` to Yahoo adapter | complete |
-| Add `PreMarketMover` model to `domain/briefing.py` | complete |
-| Update `DailyBriefing` with `premarket_gainers`, `premarket_losers` | complete |
-| Update `briefing_to_dict()` serialization | complete |
-| Add `PreMarketMover` TypeScript type | complete |
-| Update `briefing.astro` with pre-market section | complete |
-| Add `to_camel_case()` conversion for frontend compatibility | complete |
+| Task | Status | Notes |
+|------|--------|-------|
+| IV skew integration | not started | Requires new options adapter |
+| Earnings revision tracking | not started | Needs IBES/FactSet integration |
+| Backtest validation | not started | Validate new weights historically |
 
-**Phase 2B: Enhanced Economic Calendar - COMPLETE**
+### Insider Transactions (Completed)
 
-| Subtask | Status |
-|---------|--------|
-| Add hybrid calendar approach (FRED + Finnhub earnings) | complete |
-| Add `EarningsAnnouncement` model to `domain/briefing.py` | complete |
-| Update `DailyBriefing` with `earnings_today`, `earnings_before_open`, `earnings_after_close` | complete |
-| Add `EarningsAnnouncement` TypeScript type | complete |
-| Update `briefing.astro` with earnings section | complete |
-| Add FRED API key support to `config/schema.py` and `config/loader.py` | complete |
+**Implementation summary:**
+1. Finnhub provides `/stock/insider-transactions` on free tier
+2. Extended `FinnhubAdapter` with `get_insider_transactions(ticker, days=90)`
+3. Added `InsiderTransaction` DB model and table
+4. Created converters: `observations_to_insider_transactions()`, `db_transactions_to_insider()`
+5. Scoring logic `_score_insider_cluster()` now has data source
 
-**Phase 2C: News Impact Scoring & Tagging - COMPLETE**
+**Files modified:**
+- `adapters/finnhub.py` - Added `_fetch_insider_transactions()`, `get_insider_transactions()`
+- `db/models.py` - Added `InsiderTransaction` dataclass
+- `db/database.py` - Added `insider_transactions` table + CRUD methods
+- `domain/scoring.py` - Added converter functions for pipeline integration
 
-| Subtask | Status |
-|---------|--------|
-| Add `NewsPriority` enum to `domain/briefing.py` | complete |
-| Update `BriefingNewsItem` with priority, relevance_score, keywords, tickers | complete |
-| Implement scoring in `_observation_to_news()` using existing `domain/news.py` functions | complete |
-| Update `briefing_to_dict()` to serialize new fields | complete |
-| Add `NewsPriority`, `NewsImpactCategory` TypeScript types | complete |
-| Update `briefing.astro` with priority badges (ALERT/HIGH tags) | complete |
+### Scoring Weights (Implemented)
 
-**Phase 3: Historical Comparison - COMPLETE**
+**New weights** (in `domain/scoring.py`):
+```
+Momentum: 25% | Quality: 25% | Valuation: 20% | Growth: 15% | Analyst: 10% | Smart Money: 5%
+```
 
-| Subtask | Status |
-|---------|--------|
-| Add `SurpriseDirection`, `HistoricalReaction` models to `domain/briefing.py` | complete |
-| Add `historical_context` field to `DailyBriefing` model | complete |
-| Add `get_historical_event_reactions()` to `CalendarAdapter` | complete |
-| Add FRED series history fetching + SPY reaction calculation | complete |
-| Update `briefing_to_dict()` serialization | complete |
-| Add `SurpriseDirection`, `HistoricalReaction` TypeScript types | complete |
-| Add "Past Event Reactions" section to `briefing.astro` | complete |
-| Integrate into `generate_frontend_data.py` pipeline | complete |
-| Add more event types (Retail, Housing, PMI) | complete |
-| Show 5-day reactions alongside 1-day | complete |
+**Timeframe-Specific** (`TimeframeWeights`):
+```
+SHORT:  Momentum 35% | Quality 15% | Valuation 15% | Growth 15% | Analyst 10% | Smart Money 10%
+MEDIUM: Momentum 25% | Quality 20% | Valuation 20% | Growth 15% | Analyst 12% | Smart Money 8%
+LONG:   Momentum 10% | Quality 30% | Valuation 30% | Growth 15% | Analyst 10% | Smart Money 5%
+```
 
-**Phase 4: Portfolio Analytics - COMPLETE**
+### Key Files
 
-| Subtask | Status |
-|---------|--------|
-| Add Portfolio Beta calculation (value-weighted) | complete |
-| Add Sector Allocation breakdown with visual bars | complete |
-| Add Concentration Warnings (>20% position alert) | complete |
-| Add Position Duration tracking (days held) | complete |
-| Add Tax-Loss Harvesting identifier (negative P&L) | complete |
-| Add Holding Period tracking (short-term vs long-term) | complete |
-| Add Sharpe Ratio calculation | complete |
-| Add Mean Reversion scanner (>10% from 50-day MA) | complete |
-| Add "Insights" tab to PortfolioView | complete |
+**Scoring Algorithm** (Updated Jan 2026):
+- `domain/scoring.py` (~1900 lines) - Core scoring with institutional-grade signals
+  - `score_stock()` - Main entry point (accepts `institutional_holdings`, `insider_transactions`)
+  - `compute_momentum_score()` - 12-1M momentum, DTC, volume
+  - `compute_quality_score()` - Gross profitability, asset growth, margins
+  - `compute_smart_money_score()` - 13F holdings + insider clusters
+  - `_score_13f_holdings()` - Fund reputation-weighted institutional activity
+  - `_score_insider_cluster()` - C-suite cluster detection
+  - `apply_risk_overlay()` - Sector limits, liquidity, DTC caps
+  - `holdings_to_institutional()` - Convert DB holdings to scoring format
+  - `observations_to_insider_transactions()` - Convert Finnhub data to scoring format
+  - `db_transactions_to_insider()` - Convert DB transactions to scoring format
+  - `InstitutionalHolding`, `InsiderTransaction` - Input dataclasses
+  - `FUND_REPUTATION` - Berkshire 1.0, Bridgewater 0.9, etc.
 
-### Key Files Created/Modified
+- `domain/analysis_types.py` - `StockMetrics` with computed properties:
+  - `momentum_12_1`, `days_to_cover`, `gross_profitability`
 
-**Backend (Python):**
-- `adapters/calendar.py` - Hybrid calendar: FRED release dates + Finnhub earnings + historical reactions
-- `adapters/yahoo.py` - Added `get_premarket_movers()` for top gainers/losers
-- `domain/briefing.py` - Full domain models: `EconomicEvent`, `PreMarketMover`, `EarningsAnnouncement`, `BriefingNewsItem`, `DailyBriefing`, `NewsPriority`, `SurpriseDirection`, `HistoricalReaction`
-- `config/schema.py` - Added `fred` API key field
-- `config/loader.py` - Added `FINTEL_FRED_KEY` environment loading
-- `scripts/generate_frontend_data.py` - Added `fetch_briefing_data()`, `to_camel_case()`, historical reactions integration
+**Adapters**:
+- `adapters/finnhub.py` - Quote, profile, and **insider transactions** (Form 4 data)
+  - `get_insider_transactions(ticker, days=90)` - Fetches from Finnhub free tier
+  - `FinnhubInsiderTransaction` dataclass for typed response
+- `adapters/sec_13f.py` - 13F institutional holdings
+- `adapters/sec.py` - 8-K material event filings
 
-**Frontend (Astro/TS):**
-- `frontend/src/pages/briefing.astro` - Full briefing page with all sections including historical context
-- `frontend/src/data/types.ts` - Added all briefing types including `NewsPriority`, `NewsImpactCategory`, `SurpriseDirection`, `HistoricalReaction`
-- `frontend/src/data/report.ts` - Added `getBriefingData()`, helper functions
-- `frontend/src/components/islands/PortfolioView.tsx` - Added Insights tab with full portfolio analytics
+**Database**:
+- `db/models.py` - `InsiderTransaction` model for SEC Form 4 data
+- `db/database.py` - `insider_transactions` table with cluster detection methods:
+  - `get_insider_transactions(ticker, days)` - General query
+  - `get_c_suite_buys(ticker, days)` - Cluster detection filter
 
-### Key Implementation Details
+### Research Sources
 
-**Pre-Market Movers:**
-- Uses Yahoo Finance `screener/predefined/saved` endpoint
-- Returns top 10 gainers and top 10 losers
-- Fetches company names via batch quotes
-- snake_case → camelCase conversion for frontend
-
-**Earnings Calendar:**
-- Finnhub FREE tier `/calendar/ipo` and `/calendar/earnings` work (unlike `/calendar/economic` which is PAID)
-- Filters to today's earnings
-- Splits by timing: BMO (before open), AMC (after close)
-
-**News Impact Scoring:**
-- Relevance = (source_credibility × 0.3) + (keyword_score × 0.5) + (has_tickers × 0.2)
-- Priority levels: CRITICAL (fed/crash/rate keywords or relevance ≥ 0.8), HIGH (earnings/merger keywords or relevance ≥ 0.6), MEDIUM, LOW
-- Display: ALERT badge (red) for critical, HIGH badge (yellow) for high priority
-
-**Historical Comparison:**
-- Fetches FRED historical series data (NFP, CPI, GDP, Unemployment, Retail, Housing, PMI) via CSV endpoint (FREE)
-- Calculates SPY price reaction using Yahoo Finance historical data (1-day and 5-day)
-- Determines surprise direction: beat (actual > forecast by threshold), miss, in-line
-- Inverse metrics (CPI, Unemployment): lower is better (beat = actual < forecast)
-- Normal metrics (NFP, GDP, Retail): higher is better (beat = actual > forecast)
-- Displays "NFP beat → +1.2% (5d: +2.3%)" style cards in briefing
-- 6-month lookback for historical data
-
-**Portfolio Analytics (Insights Tab):**
-- **Portfolio Beta**: Value-weighted average of stock betas (requires >50% coverage)
-- **Sharpe Ratio**: (portfolio return - 5% risk-free) / volatility
-- **Sector Allocation**: Visual breakdown with colored progress bars
-- **Concentration Warnings**: Alert when any position >20% of portfolio
-- **Tax-Loss Harvesting**: Identifies positions with unrealized losses, shows holding period
-- **Holding Period Tracking**: Short-term (<1 year) vs long-term (>1 year) classification
-- **Mean Reversion Alerts**: Flags positions >10% from 50-day moving average
-
-### Current State
-
-- **Briefing page working** at http://localhost:4321/briefing
-- **Pre-market movers** showing 10 gainers + 10 losers with % changes
-- **Earnings section** showing 30 earnings today (BMO/AMC split)
-- **News with scoring** showing priority badges and relevance keywords
-- **Historical context** showing 7 event types with 1-day and 5-day SPY reactions
-- **Economic calendar** populated via FRED API (NFP, CPI, GDP, FOMC, etc.)
-- **Portfolio Insights tab** with beta, Sharpe, sector allocation, tax-loss harvesting, mean reversion
-- Build passes, pipeline generates data successfully
-
-### API Key Status
-
-| API | Status | Notes |
-|-----|--------|-------|
-| Finnhub | Configured | FREE tier: earnings/IPO work, economic calendar 403 |
-| FRED | Uses CSV endpoint | No key needed for historical data |
-| Yahoo Finance | No key needed | Pre-market movers + SPY reactions work |
-
-### Next Steps (if continuing)
-
-1. **FRED API integration** - Configure key for economic release dates calendar
-2. **Fed speech calendar** - Add upcoming Fed speeches
-3. **User preferences** - News category filters, watchlist integration
-4. **Enhanced historical context** - Add more event types, average historical reactions
-
-### Bug Fixes During Implementation
-
-**Phase 1:**
-1. **Pydantic field name clash** - `date: date = Field(...)` shadowed type. Fixed with `from datetime import date as date_type`
-2. **Timezone-aware datetime sorting** - RSS feeds have mixed tz-aware/naive. Fixed with normalizer in sort key
-3. **Missing dotenv loading** - Added `python-dotenv` and explicit load
-
-**Phase 2:**
-4. **ApiKeysConfig missing `fred` attribute** - Config schema didn't have FRED key. Fixed by adding to `config/schema.py` and `config/loader.py`
-5. **Pre-market movers snake_case vs camelCase** - Yahoo adapter returned `company_name`, `change_percent`, etc. but frontend expected camelCase. Fixed with `to_camel_case()` conversion function
+- [Insider Cluster Buying (2IQ Research)](https://www.2iqresearch.com/blog/what-is-cluster-buying-and-why-is-it-such-a-powerful-insider-signal)
+- [Days to Cover (NBER)](https://www.nber.org/system/files/working_papers/w21166/w21166.pdf)
 
 ---
 
 ## History
 
-- e69c339: chore: refresh market data [skip ci]
+- 00f445f: docs: add README and .env.example
+- e0d7451: chore: refresh market data with historical reactions [skip ci]
+- d32433d: feat: Phase 3-4 historical comparison + portfolio analytics
 - f7a38b7: fix: integrate SEC 13F adapter for hedge fund holdings
-- 5ea1816: feat: Phase 4 - Add pagination support to pipeline and presentation layer
-- 565a821: feat: Phase 3 - Expanded data sources
+- (uncommitted): Institutional-grade scoring rebuild - momentum 12-1M, gross profitability, DTC, 13F scoring, risk overlay, timeframe weights
+- (uncommitted): Insider transactions via Finnhub - Form 4 data, cluster detection, DB table
 
 ---
 
 ## Anti-Patterns
 
-### 1. Finnhub Economic Calendar Free Tier Assumption
-**Problem:** Assumed Finnhub economic calendar was free (docs say "free" but `/calendar/economic` requires paid plan)
-**Symptom:** HTTP 403 Forbidden
-**Resolution:** Graceful degradation to news-only; use earnings calendar (FREE) instead
-**Prevention:** Always test API endpoints; check pricing for endpoint-specific restrictions
+### 1. Data Fetched But Not Used
+**Problem:** Adapters fetch data (13F, Congress, options) that is displayed but not used in scoring
+**Resolution:** Integrated 13F changes into scoring; removed Congress/Reddit from scoring consideration
+**Prevention:** Define upfront whether data sources are display-only or scoring-eligible
 
-### 2. Pydantic Field Name Shadowing Type
-**Problem:** `date: date = Field(...)` shadows the type with the field name
-**Symptom:** `PydanticUserError: Error when building FieldInfo`
-**Resolution:** Import as alias: `from datetime import date as date_type`
+### 2. Single-Period Momentum
+**Problem:** Only 1-month momentum when academic evidence supports 12-1 month (skip recent month reversal)
+**Resolution:** Added `_score_momentum_12_1()` with 50% weight in momentum scoring
+**Prevention:** Research academic evidence before implementing quant signals
 
-### 3. Config Schema Mismatch
-**Problem:** Added new API key to adapter but not to config schema
-**Symptom:** `AttributeError: 'ApiKeysConfig' object has no attribute 'fred'`
-**Resolution:** Add field to both `config/schema.py` (Pydantic model) and `config/loader.py` (env loading)
-
-### 4. Backend/Frontend Case Convention Mismatch
-**Problem:** Python adapters return snake_case, TypeScript expects camelCase
-**Symptom:** Frontend shows undefined values
-**Resolution:** Add conversion function at serialization boundary (`to_camel_case()`)
+### 3. Check Finnhub First
+**Problem:** Created new adapters when existing ones may have the endpoint
+**Prevention:** Before creating new adapter, check if Finnhub/Yahoo already provides the data
 
 ---
 
@@ -214,7 +137,7 @@ Fintel is a financial intelligence dashboard with stock picks, smart money track
 
 | Hash | Pattern | Resolution |
 |------|---------|------------|
-| (briefing) | Finnhub calendar 403 | Use earnings calendar (FREE) instead |
-| (briefing) | date: date Pydantic | Use `date_type` alias |
-| (briefing) | Config schema mismatch | Update both schema.py and loader.py |
-| (briefing) | snake_case/camelCase | Conversion at serialization boundary |
+| (scoring) | Data fetched not used | Integrate into scoring or mark display-only |
+| (scoring) | 1M momentum only | Use 12-1 month per Jegadeesh-Titman |
+| (briefing) | Finnhub calendar 403 | Check API tier before assuming free |
+| (adapters) | New adapter before checking existing | Check Finnhub/Yahoo first |

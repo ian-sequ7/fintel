@@ -253,6 +253,16 @@ class YahooAdapter(BaseAdapter):
                 "two_hundred_day_average": info.get("twoHundredDayAverage"),
                 "average_volume": info.get("averageVolume"),
                 "current_price": info.get("regularMarketPrice"),
+                # Short interest data for Days-to-Cover signal (Hong et al NBER)
+                "shares_short": info.get("sharesShort"),
+                "short_ratio": info.get("shortRatio"),  # This IS days-to-cover
+                "short_percent_of_float": info.get("shortPercentOfFloat"),
+                # Quality factors for Novy-Marx gross profitability
+                "total_assets": info.get("totalAssets"),
+                "gross_profit": info.get("grossProfits"),
+                # Asset growth tracking (for Fama-French CMA factor)
+                # Note: Previous period assets not directly available,
+                # would need to be calculated from quarterly data
             }
 
             logger.debug(
@@ -679,6 +689,81 @@ class YahooAdapter(BaseAdapter):
             logger.error(f"Batch market cap fetch failed: {e}")
 
         return results
+
+    def get_multi_period_returns(
+        self,
+        ticker: str,
+        current_price: float | None = None,
+    ) -> dict[str, float | None]:
+        """
+        Calculate multi-period returns for momentum scoring.
+
+        Returns 6M and 12M price changes as decimals (0.10 = 10%).
+        For 12-1 month momentum (Jegadeesh-Titman), we skip the most recent month.
+
+        Args:
+            ticker: Stock ticker symbol
+            current_price: Current price (optional, will fetch if not provided)
+
+        Returns:
+            Dict with keys: price_change_6m, price_change_12m, momentum_12_1
+        """
+        result = {
+            "price_change_6m": None,
+            "price_change_12m": None,
+            "momentum_12_1": None,
+        }
+
+        try:
+            # Fetch 13 months of history to calculate 12-1 momentum
+            history = self.get_price_history(ticker, days=395)  # ~13 months
+
+            if not history or len(history) < 20:
+                return result
+
+            # Get current price if not provided
+            if current_price is None:
+                current_price = history[-1].get("close") if history else None
+
+            if current_price is None:
+                return result
+
+            # Calculate 6-month return (~130 trading days)
+            if len(history) >= 130:
+                price_6m_ago = history[-130].get("close")
+                if price_6m_ago and price_6m_ago > 0:
+                    result["price_change_6m"] = (current_price - price_6m_ago) / price_6m_ago
+
+            # Calculate 12-month return (~252 trading days)
+            if len(history) >= 252:
+                price_12m_ago = history[-252].get("close")
+                if price_12m_ago and price_12m_ago > 0:
+                    result["price_change_12m"] = (current_price - price_12m_ago) / price_12m_ago
+
+            # Calculate 12-1 month momentum (skip most recent month)
+            # This is 12-month return minus 1-month return
+            if len(history) >= 252:
+                price_12m_ago = history[-252].get("close")
+                # Price 1 month ago (~21 trading days)
+                price_1m_ago = history[-21].get("close") if len(history) >= 21 else None
+
+                if price_12m_ago and price_1m_ago and price_12m_ago > 0:
+                    # Return from 12 months ago to 1 month ago
+                    result["momentum_12_1"] = (price_1m_ago - price_12m_ago) / price_12m_ago
+
+            logger.debug(
+                f"Multi-period returns for {ticker}: "
+                f"6M={result['price_change_6m']:.2%}, "
+                f"12M={result['price_change_12m']:.2%}, "
+                f"12-1M={result['momentum_12_1']:.2%}"
+                if all(v is not None for v in result.values())
+                else f"Multi-period returns for {ticker}: partial data"
+            )
+
+        except Exception as e:
+            logger.warning(f"Failed to calculate multi-period returns for {ticker}: {e}")
+
+        return result
 
     # ========================================================================
     # Pre-Market Movers Detection

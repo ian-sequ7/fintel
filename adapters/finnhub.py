@@ -62,6 +62,24 @@ class FinnhubProfile:
     website: str | None
 
 
+@dataclass
+class FinnhubInsiderTransaction:
+    """
+    Typed insider transaction from Finnhub.
+
+    Data sourced from SEC Form 3, 4, 5 filings.
+    Endpoint: /stock/insider-transactions
+    """
+    symbol: str
+    name: str  # Insider's name
+    share: int  # Shares held after transaction
+    change: int  # Net share change (+ = buy, - = sell)
+    filing_date: str  # Date filing submitted (YYYY-MM-DD)
+    transaction_date: str  # Date transaction occurred (YYYY-MM-DD)
+    transaction_code: str  # SEC Form 4 code (P=Purchase, S=Sale, etc.)
+    transaction_price: float | None  # Average price per share
+
+
 class FinnhubAdapter(BaseAdapter):
     """
     Finnhub data adapter.
@@ -104,9 +122,13 @@ class FinnhubAdapter(BaseAdapter):
             return self._fetch_quote(ticker)
         elif data_type == "profile":
             return self._fetch_profile(ticker)
+        elif data_type == "insider_transactions":
+            from_date = kwargs.get("from_date")
+            to_date = kwargs.get("to_date")
+            return self._fetch_insider_transactions(ticker, from_date, to_date)
         else:
             raise ValidationError(
-                reason=f"data_type must be 'quote' or 'profile', got '{data_type}'",
+                reason=f"data_type must be 'quote', 'profile', or 'insider_transactions', got '{data_type}'",
                 field="data_type",
                 value=data_type,
                 source=self.source_name,
@@ -234,6 +256,130 @@ class FinnhubAdapter(BaseAdapter):
             reliability=self.reliability,
         )]
 
+    def _fetch_insider_transactions(
+        self,
+        ticker: str,
+        from_date: str | None = None,
+        to_date: str | None = None,
+    ) -> list[Observation]:
+        """
+        Fetch insider transactions from Finnhub.
+
+        Endpoint: /stock/insider-transactions?symbol={ticker}
+        Data sourced from SEC Form 3, 4, 5 filings.
+
+        Args:
+            ticker: Stock symbol (e.g., "AAPL")
+            from_date: Optional start date (YYYY-MM-DD)
+            to_date: Optional end date (YYYY-MM-DD)
+
+        Returns:
+            List of Observations with insider transaction data.
+            Each observation contains one insider transaction.
+        """
+        api_key = self._get_api_key()
+        if not api_key:
+            raise DataError.empty(
+                source=self.source_name,
+                description="Finnhub API key required for insider transactions",
+            )
+
+        url = f"{self.BASE_URL}/stock/insider-transactions?symbol={ticker}"
+        url += f"&token={api_key}"
+        if from_date:
+            url += f"&from={from_date}"
+        if to_date:
+            url += f"&to={to_date}"
+
+        data = self._http_get_json(url)
+
+        if not data or "data" not in data:
+            raise DataError.empty(
+                source=self.source_name,
+                description=f"No insider transaction data for {ticker}",
+            )
+
+        transactions = data.get("data", [])
+        if not transactions:
+            logger.debug(f"No insider transactions found for {ticker}")
+            return []
+
+        observations = []
+        for txn in transactions:
+            try:
+                # Parse transaction
+                insider_txn = FinnhubInsiderTransaction(
+                    symbol=txn.get("symbol", ticker),
+                    name=txn.get("name", "Unknown"),
+                    share=int(txn.get("share", 0)),
+                    change=int(txn.get("change", 0)),
+                    filing_date=txn.get("filingDate", ""),
+                    transaction_date=txn.get("transactionDate", ""),
+                    transaction_code=txn.get("transactionCode", ""),
+                    transaction_price=txn.get("transactionPrice"),
+                )
+
+                # Determine transaction type from change sign
+                txn_type = "buy" if insider_txn.change > 0 else "sell"
+
+                # Check if C-suite based on transaction patterns
+                # Note: Finnhub doesn't provide officer title directly.
+                # We mark all as potential C-suite for now; the scoring
+                # function uses cluster detection which doesn't require title.
+                is_c_suite = self._is_likely_c_suite(insider_txn.name, insider_txn.change)
+
+                obs_data = {
+                    "insider_name": insider_txn.name,
+                    "shares_after": insider_txn.share,
+                    "shares_change": abs(insider_txn.change),
+                    "transaction_type": txn_type,
+                    "filing_date": insider_txn.filing_date,
+                    "transaction_date": insider_txn.transaction_date,
+                    "transaction_code": insider_txn.transaction_code,
+                    "transaction_price": insider_txn.transaction_price,
+                    "is_c_suite": is_c_suite,
+                    # For scoring pipeline compatibility
+                    "officer_title": "Unknown",  # Not provided by Finnhub
+                }
+
+                # Parse transaction date for observation timestamp
+                try:
+                    txn_dt = datetime.strptime(insider_txn.transaction_date, "%Y-%m-%d")
+                except ValueError:
+                    txn_dt = datetime.now()
+
+                observations.append(Observation(
+                    source=self.source_name,
+                    timestamp=txn_dt,
+                    category=Category.FUNDAMENTAL,
+                    data=obs_data,
+                    ticker=ticker,
+                    reliability=self.reliability,
+                ))
+
+            except (ValueError, KeyError) as e:
+                logger.debug(f"Skipping malformed insider transaction: {e}")
+                continue
+
+        logger.debug(f"Fetched {len(observations)} insider transactions for {ticker}")
+        return observations
+
+    def _is_likely_c_suite(self, name: str, change: int) -> bool:
+        """
+        Heuristic to identify likely C-suite executives.
+
+        Since Finnhub doesn't provide officer title, we use transaction size
+        as a proxy. Large buys (>$100k at typical prices) are more likely
+        from executives with significant compensation.
+
+        This is a rough heuristic - the cluster detection algorithm in
+        scoring.py handles the actual signal detection.
+        """
+        # Large transactions (>10k shares) more likely from executives
+        if abs(change) > 10000:
+            return True
+        return False
+
     def _get_api_key(self) -> str | None:
         """Get Finnhub API key from config or environment."""
         # Check config first
@@ -255,3 +401,27 @@ class FinnhubAdapter(BaseAdapter):
     def get_profile(self, ticker: str) -> list[Observation]:
         """Get company profile for a ticker."""
         return self.fetch(ticker=ticker, data_type="profile")
+
+    def get_insider_transactions(
+        self,
+        ticker: str,
+        days: int = 90,
+    ) -> list[Observation]:
+        """
+        Get insider transactions for a ticker.
+
+        Args:
+            ticker: Stock symbol
+            days: Number of days of history (default 90 for cluster detection)
+
+        Returns:
+            List of Observations with insider transaction data
+        """
+        from_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+        to_date = datetime.now().strftime("%Y-%m-%d")
+        return self.fetch(
+            ticker=ticker,
+            data_type="insider_transactions",
+            from_date=from_date,
+            to_date=to_date,
+        )

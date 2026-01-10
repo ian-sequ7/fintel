@@ -24,6 +24,7 @@ from .models import (
     PickPerformance,
     HedgeFund,
     HedgeFundHolding,
+    InsiderTransaction,
 )
 
 logger = logging.getLogger(__name__)
@@ -270,6 +271,30 @@ class Database:
     CREATE INDEX IF NOT EXISTS idx_hfh_filing ON hedge_fund_holdings(filing_date);
     CREATE INDEX IF NOT EXISTS idx_hfh_action ON hedge_fund_holdings(action);
     CREATE UNIQUE INDEX IF NOT EXISTS idx_hfh_fund_cusip_report ON hedge_fund_holdings(fund_id, cusip, report_date);
+
+    -- Insider transactions from SEC Form 4 filings
+    -- Used for insider cluster detection (3+ C-suite buys in 30-60 days)
+    CREATE TABLE IF NOT EXISTS insider_transactions (
+        id TEXT PRIMARY KEY,
+        ticker TEXT NOT NULL,
+        insider_name TEXT NOT NULL,
+        transaction_type TEXT NOT NULL,
+        shares INTEGER NOT NULL,
+        shares_after INTEGER,
+        transaction_date DATE,
+        filing_date DATE,
+        transaction_code TEXT,
+        transaction_price REAL,
+        officer_title TEXT,
+        is_c_suite INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_insider_ticker ON insider_transactions(ticker);
+    CREATE INDEX IF NOT EXISTS idx_insider_date ON insider_transactions(transaction_date);
+    CREATE INDEX IF NOT EXISTS idx_insider_type ON insider_transactions(transaction_type);
+    CREATE INDEX IF NOT EXISTS idx_insider_csuite ON insider_transactions(is_c_suite);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_insider_unique ON insider_transactions(ticker, insider_name, transaction_date, shares);
     """
 
     def __init__(self, db_path: Optional[Path] = None):
@@ -1452,6 +1477,133 @@ class Database:
             }
 
     # =========================================================================
+    # Insider Transactions
+    # =========================================================================
+
+    def upsert_insider_transaction(self, txn: InsiderTransaction) -> bool:
+        """Insert or update an insider transaction. Returns True if inserted."""
+        with self._connection() as conn:
+            existing = conn.execute(
+                "SELECT id FROM insider_transactions WHERE id = ?", (txn.id,)
+            ).fetchone()
+
+            if existing:
+                return False  # Don't update existing transactions
+
+            try:
+                conn.execute(
+                    """
+                    INSERT INTO insider_transactions
+                    (id, ticker, insider_name, transaction_type, shares, shares_after,
+                     transaction_date, filing_date, transaction_code, transaction_price,
+                     officer_title, is_c_suite)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (txn.id, txn.ticker, txn.insider_name, txn.transaction_type,
+                     txn.shares, txn.shares_after, txn.transaction_date,
+                     txn.filing_date, txn.transaction_code, txn.transaction_price,
+                     txn.officer_title, txn.is_c_suite)
+                )
+                return True
+            except sqlite3.IntegrityError:
+                # Duplicate transaction (same ticker, name, date, shares)
+                return False
+
+    def get_insider_transactions(
+        self,
+        ticker: str,
+        days: int = 90,
+        transaction_type: Optional[str] = None,
+    ) -> list[InsiderTransaction]:
+        """
+        Get insider transactions for a ticker.
+
+        Args:
+            ticker: Stock ticker symbol
+            days: Number of days of history (default 90 for cluster detection)
+            transaction_type: Filter by 'buy' or 'sell'
+
+        Returns:
+            List of InsiderTransaction objects
+        """
+        query = """
+            SELECT * FROM insider_transactions
+            WHERE ticker = ? AND transaction_date >= date('now', ?)
+        """
+        params: list = [ticker.upper(), f"-{days} days"]
+
+        if transaction_type:
+            query += " AND transaction_type = ?"
+            params.append(transaction_type)
+
+        query += " ORDER BY transaction_date DESC"
+
+        with self._connection() as conn:
+            rows = conn.execute(query, params).fetchall()
+            return [self._row_to_insider_transaction(row) for row in rows]
+
+    def get_insider_buys(self, ticker: str, days: int = 60) -> list[InsiderTransaction]:
+        """Get insider buy transactions for cluster detection."""
+        return self.get_insider_transactions(ticker, days=days, transaction_type="buy")
+
+    def get_c_suite_buys(self, ticker: str, days: int = 60) -> list[InsiderTransaction]:
+        """Get C-suite buy transactions for cluster detection."""
+        with self._connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT * FROM insider_transactions
+                WHERE ticker = ?
+                  AND transaction_type = 'buy'
+                  AND is_c_suite = 1
+                  AND transaction_date >= date('now', ?)
+                ORDER BY transaction_date DESC
+                """,
+                (ticker.upper(), f"-{days} days")
+            ).fetchall()
+            return [self._row_to_insider_transaction(row) for row in rows]
+
+    def get_recent_insider_activity(
+        self,
+        transaction_type: Optional[str] = None,
+        days: int = 30,
+        limit: int = 100,
+    ) -> list[InsiderTransaction]:
+        """Get recent insider activity across all tickers."""
+        query = """
+            SELECT * FROM insider_transactions
+            WHERE transaction_date >= date('now', ?)
+        """
+        params: list = [f"-{days} days"]
+
+        if transaction_type:
+            query += " AND transaction_type = ?"
+            params.append(transaction_type)
+
+        query += " ORDER BY transaction_date DESC LIMIT ?"
+        params.append(limit)
+
+        with self._connection() as conn:
+            rows = conn.execute(query, params).fetchall()
+            return [self._row_to_insider_transaction(row) for row in rows]
+
+    def _row_to_insider_transaction(self, row: sqlite3.Row) -> InsiderTransaction:
+        return InsiderTransaction(
+            id=row["id"],
+            ticker=row["ticker"],
+            insider_name=row["insider_name"],
+            transaction_type=row["transaction_type"],
+            shares=row["shares"],
+            shares_after=row["shares_after"],
+            transaction_date=row["transaction_date"],
+            filing_date=row["filing_date"],
+            transaction_code=row["transaction_code"] or "",
+            transaction_price=row["transaction_price"],
+            officer_title=row["officer_title"] or "",
+            is_c_suite=bool(row["is_c_suite"]),
+            created_at=row["created_at"] or datetime.now(),
+        )
+
+    # =========================================================================
     # Stats
     # =========================================================================
 
@@ -1472,6 +1624,7 @@ class Database:
                 "pick_performance": count("pick_performance"),
                 "hedge_funds": count("hedge_funds"),
                 "hedge_fund_holdings": count("hedge_fund_holdings"),
+                "insider_transactions": count("insider_transactions"),
                 "scrape_runs": conn.execute(
                     "SELECT COUNT(*) FROM scrape_runs WHERE completed_at IS NOT NULL"
                 ).fetchone()[0],
