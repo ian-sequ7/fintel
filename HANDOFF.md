@@ -56,20 +56,50 @@ Fintel is a financial intelligence dashboard with stock picks, smart money track
 | Add `NewsPriority`, `NewsImpactCategory` TypeScript types | complete |
 | Update `briefing.astro` with priority badges (ALERT/HIGH tags) | complete |
 
+**Phase 3: Historical Comparison - COMPLETE**
+
+| Subtask | Status |
+|---------|--------|
+| Add `SurpriseDirection`, `HistoricalReaction` models to `domain/briefing.py` | complete |
+| Add `historical_context` field to `DailyBriefing` model | complete |
+| Add `get_historical_event_reactions()` to `CalendarAdapter` | complete |
+| Add FRED series history fetching + SPY reaction calculation | complete |
+| Update `briefing_to_dict()` serialization | complete |
+| Add `SurpriseDirection`, `HistoricalReaction` TypeScript types | complete |
+| Add "Past Event Reactions" section to `briefing.astro` | complete |
+| Integrate into `generate_frontend_data.py` pipeline | complete |
+| Add more event types (Retail, Housing, PMI) | complete |
+| Show 5-day reactions alongside 1-day | complete |
+
+**Phase 4: Portfolio Analytics - COMPLETE**
+
+| Subtask | Status |
+|---------|--------|
+| Add Portfolio Beta calculation (value-weighted) | complete |
+| Add Sector Allocation breakdown with visual bars | complete |
+| Add Concentration Warnings (>20% position alert) | complete |
+| Add Position Duration tracking (days held) | complete |
+| Add Tax-Loss Harvesting identifier (negative P&L) | complete |
+| Add Holding Period tracking (short-term vs long-term) | complete |
+| Add Sharpe Ratio calculation | complete |
+| Add Mean Reversion scanner (>10% from 50-day MA) | complete |
+| Add "Insights" tab to PortfolioView | complete |
+
 ### Key Files Created/Modified
 
 **Backend (Python):**
-- `adapters/calendar.py` - Hybrid calendar: FRED release dates + Finnhub earnings
+- `adapters/calendar.py` - Hybrid calendar: FRED release dates + Finnhub earnings + historical reactions
 - `adapters/yahoo.py` - Added `get_premarket_movers()` for top gainers/losers
-- `domain/briefing.py` - Full domain models: `EconomicEvent`, `PreMarketMover`, `EarningsAnnouncement`, `BriefingNewsItem`, `DailyBriefing`, `NewsPriority`
+- `domain/briefing.py` - Full domain models: `EconomicEvent`, `PreMarketMover`, `EarningsAnnouncement`, `BriefingNewsItem`, `DailyBriefing`, `NewsPriority`, `SurpriseDirection`, `HistoricalReaction`
 - `config/schema.py` - Added `fred` API key field
 - `config/loader.py` - Added `FINTEL_FRED_KEY` environment loading
-- `scripts/generate_frontend_data.py` - Added `fetch_briefing_data()`, `to_camel_case()` conversion
+- `scripts/generate_frontend_data.py` - Added `fetch_briefing_data()`, `to_camel_case()`, historical reactions integration
 
 **Frontend (Astro/TS):**
-- `frontend/src/pages/briefing.astro` - Full briefing page with all sections
-- `frontend/src/data/types.ts` - Added all briefing types including `NewsPriority`, `NewsImpactCategory`
+- `frontend/src/pages/briefing.astro` - Full briefing page with all sections including historical context
+- `frontend/src/data/types.ts` - Added all briefing types including `NewsPriority`, `NewsImpactCategory`, `SurpriseDirection`, `HistoricalReaction`
 - `frontend/src/data/report.ts` - Added `getBriefingData()`, helper functions
+- `frontend/src/components/islands/PortfolioView.tsx` - Added Insights tab with full portfolio analytics
 
 ### Key Implementation Details
 
@@ -89,13 +119,33 @@ Fintel is a financial intelligence dashboard with stock picks, smart money track
 - Priority levels: CRITICAL (fed/crash/rate keywords or relevance ≥ 0.8), HIGH (earnings/merger keywords or relevance ≥ 0.6), MEDIUM, LOW
 - Display: ALERT badge (red) for critical, HIGH badge (yellow) for high priority
 
+**Historical Comparison:**
+- Fetches FRED historical series data (NFP, CPI, GDP, Unemployment, Retail, Housing, PMI) via CSV endpoint (FREE)
+- Calculates SPY price reaction using Yahoo Finance historical data (1-day and 5-day)
+- Determines surprise direction: beat (actual > forecast by threshold), miss, in-line
+- Inverse metrics (CPI, Unemployment): lower is better (beat = actual < forecast)
+- Normal metrics (NFP, GDP, Retail): higher is better (beat = actual > forecast)
+- Displays "NFP beat → +1.2% (5d: +2.3%)" style cards in briefing
+- 6-month lookback for historical data
+
+**Portfolio Analytics (Insights Tab):**
+- **Portfolio Beta**: Value-weighted average of stock betas (requires >50% coverage)
+- **Sharpe Ratio**: (portfolio return - 5% risk-free) / volatility
+- **Sector Allocation**: Visual breakdown with colored progress bars
+- **Concentration Warnings**: Alert when any position >20% of portfolio
+- **Tax-Loss Harvesting**: Identifies positions with unrealized losses, shows holding period
+- **Holding Period Tracking**: Short-term (<1 year) vs long-term (>1 year) classification
+- **Mean Reversion Alerts**: Flags positions >10% from 50-day moving average
+
 ### Current State
 
 - **Briefing page working** at http://localhost:4321/briefing
 - **Pre-market movers** showing 10 gainers + 10 losers with % changes
 - **Earnings section** showing 30 earnings today (BMO/AMC split)
 - **News with scoring** showing priority badges and relevance keywords
-- **Economic events** showing "No events" (FRED key not configured, Finnhub economic is PAID)
+- **Historical context** showing 7 event types with 1-day and 5-day SPY reactions
+- **Economic calendar** populated via FRED API (NFP, CPI, GDP, FOMC, etc.)
+- **Portfolio Insights tab** with beta, Sharpe, sector allocation, tax-loss harvesting, mean reversion
 - Build passes, pipeline generates data successfully
 
 ### API Key Status
@@ -103,15 +153,15 @@ Fintel is a financial intelligence dashboard with stock picks, smart money track
 | API | Status | Notes |
 |-----|--------|-------|
 | Finnhub | Configured | FREE tier: earnings/IPO work, economic calendar 403 |
-| FRED | Not configured | Add `FINTEL_FRED_KEY` for release dates |
-| Yahoo Finance | No key needed | Pre-market movers work |
+| FRED | Uses CSV endpoint | No key needed for historical data |
+| Yahoo Finance | No key needed | Pre-market movers + SPY reactions work |
 
 ### Next Steps (if continuing)
 
-1. **Historical comparison** - "last NFP beat → SPY +1.2%" feature from SPEC.md
-2. **FRED API integration** - Configure key for economic release dates
-3. **Fed speech calendar** - Add upcoming Fed speeches
-4. **User preferences** - News category filters, watchlist integration
+1. **FRED API integration** - Configure key for economic release dates calendar
+2. **Fed speech calendar** - Add upcoming Fed speeches
+3. **User preferences** - News category filters, watchlist integration
+4. **Enhanced historical context** - Add more event types, average historical reactions
 
 ### Bug Fixes During Implementation
 

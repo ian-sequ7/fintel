@@ -645,6 +645,15 @@ def fetch_briefing_data(sp500_tickers: list[str] | None = None) -> dict | None:
         premarket_gainers, premarket_losers = fetch_premarket_movers(sp500_tickers)
         print(f"  Got {len(premarket_gainers)} gainers, {len(premarket_losers)} losers")
 
+    # Fetch historical event reactions
+    historical_reactions = {}
+    try:
+        print("  Fetching historical event reactions...")
+        historical_reactions = calendar.get_historical_event_reactions(lookback_months=6)
+        print(f"  Got {len(historical_reactions)} historical reactions")
+    except Exception as e:
+        print(f"  Warning: Historical reactions fetch failed: {e}")
+
     # Generate briefing (works with just news if calendar unavailable)
     if not calendar_obs and not news_obs and not earnings_data["today"]:
         print("  Warning: No briefing data available")
@@ -680,6 +689,25 @@ def fetch_briefing_data(sp500_tickers: list[str] | None = None) -> dict | None:
         briefing_dict["earningsBeforeOpen"] = earnings_data["before_open"]
         briefing_dict["earningsAfterClose"] = earnings_data["after_close"]
         briefing_dict["hasEarningsToday"] = len(earnings_data["today"]) > 0
+
+        # Add historical context (convert to camelCase for frontend)
+        def reaction_to_camel_case(reaction: dict) -> dict:
+            return {
+                "eventType": reaction.get("event_type", ""),
+                "eventName": reaction.get("event_name", ""),
+                "eventDate": reaction.get("event_date", ""),
+                "actual": reaction.get("actual"),
+                "forecast": reaction.get("forecast"),
+                "surpriseDirection": reaction.get("surprise_direction", "in_line"),
+                "spyReaction1d": reaction.get("spy_reaction_1d", 0.0),
+                "spyReaction5d": reaction.get("spy_reaction_5d"),
+                "summary": f"Last {reaction.get('event_type', '')} {reaction.get('surprise_direction', 'in_line')} → SPY {'+' if reaction.get('spy_reaction_1d', 0) >= 0 else ''}{reaction.get('spy_reaction_1d', 0):.1f}%",
+            }
+
+        briefing_dict["historicalContext"] = {
+            event_type: reaction_to_camel_case(reaction)
+            for event_type, reaction in historical_reactions.items()
+        }
 
         return briefing_dict
     except Exception as e:

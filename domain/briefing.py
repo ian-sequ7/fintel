@@ -121,6 +121,34 @@ class EarningsAnnouncement(BaseModel):
         return self.eps_actual is not None
 
 
+class SurpriseDirection(str, Enum):
+    """Direction of economic surprise vs forecast."""
+    BEAT = "beat"       # Actual > Forecast (good for growth, bad for inflation)
+    MISS = "miss"       # Actual < Forecast
+    IN_LINE = "in_line" # Within ~0.1% of forecast
+
+
+class HistoricalReaction(BaseModel):
+    """Historical market reaction to an economic event."""
+    model_config = {"frozen": True, "extra": "forbid"}
+
+    event_type: str = Field(description="Event type code (NFP, CPI, GDP, FOMC)")
+    event_name: str = Field(description="Human-readable event name")
+    event_date: date_type = Field(description="Date of the historical event")
+    actual: float | None = Field(default=None, description="Actual released value")
+    forecast: float | None = Field(default=None, description="Consensus forecast")
+    surprise_direction: SurpriseDirection = Field(description="Beat/miss/in-line")
+    spy_reaction_1d: float = Field(description="SPY % change next trading day")
+    spy_reaction_5d: float | None = Field(default=None, description="SPY % change over 5 days")
+
+    @property
+    def summary(self) -> str:
+        """Generate summary like 'Last NFP beat → SPY +1.2%'."""
+        direction = self.surprise_direction.value
+        sign = "+" if self.spy_reaction_1d >= 0 else ""
+        return f"Last {self.event_type} {direction} → SPY {sign}{self.spy_reaction_1d:.1f}%"
+
+
 class DailyBriefing(BaseModel):
     """Daily market briefing combining calendar + news."""
     model_config = {"extra": "forbid"}
@@ -174,6 +202,12 @@ class DailyBriefing(BaseModel):
     fed_news: list[BriefingNewsItem] = Field(
         default_factory=list,
         description="Fed/monetary policy news"
+    )
+
+    # Historical context for today's events
+    historical_context: dict[str, HistoricalReaction] = Field(
+        default_factory=dict,
+        description="Most recent reaction for each event type (NFP, CPI, etc.)"
     )
 
     @property
@@ -483,4 +517,18 @@ def briefing_to_dict(briefing: DailyBriefing) -> dict:
             for n in briefing.fed_news
         ],
         "hasHighImpactToday": briefing.has_high_impact_today,
+        "historicalContext": {
+            event_type: {
+                "eventType": reaction.event_type,
+                "eventName": reaction.event_name,
+                "eventDate": reaction.event_date.isoformat(),
+                "actual": reaction.actual,
+                "forecast": reaction.forecast,
+                "surpriseDirection": reaction.surprise_direction.value,
+                "spyReaction1d": reaction.spy_reaction_1d,
+                "spyReaction5d": reaction.spy_reaction_5d,
+                "summary": reaction.summary,
+            }
+            for event_type, reaction in briefing.historical_context.items()
+        },
     }

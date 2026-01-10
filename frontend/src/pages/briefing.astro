@@ -77,6 +77,52 @@ function getImpactDot(impact: string): string {
         </section>
       )}
 
+      <!-- Historical Context: Past Event Reactions -->
+      {briefing.historicalContext && Object.keys(briefing.historicalContext).length > 0 && (
+        <section class="mb-6">
+          <h2 class="text-sm font-medium text-text-secondary mb-3 flex items-center gap-2">
+            <span>&#128202;</span> Past Event Reactions
+          </h2>
+          <div class="flex flex-wrap gap-3">
+            {Object.values(briefing.historicalContext).map((reaction) => {
+              const isPositive1d = reaction.spyReaction1d >= 0;
+              const isPositive5d = reaction.spyReaction5d !== null ? reaction.spyReaction5d >= 0 : null;
+              const reactionColor1d = isPositive1d ? "text-success" : "text-danger";
+              const reactionColor5d = isPositive5d === null ? "text-text-secondary" : isPositive5d ? "text-success" : "text-danger";
+              const bgColor = isPositive1d ? "bg-success/10 border-success/20" : "bg-danger/10 border-danger/20";
+              const surpriseLabel = reaction.surpriseDirection === "beat" ? "beat" : reaction.surpriseDirection === "miss" ? "miss" : "in-line";
+              const surpriseColor = reaction.surpriseDirection === "beat" ? "text-success" : reaction.surpriseDirection === "miss" ? "text-danger" : "text-text-secondary";
+
+              return (
+                <div class={`px-3 py-2 rounded-lg border ${bgColor}`}>
+                  <div class="flex items-center gap-2">
+                    <span class="font-semibold text-text-primary text-sm">{reaction.eventType}</span>
+                    <span class={`text-xs ${surpriseColor}`}>{surpriseLabel}</span>
+                    <span class="text-text-secondary">→</span>
+                    <span class={`font-mono font-bold ${reactionColor1d}`}>
+                      {isPositive1d ? "+" : ""}{reaction.spyReaction1d.toFixed(1)}%
+                    </span>
+                    {reaction.spyReaction5d !== null && (
+                      <span class={`font-mono text-xs ${reactionColor5d}`}>
+                        (5d: {isPositive5d ? "+" : ""}{reaction.spyReaction5d.toFixed(1)}%)
+                      </span>
+                    )}
+                  </div>
+                  <div class="text-xs text-text-secondary mt-0.5">
+                    {new Date(reaction.eventDate).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                    {reaction.actual !== null && reaction.forecast !== null && (
+                      <span class="ml-2">
+                        ({reaction.actual.toFixed(1)} vs {reaction.forecast.toFixed(1)} est)
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       <!-- Pre-Market Movers -->
       {(briefing.premarketGainers?.length > 0 || briefing.premarketLosers?.length > 0) && (
         <section class="mb-8">

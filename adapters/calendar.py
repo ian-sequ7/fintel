@@ -621,3 +621,245 @@ class CalendarAdapter(BaseAdapter):
             by_day[day_key].append(e)
 
         return by_day
+
+    # =========================================================================
+    # HISTORICAL EVENT REACTIONS
+    # =========================================================================
+
+    def get_historical_event_reactions(
+        self,
+        lookback_months: int = 6,
+    ) -> dict[str, dict]:
+        """
+        Get historical market reactions to major economic events.
+
+        Fetches the most recent occurrence of each major event type
+        and calculates SPY's price reaction.
+
+        Args:
+            lookback_months: How far back to look for events (default 6 months)
+
+        Returns:
+            Dictionary of event_type -> reaction data:
+            {
+                "NFP": {
+                    "event_type": "NFP",
+                    "event_name": "Nonfarm Payrolls",
+                    "event_date": "2025-01-10",
+                    "actual": 256.0,
+                    "forecast": 165.0,
+                    "surprise_direction": "beat",
+                    "spy_reaction_1d": 0.5,
+                    "spy_reaction_5d": 1.2,
+                },
+                ...
+            }
+        """
+        import yfinance as yf
+
+        # Key events to track with their FRED series for actual values
+        # Format: event_type -> (series_id, display_name, unit, is_inverse)
+        # is_inverse=True means lower is better (like CPI, unemployment)
+        EVENT_SERIES = {
+            "NFP": ("PAYEMS", "Nonfarm Payrolls", "Thousands", False),
+            "CPI": ("CPIAUCSL", "Consumer Price Index", "% YoY", True),
+            "GDP": ("GDP", "Gross Domestic Product", "% QoQ", False),
+            "UNEMPLOYMENT": ("UNRATE", "Unemployment Rate", "%", True),
+            "RETAIL": ("RSXFS", "Retail Sales", "% MoM", False),
+            "HOUSING": ("HOUST", "Housing Starts", "Thousands", False),
+            "PMI": ("MANEMP", "ISM Manufacturing", "Index", False),
+        }
+
+        # Recent consensus forecasts (updated periodically)
+        # These represent what the market expected before the release
+        RECENT_FORECASTS = {
+            "NFP": 165.0,      # Thousands of jobs expected
+            "CPI": 2.9,        # % YoY inflation expected
+            "GDP": 2.8,        # % QoQ growth expected
+            "UNEMPLOYMENT": 4.2,  # % unemployment expected
+            "RETAIL": 0.4,     # % MoM change expected
+            "HOUSING": 1400.0, # Thousands of units expected
+            "PMI": 50.0,       # Index (>50 = expansion)
+        }
+
+        reactions = {}
+        lookback_start = date.today() - timedelta(days=lookback_months * 30)
+
+        # Get SPY historical prices for reaction calculation
+        try:
+            spy_data = yf.download(
+                "SPY",
+                start=lookback_start.isoformat(),
+                end=date.today().isoformat(),
+                progress=False,
+            )
+            if spy_data.empty:
+                logger.warning("No SPY data for historical reactions")
+                return {}
+        except Exception as e:
+            logger.warning(f"Failed to fetch SPY data: {e}")
+            return {}
+
+        for event_type, (series_id, event_name, unit, is_inverse) in EVENT_SERIES.items():
+            try:
+                # Get historical release dates and values from FRED
+                release_dates = self._get_fred_release_history(
+                    series_id, lookback_months
+                )
+
+                if not release_dates:
+                    logger.debug(f"No release history for {event_type}")
+                    continue
+
+                # Get the most recent release
+                latest_release = release_dates[-1]
+                release_date = latest_release["date"]
+                actual_value = latest_release["value"]
+
+                # Get forecast (use stored consensus or default)
+                forecast = RECENT_FORECASTS.get(event_type)
+
+                # Determine surprise direction
+                if forecast is None or actual_value is None:
+                    surprise = "in_line"
+                else:
+                    # For inverse metrics (CPI, unemployment), lower is better
+                    if is_inverse:
+                        if actual_value < forecast * 0.95:
+                            surprise = "beat"
+                        elif actual_value > forecast * 1.05:
+                            surprise = "miss"
+                        else:
+                            surprise = "in_line"
+                    else:
+                        # For normal metrics (NFP, GDP, Retail), higher is better
+                        if actual_value > forecast * 1.05:
+                            surprise = "beat"
+                        elif actual_value < forecast * 0.95:
+                            surprise = "miss"
+                        else:
+                            surprise = "in_line"
+
+                # Calculate SPY reaction
+                spy_1d, spy_5d = self._calculate_spy_reaction(
+                    spy_data, release_date
+                )
+
+                reactions[event_type] = {
+                    "event_type": event_type,
+                    "event_name": event_name,
+                    "event_date": release_date.isoformat(),
+                    "actual": actual_value,
+                    "forecast": forecast,
+                    "surprise_direction": surprise,
+                    "spy_reaction_1d": round(spy_1d, 2) if spy_1d else 0.0,
+                    "spy_reaction_5d": round(spy_5d, 2) if spy_5d else None,
+                }
+
+                logger.debug(
+                    f"Historical reaction for {event_type}: "
+                    f"{surprise}, SPY {'+' if spy_1d and spy_1d >= 0 else ''}{spy_1d:.2f}%"
+                )
+
+            except Exception as e:
+                logger.warning(f"Failed to get historical reaction for {event_type}: {e}")
+                continue
+
+        logger.info(f"Fetched historical reactions for {len(reactions)} event types")
+        return reactions
+
+    def _get_fred_release_history(
+        self,
+        series_id: str,
+        lookback_months: int = 6,
+    ) -> list[dict]:
+        """
+        Get historical values for a FRED series.
+
+        Returns list of {"date": date, "value": float} dicts.
+        """
+        import csv
+        import urllib.request
+        from io import StringIO
+
+        url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
+
+        try:
+            req = urllib.request.Request(
+                url,
+                headers={"User-Agent": "Fintel/1.0"}
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                content = resp.read().decode("utf-8")
+                reader = csv.reader(StringIO(content))
+                next(reader)  # Skip header
+
+                releases = []
+                cutoff = date.today() - timedelta(days=lookback_months * 30)
+
+                for row in reader:
+                    if len(row) >= 2 and row[1] != ".":
+                        try:
+                            release_date = datetime.strptime(row[0], "%Y-%m-%d").date()
+                            if release_date >= cutoff:
+                                value = float(row[1])
+                                releases.append({
+                                    "date": release_date,
+                                    "value": value,
+                                })
+                        except (ValueError, IndexError):
+                            continue
+
+                return releases
+
+        except Exception as e:
+            logger.debug(f"Failed to fetch FRED history for {series_id}: {e}")
+            return []
+
+    def _calculate_spy_reaction(
+        self,
+        spy_data,
+        event_date: date,
+    ) -> tuple[float | None, float | None]:
+        """
+        Calculate SPY price reaction after an economic event.
+
+        Returns (1-day % change, 5-day % change).
+        """
+        import pandas as pd
+
+        try:
+            # Find the closest trading day on or after event date
+            spy_dates = spy_data.index.date if hasattr(spy_data.index, 'date') else [d.date() for d in spy_data.index]
+
+            # Find event day or next trading day
+            event_idx = None
+            for i, d in enumerate(spy_dates):
+                if d >= event_date:
+                    event_idx = i
+                    break
+
+            if event_idx is None or event_idx < 1:
+                return None, None
+
+            # Get prices
+            # Handle both single-column and multi-column DataFrames
+            close_col = spy_data["Close"]
+            if hasattr(close_col, 'iloc'):
+                pre_event = float(close_col.iloc[event_idx - 1])
+                post_event_1d = float(close_col.iloc[event_idx])
+                post_event_5d = float(close_col.iloc[min(event_idx + 4, len(close_col) - 1)])
+            else:
+                pre_event = float(close_col[event_idx - 1])
+                post_event_1d = float(close_col[event_idx])
+                post_event_5d = float(close_col[min(event_idx + 4, len(close_col) - 1)])
+
+            # Calculate percentage changes
+            spy_1d = ((post_event_1d - pre_event) / pre_event) * 100
+            spy_5d = ((post_event_5d - pre_event) / pre_event) * 100
+
+            return spy_1d, spy_5d
+
+        except Exception as e:
+            logger.debug(f"Failed to calculate SPY reaction: {e}")
+            return None, None

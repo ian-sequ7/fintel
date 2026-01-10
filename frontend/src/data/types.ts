@@ -280,6 +280,20 @@ export interface EarningsAnnouncement {
   isReported: boolean;
 }
 
+export type SurpriseDirection = "beat" | "miss" | "in_line";
+
+export interface HistoricalReaction {
+  eventType: string; // "NFP", "CPI", "GDP", etc.
+  eventName: string; // "Nonfarm Payrolls", etc.
+  eventDate: string; // ISO date
+  actual: number | null;
+  forecast: number | null;
+  surpriseDirection: SurpriseDirection;
+  spyReaction1d: number; // SPY % change next trading day
+  spyReaction5d: number | null; // SPY % change over 5 days
+  summary: string; // "Last NFP beat → SPY +1.2%"
+}
+
 export interface DailyBriefing {
   date: string; // ISO date
   generatedAt: string;
@@ -299,6 +313,7 @@ export interface DailyBriefing {
   marketNews: BriefingNewsItem[];
   fedNews: BriefingNewsItem[];
   hasHighImpactToday: boolean;
+  historicalContext: Record<string, HistoricalReaction>; // event_type -> reaction
 }
 
 // =============================================================================
