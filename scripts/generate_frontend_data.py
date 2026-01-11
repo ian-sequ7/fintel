@@ -410,24 +410,25 @@ def hedge_fund_holding_to_frontend(holding: HedgeFundHolding, fund_name: str, ma
 
 def fetch_sp500_batch_prices() -> dict[str, dict]:
     """
-    Fetch prices for ALL S&P 500 tickers using efficient batch download.
+    Fetch prices for combined universe (S&P 500 + Dow + NASDAQ-100).
 
-    This is extremely fast (~6 seconds for 500 tickers) and uses only ~2 API calls.
+    This is extremely fast (~10 seconds for ~516 tickers) and uses only ~2 API calls.
     Returns minimal price data suitable for heatmap and overview displays.
+    Includes index membership badges for each stock.
     """
     from adapters.yahoo import YahooAdapter
     from adapters.universe import get_universe_provider
     import time
 
-    print("Fetching S&P 500 batch prices...")
+    print("Fetching combined universe batch prices...")
     start = time.time()
 
-    # Get S&P 500 tickers
+    # Get combined universe (S&P 500 + Dow + NASDAQ-100, deduplicated)
     universe = get_universe_provider()
-    sp500_info = universe.get_universe()
-    tickers = list(sp500_info.keys())
+    universe_info = universe.get_universe()
+    tickers = list(universe_info.keys())
 
-    print(f"  Found {len(tickers)} S&P 500 tickers")
+    print(f"  Found {len(tickers)} tickers (S&P 500 + Dow + NASDAQ-100)")
 
     # Batch fetch prices
     yahoo = YahooAdapter()
@@ -440,10 +441,10 @@ def fetch_sp500_batch_prices() -> dict[str, dict]:
     market_caps = yahoo.get_market_caps_batch(tickers)
     cap_time = time.time() - cap_start
 
-    # Merge with sector info from universe
+    # Merge with sector info and index membership from universe
     result = {}
     for ticker, price_data in prices.items():
-        info = sp500_info.get(ticker)
+        info = universe_info.get(ticker)
         result[ticker] = {
             "ticker": ticker,
             "companyName": info.name if info else ticker,
@@ -453,6 +454,8 @@ def fetch_sp500_batch_prices() -> dict[str, dict]:
             "priceChangePercent": price_data["change_percent"],
             "volume": price_data.get("volume"),
             "marketCap": market_caps.get(ticker),
+            # Index membership badges (e.g., ["S&P 500", "Dow 30", "NASDAQ-100"])
+            "indices": info.index_badges if info else [],
             # Flag that this is lite data (no fundamentals)
             "isLite": True,
         }

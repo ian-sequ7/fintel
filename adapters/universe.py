@@ -2,9 +2,16 @@
 Stock universe providers.
 
 Provides lists of tickers for analysis:
-- S&P 500 constituents (from Wikipedia)
+- S&P 500 constituents
+- Dow Jones Industrial Average (30 stocks)
+- NASDAQ-100 constituents
+- Combined universe (deduplicated)
 - Sector-based filtering
 - Custom watchlists
+
+Data sources:
+- Primary: yfiua/index-constituents GitHub (updated monthly)
+- Fallback: Wikipedia tables
 
 Caches constituents for 24 hours (they rarely change).
 """
@@ -12,8 +19,9 @@ Caches constituents for 24 hours (they rarely change).
 import csv
 import json
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
+from enum import Enum
 from io import StringIO
 from typing import ClassVar
 
@@ -24,13 +32,45 @@ from ports import FetchError
 logger = logging.getLogger(__name__)
 
 
+class Index(Enum):
+    """Stock market indices."""
+    SP500 = "sp500"
+    DOW = "dow"
+    NASDAQ100 = "nasdaq100"
+
+
 @dataclass
 class StockInfo:
-    """Basic stock information."""
+    """Basic stock information with index membership."""
     ticker: str
     name: str
     sector: str
     industry: str
+    indices: list[Index] = field(default_factory=list)
+
+    @property
+    def in_sp500(self) -> bool:
+        return Index.SP500 in self.indices
+
+    @property
+    def in_dow(self) -> bool:
+        return Index.DOW in self.indices
+
+    @property
+    def in_nasdaq100(self) -> bool:
+        return Index.NASDAQ100 in self.indices
+
+    @property
+    def index_badges(self) -> list[str]:
+        """Return display-friendly index badges."""
+        badges = []
+        if self.in_sp500:
+            badges.append("S&P 500")
+        if self.in_dow:
+            badges.append("Dow 30")
+        if self.in_nasdaq100:
+            badges.append("NASDAQ-100")
+        return badges
 
 
 # Sector mapping for normalization
@@ -51,14 +91,26 @@ SECTOR_NORMALIZE = {
 
 class UniverseProvider(BaseAdapter):
     """
-    Provides stock universe (S&P 500 constituents).
+    Provides stock universe (S&P 500 + Dow 30 + NASDAQ-100).
 
-    Fetches from Wikipedia and caches for 24 hours.
-    Falls back to static list if fetch fails.
+    Primary source: yfiua/index-constituents GitHub (CSV, updated monthly)
+    Fallback: Wikipedia tables
+
+    Caches for 24 hours since constituents rarely change.
     """
 
-    # Wikipedia S&P 500 constituents table
-    WIKI_URL = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+    # Primary data source: yfiua/index-constituents (monthly updates, Yahoo-compatible symbols)
+    YFIUA_SP500_URL = "https://yfiua.github.io/index-constituents/constituents-sp500.csv"
+    YFIUA_DOW_URL = "https://yfiua.github.io/index-constituents/constituents-dowjones.csv"
+    YFIUA_NASDAQ100_URL = "https://yfiua.github.io/index-constituents/constituents-nasdaq100.csv"
+
+    # Fallback: Wikipedia tables
+    WIKI_SP500_URL = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+    WIKI_DOW_URL = "https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average"
+    WIKI_NASDAQ100_URL = "https://en.wikipedia.org/wiki/Nasdaq-100"
+
+    # Legacy alias
+    WIKI_URL = WIKI_SP500_URL
 
     # Cache TTL for universe data (24 hours)
     UNIVERSE_CACHE_TTL: ClassVar[timedelta] = timedelta(hours=24)
@@ -103,6 +155,8 @@ class UniverseProvider(BaseAdapter):
         super().__init__()
         self._universe_cache: dict[str, StockInfo] | None = None
         self._universe_cached_at: datetime | None = None
+        # Per-index caches for raw ticker lists
+        self._index_cache: dict[Index, set[str]] = {}
 
     @property
     def source_name(self) -> str:
@@ -179,6 +233,99 @@ class UniverseProvider(BaseAdapter):
         logger.info(f"Parsed {len(stocks)} stocks from Wikipedia")
         return stocks
 
+    def _normalize_ticker(self, ticker: str) -> str:
+        """Normalize ticker for Yahoo Finance compatibility.
+
+        Yahoo uses '-' instead of '.' for share classes (BRK-B, BF-B).
+        """
+        return ticker.replace(".", "-").upper()
+
+    def _fetch_index_from_yfiua(self, index: Index) -> set[str]:
+        """Fetch index constituents from yfiua GitHub CSV."""
+        url_map = {
+            Index.SP500: self.YFIUA_SP500_URL,
+            Index.DOW: self.YFIUA_DOW_URL,
+            Index.NASDAQ100: self.YFIUA_NASDAQ100_URL,
+        }
+        url = url_map[index]
+
+        try:
+            csv_text = self._http_get_text(url)
+            reader = csv.DictReader(StringIO(csv_text))
+            tickers = set()
+            for row in reader:
+                symbol = row.get("Symbol", "").strip()
+                if symbol:
+                    tickers.add(self._normalize_ticker(symbol))
+            logger.info(f"Fetched {len(tickers)} tickers for {index.value} from yfiua")
+            return tickers
+        except Exception as e:
+            logger.warning(f"Failed to fetch {index.value} from yfiua: {e}")
+            return set()
+
+    def _fetch_combined_universe(self) -> dict[str, StockInfo]:
+        """
+        Fetch combined universe from all indices with membership tracking.
+
+        Returns dict with all unique tickers, each tagged with index membership.
+        Sector data comes from S&P 500 Wikipedia (most comprehensive).
+        """
+        # Fetch each index from yfiua
+        sp500_tickers = self._fetch_index_from_yfiua(Index.SP500)
+        dow_tickers = self._fetch_index_from_yfiua(Index.DOW)
+        nasdaq100_tickers = self._fetch_index_from_yfiua(Index.NASDAQ100)
+
+        # Cache for filter_by_index
+        self._index_cache = {
+            Index.SP500: sp500_tickers,
+            Index.DOW: dow_tickers,
+            Index.NASDAQ100: nasdaq100_tickers,
+        }
+
+        # Get sector data from Wikipedia (fallback to S&P 500 page)
+        sp500_data = self._fetch_sp500()
+
+        # Build combined universe
+        all_tickers = sp500_tickers | dow_tickers | nasdaq100_tickers
+        universe: dict[str, StockInfo] = {}
+
+        for ticker in all_tickers:
+            # Determine index membership
+            indices = []
+            if ticker in sp500_tickers:
+                indices.append(Index.SP500)
+            if ticker in dow_tickers:
+                indices.append(Index.DOW)
+            if ticker in nasdaq100_tickers:
+                indices.append(Index.NASDAQ100)
+
+            # Get sector from S&P 500 data, fallback to static mapping
+            if ticker in sp500_data:
+                info = sp500_data[ticker]
+                universe[ticker] = StockInfo(
+                    ticker=ticker,
+                    name=info.name,
+                    sector=info.sector,
+                    industry=info.industry,
+                    indices=indices,
+                )
+            else:
+                # Not in S&P 500 - use fallback sector or "unknown"
+                sector = self.FALLBACK_SECTORS.get(ticker, "technology")  # Most NASDAQ-only are tech
+                universe[ticker] = StockInfo(
+                    ticker=ticker,
+                    name=ticker,
+                    sector=sector,
+                    industry="",
+                    indices=indices,
+                )
+
+        logger.info(
+            f"Combined universe: {len(universe)} unique tickers "
+            f"(SP500: {len(sp500_tickers)}, Dow: {len(dow_tickers)}, NASDAQ-100: {len(nasdaq100_tickers)})"
+        )
+        return universe
+
     def _fetch_sp500(self) -> dict[str, StockInfo]:
         """Fetch S&P 500 constituents from Wikipedia."""
         try:
@@ -195,7 +342,7 @@ class UniverseProvider(BaseAdapter):
             return {}
 
     def _get_fallback(self) -> dict[str, StockInfo]:
-        """Return fallback static list."""
+        """Return fallback static list with S&P 500 membership."""
         stocks = {}
         for ticker in self.FALLBACK_TICKERS:
             sector = self.FALLBACK_SECTORS.get(ticker, "unknown")
@@ -204,15 +351,21 @@ class UniverseProvider(BaseAdapter):
                 name=ticker,  # Name unknown in fallback
                 sector=sector,
                 industry="",
+                indices=[Index.SP500],  # Fallback are all S&P 500
             )
         return stocks
 
-    def get_universe(self, force_refresh: bool = False) -> dict[str, StockInfo]:
+    def get_universe(
+        self,
+        force_refresh: bool = False,
+        indices: list[Index] | None = None,
+    ) -> dict[str, StockInfo]:
         """
         Get stock universe with caching.
 
         Args:
             force_refresh: Bypass cache and fetch fresh data
+            indices: Filter to specific indices (default: all)
 
         Returns:
             Dict of ticker -> StockInfo
@@ -221,10 +374,13 @@ class UniverseProvider(BaseAdapter):
         if not force_refresh and self._universe_cache:
             age = datetime.now() - (self._universe_cached_at or datetime.min)
             if age < self.UNIVERSE_CACHE_TTL:
-                return self._universe_cache
+                universe = self._universe_cache
+                if indices:
+                    return self._filter_universe_by_indices(universe, indices)
+                return universe
 
-        # Fetch fresh
-        universe = self._fetch_sp500()
+        # Fetch combined universe from all indices
+        universe = self._fetch_combined_universe()
 
         # Fallback if fetch failed
         if not universe:
@@ -235,7 +391,45 @@ class UniverseProvider(BaseAdapter):
         self._universe_cache = universe
         self._universe_cached_at = datetime.now()
 
+        if indices:
+            return self._filter_universe_by_indices(universe, indices)
         return universe
+
+    def _filter_universe_by_indices(
+        self,
+        universe: dict[str, StockInfo],
+        indices: list[Index],
+    ) -> dict[str, StockInfo]:
+        """Filter universe to only include stocks in specified indices."""
+        return {
+            ticker: info
+            for ticker, info in universe.items()
+            if any(idx in info.indices for idx in indices)
+        }
+
+    def filter_by_index(
+        self,
+        index: Index,
+        force_refresh: bool = False,
+    ) -> list[str]:
+        """Get tickers in a specific index."""
+        universe = self.get_universe(force_refresh)
+        return [
+            ticker for ticker, info in universe.items()
+            if index in info.indices
+        ]
+
+    def get_sp500_tickers(self, force_refresh: bool = False) -> list[str]:
+        """Get S&P 500 tickers only."""
+        return self.filter_by_index(Index.SP500, force_refresh)
+
+    def get_dow_tickers(self, force_refresh: bool = False) -> list[str]:
+        """Get Dow 30 tickers only."""
+        return self.filter_by_index(Index.DOW, force_refresh)
+
+    def get_nasdaq100_tickers(self, force_refresh: bool = False) -> list[str]:
+        """Get NASDAQ-100 tickers only."""
+        return self.filter_by_index(Index.NASDAQ100, force_refresh)
 
     def get_tickers(self, force_refresh: bool = False) -> list[str]:
         """Get list of tickers in universe."""
@@ -287,11 +481,33 @@ def get_universe_provider() -> UniverseProvider:
     return _provider
 
 
-def get_sp500_tickers() -> list[str]:
-    """Convenience function to get S&P 500 tickers."""
+def get_all_tickers() -> list[str]:
+    """Get all tickers in combined universe (S&P 500 + Dow + NASDAQ-100)."""
     return get_universe_provider().get_tickers()
 
 
+def get_sp500_tickers() -> list[str]:
+    """Get S&P 500 tickers only."""
+    return get_universe_provider().get_sp500_tickers()
+
+
+def get_dow_tickers() -> list[str]:
+    """Get Dow 30 tickers only."""
+    return get_universe_provider().get_dow_tickers()
+
+
+def get_nasdaq100_tickers() -> list[str]:
+    """Get NASDAQ-100 tickers only."""
+    return get_universe_provider().get_nasdaq100_tickers()
+
+
 def get_sector_for_ticker(ticker: str) -> str:
-    """Convenience function to get sector for a ticker."""
+    """Get sector for a ticker."""
     return get_universe_provider().get_sector_for_ticker(ticker)
+
+
+def get_index_membership(ticker: str) -> list[str]:
+    """Get index membership badges for a ticker."""
+    universe = get_universe_provider().get_universe()
+    info = universe.get(ticker.upper())
+    return info.index_badges if info else []

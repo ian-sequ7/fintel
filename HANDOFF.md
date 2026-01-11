@@ -26,6 +26,7 @@ Fintel is a financial intelligence dashboard with stock picks, smart money track
 | Signal attribution output | ✅ DONE | `PickSummary`, `format_pick_with_attribution()` |
 | Smart money 13F scoring | ✅ DONE | `InstitutionalHolding`, `FUND_REPUTATION`, `holdings_to_institutional()` |
 | **Insider transactions** | ✅ DONE | Extended FinnhubAdapter with `/stock/insider-transactions` (free tier) |
+| **Expanded universe** | ✅ DONE | S&P 500 + Dow 30 + NASDAQ-100 (516 unique tickers) |
 
 **Remaining Work**:
 
@@ -97,10 +98,33 @@ LONG:   Momentum 10% | Quality 30% | Valuation 30% | Growth 15% | Analyst 10% | 
   - `get_insider_transactions(ticker, days)` - General query
   - `get_c_suite_buys(ticker, days)` - Cluster detection filter
 
+### Expanded Universe (Completed)
+
+**Coverage:** S&P 500 + Dow 30 + NASDAQ-100 = 516 unique tickers (after deduplication)
+
+**Data source:** yfiua/index-constituents GitHub (updated monthly, Yahoo-compatible symbols)
+
+**Overlap analysis:**
+- S&P 500 ∩ NASDAQ-100: 88 stocks
+- S&P 500 ∩ Dow 30: 30 stocks (all Dow in S&P)
+- All three indices: 7 stocks (AAPL, AMGN, AMZN, CSCO, HON, MSFT, NVDA)
+
+**Files modified:**
+- `adapters/universe.py` - Added `Index` enum, `_fetch_index_from_yfiua()`, `_fetch_combined_universe()`, index membership tracking
+- `adapters/__init__.py` - Exported new functions: `get_all_tickers()`, `get_dow_tickers()`, `get_nasdaq100_tickers()`, `get_index_membership()`
+- `scripts/generate_frontend_data.py` - Updated batch fetch to include index badges
+- `frontend/src/data/types.ts` - Added `IndexMembership` type, `indices` field
+- `frontend/src/data/heatmap-utils.ts` - Added index filter options
+- `frontend/src/components/islands/HeatMap.tsx` - Added index filter buttons (S&P 500, Dow, NASDAQ-100)
+- `frontend/src/components/composed/PickCard.astro` - Added index membership badges
+
+**Performance:** yf.download() handles 516 tickers in ~9 seconds (56 tickers/sec)
+
 ### Research Sources
 
 - [Insider Cluster Buying (2IQ Research)](https://www.2iqresearch.com/blog/what-is-cluster-buying-and-why-is-it-such-a-powerful-insider-signal)
 - [Days to Cover (NBER)](https://www.nber.org/system/files/working_papers/w21166/w21166.pdf)
+- [yfiua/index-constituents](https://github.com/yfiua/index-constituents) - Monthly updated index constituent CSVs
 
 ---
 

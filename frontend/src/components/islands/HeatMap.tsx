@@ -188,13 +188,39 @@ export default function HeatMap({
       {/* Controls */}
       <div className="bg-bg-surface border border-border rounded-lg p-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
+          {/* Index Filter */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-text-secondary">Index:</span>
+            <div className="flex rounded-lg border border-border overflow-hidden">
+              {(
+                [
+                  { value: "all", label: "All" },
+                  { value: "sp500", label: "S&P 500" },
+                  { value: "dow", label: "Dow 30" },
+                  { value: "nasdaq100", label: "NASDAQ-100" },
+                ] as const
+              ).map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setView(option.value)}
+                  className={`px-3 py-1.5 text-sm font-medium transition-colors ${
+                    view === option.value
+                      ? "bg-text-primary text-bg-base"
+                      : "bg-bg-surface text-text-secondary hover:bg-bg-elevated"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* View Filter */}
           <div className="flex items-center gap-2">
             <span className="text-sm text-text-secondary">View:</span>
             <div className="flex rounded-lg border border-border overflow-hidden">
               {(
                 [
-                  { value: "all", label: "All" },
                   { value: "watchlist", label: "Watchlist" },
                   { value: "topConviction", label: "Top 20" },
                   { value: "bySector", label: "By Sector" },
@@ -393,6 +419,14 @@ export default function HeatMap({
                   {SECTOR_LABELS[tooltip.tile.sector]}
                 </span>
               </div>
+              {tooltip.tile.indices.length > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-text-secondary">Indices:</span>
+                  <span className="font-medium text-right">
+                    {tooltip.tile.indices.join(", ")}
+                  </span>
+                </div>
+              )}
             </div>
             <div className="mt-2 pt-2 border-t border-border text-xs text-text-secondary">
               Click to view details

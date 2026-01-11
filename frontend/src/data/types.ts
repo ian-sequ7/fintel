@@ -58,6 +58,7 @@ export interface StockPick {
   marketCap?: number;
   peRatio?: number;
   volume?: number;
+  indices?: IndexMembership[]; // Which indices this stock belongs to
 }
 
 export interface StockDetail extends StockPick {
@@ -81,7 +82,13 @@ export interface StockFundamentals {
 }
 
 /**
- * Lite stock data - minimal price info for S&P 500 heatmap display.
+ * Index membership - which major US indices the stock belongs to.
+ */
+export type IndexMembership = "S&P 500" | "Dow 30" | "NASDAQ-100";
+
+/**
+ * Lite stock data - minimal price info for heatmap display.
+ * Includes S&P 500 + Dow 30 + NASDAQ-100 stocks.
  * Full fundamentals/history only available for scored picks.
  */
 export interface LiteStock {
@@ -93,6 +100,7 @@ export interface LiteStock {
   priceChangePercent: number;
   volume?: number;
   marketCap?: number;
+  indices?: IndexMembership[]; // Which indices this stock belongs to
   isLite: true;
 }
 

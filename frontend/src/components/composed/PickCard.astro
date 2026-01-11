@@ -45,13 +45,20 @@ const priceChangePositive = pick.priceChange >= 0;
     className,
   ]}
 >
-  <!-- Header: Ticker + Timeframe + Compare -->
+  <!-- Header: Ticker + Timeframe + Index Badges + Compare -->
   <div class="flex items-start justify-between mb-2">
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 flex-wrap">
       <span class="font-mono text-lg font-bold text-text-primary">
         {pick.ticker}
       </span>
       <Badge text={timeframeLabels[pick.timeframe]} variant={timeframeColors[pick.timeframe]} size="sm" />
+      {!compact && pick.indices && pick.indices.map((index: string) => (
+        <Badge
+          text={index === "S&P 500" ? "S&P" : index === "NASDAQ-100" ? "NDX" : "DOW"}
+          variant="info"
+          size="sm"
+        />
+      ))}
     </div>
     {!compact && (
       <div class="flex items-center gap-1">

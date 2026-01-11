@@ -3,7 +3,7 @@
  * Data transformation and layout algorithms for the heat map visualization
  */
 
-import type { StockPick, Sector } from "./types";
+import type { StockPick, Sector, IndexMembership } from "./types";
 
 // ============================================================================
 // Types
@@ -23,6 +23,7 @@ export interface HeatMapTileData {
   stopLoss?: number | null;
   value: number; // Normalized value for sizing (0-1)
   isWatchlist: boolean;
+  indices: IndexMembership[]; // Which indices this stock belongs to
 }
 
 export interface TileLayout {
@@ -34,7 +35,7 @@ export interface TileLayout {
 }
 
 export type SizeByOption = "marketCap" | "conviction";
-export type ViewOption = "all" | "watchlist" | "topConviction" | "bySector";
+export type ViewOption = "all" | "watchlist" | "topConviction" | "bySector" | "sp500" | "dow" | "nasdaq100";
 
 // ============================================================================
 // Color Utilities
@@ -114,6 +115,7 @@ export function _transformToHeatMapData(
     stopLoss: stock.stopLoss,
     value: (value - minValue) / range,
     isWatchlist: watchlistSet.has(stock.ticker),
+    indices: stock.indices || [],
   }));
 }
 
@@ -149,6 +151,12 @@ export function _filterByView(
       return [...data]
         .sort((a, b) => b.convictionScore - a.convictionScore)
         .slice(0, 20);
+    case "sp500":
+      return data.filter((tile) => tile.indices.includes("S&P 500"));
+    case "dow":
+      return data.filter((tile) => tile.indices.includes("Dow 30"));
+    case "nasdaq100":
+      return data.filter((tile) => tile.indices.includes("NASDAQ-100"));
     case "all":
     case "bySector":
     default:
