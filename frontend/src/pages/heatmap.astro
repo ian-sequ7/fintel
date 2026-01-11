@@ -25,6 +25,8 @@ const mergedStocks: StockPick[] = allStocks.map((stock: LiteStock) => {
       currentPrice: stock.currentPrice,
       priceChange: stock.priceChange,
       priceChangePercent: stock.priceChangePercent,
+      // Include index membership from allStocks
+      indices: stock.indices || [],
     };
   }
   // Convert lite stock to StockPick format with defaults
@@ -41,6 +43,7 @@ const mergedStocks: StockPick[] = allStocks.map((stock: LiteStock) => {
     sector: (stock.sector as Sector) || "technology",
     volume: stock.volume,
     marketCap: stock.marketCap,
+    indices: stock.indices || [],
   };
 });
 
