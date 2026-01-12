@@ -38,10 +38,12 @@ The scoring engine uses 6 weighted factors based on academic research:
 - **Options Flow**: Unusual options activity with volume/OI analysis
 
 ### Daily Briefing
-- Economic calendar (NFP, CPI, GDP, FOMC) with impact ratings
+- Economic calendar (NFP, CPI, GDP, PCE, Retail Sales, Housing Starts, PMI) with impact ratings
 - Historical event reactions ("Last NFP beat → SPY +1.2%")
 - Pre-market movers and earnings calendar
 - Impact-scored news from multiple sources
+
+**Note**: Economic calendar requires FRED API key (free). Tracked events are major market-moving releases only. Events like CB Employment Trends Index, Fed speeches, and Treasury auctions require premium data sources and are not included.
 
 ### Macro Risk Analysis
 8 risk categories with severity scoring:
@@ -159,7 +161,16 @@ npm run dev
 | API | Required | Purpose | Get Key |
 |-----|----------|---------|---------|
 | Finnhub | Yes | Earnings, insider data, company info | [finnhub.io](https://finnhub.io/register) |
-| FRED | Optional | 22+ economic indicators | [fred.stlouisfed.org](https://fred.stlouisfed.org/docs/api/api_key.html) |
+| FRED | Recommended | 22+ economic indicators + calendar | [fred.stlouisfed.org](https://fred.stlouisfed.org/docs/api/api_key.html) |
+
+**FRED API Key Setup**:
+```bash
+# In .env file, add:
+FINTEL_FRED_KEY=your_fred_api_key_here
+
+# Get free key: https://fred.stlouisfed.org/docs/api/api_key.html
+# Without this key, economic calendar will be empty
+```
 
 ### Configuration
 
