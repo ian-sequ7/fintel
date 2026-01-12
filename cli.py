@@ -7,6 +7,7 @@ Usage:
     fintel news [--category CATEGORY] [--limit N]
     fintel macro
     fintel status
+    fintel backtest [--start DATE] [--end DATE] [--timeframe TF] [--picks N]
 
 Examples:
     fintel report                          # Full markdown report to stdout
@@ -15,6 +16,8 @@ Examples:
     fintel report --verbose                # Debug data flow
     fintel picks --timeframe short -n 3    # Top 3 short-term picks
     fintel news --category market          # Market-wide news only
+    fintel backtest --start 2024-08-01 --end 2024-12-31  # Run backtest
+    fintel backtest --timeframe short -n 3 -f json      # JSON output
 """
 
 import argparse
@@ -267,6 +270,73 @@ def cmd_macro(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_backtest(args: argparse.Namespace) -> int:
+    """Run historical backtest of stock picking strategy."""
+    setup_logging(args.verbose)
+
+    from datetime import date
+    from domain.backtest import run_backtest, BacktestConfig
+
+    # Parse dates
+    try:
+        start_date = date.fromisoformat(args.start)
+        end_date = date.fromisoformat(args.end)
+    except ValueError as e:
+        print(f"Error parsing dates: {e}", file=sys.stderr)
+        return 1
+
+    if start_date >= end_date:
+        print("Error: start date must be before end date", file=sys.stderr)
+        return 1
+
+    # Get universe
+    universe = None
+    if args.tickers:
+        universe = [t.strip().upper() for t in args.tickers.split(",")]
+
+    config = BacktestConfig(
+        top_n_picks=args.picks,
+        min_conviction=args.min_conviction,
+    )
+
+    print(f"Running backtest from {start_date} to {end_date}...", file=sys.stderr)
+    print(f"Timeframe: {args.timeframe}, Top {args.picks} picks per month", file=sys.stderr)
+
+    try:
+        result = run_backtest(
+            start_date=start_date,
+            end_date=end_date,
+            timeframe=args.timeframe,
+            config=config,
+            universe=universe,
+            verbose=args.verbose,
+        )
+    except Exception as e:
+        print(f"Backtest failed: {e}", file=sys.stderr)
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
+        return 1
+
+    # Output
+    if args.format == "json":
+        output = json.dumps(result.to_dict(), indent=2)
+        if args.output:
+            Path(args.output).write_text(output)
+            print(f"Results written to {args.output}", file=sys.stderr)
+        else:
+            print(output)
+    else:
+        summary = result.summary()
+        if args.output:
+            Path(args.output).write_text(summary)
+            print(f"Results written to {args.output}", file=sys.stderr)
+        else:
+            print(summary)
+
+    return 0
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     """Show pipeline status and data source health."""
     setup_logging(args.verbose)
@@ -444,6 +514,47 @@ Examples:
     status_parser = subparsers.add_parser("status", help="Check data source health")
     status_parser.add_argument("--verbose", "-v", action="store_true", help="Show details")
     status_parser.set_defaults(func=cmd_status)
+
+    # Backtest command
+    backtest_parser = subparsers.add_parser("backtest", help="Run historical backtest")
+    backtest_parser.add_argument(
+        "--start",
+        default="2024-08-01",
+        help="Start date (YYYY-MM-DD)",
+    )
+    backtest_parser.add_argument(
+        "--end",
+        default="2025-12-31",
+        help="End date (YYYY-MM-DD)",
+    )
+    backtest_parser.add_argument(
+        "--timeframe",
+        choices=["short", "medium", "long"],
+        default="medium",
+        help="Pick timeframe to test",
+    )
+    backtest_parser.add_argument(
+        "-n", "--picks",
+        type=int,
+        default=5,
+        help="Number of picks per month",
+    )
+    backtest_parser.add_argument(
+        "--min-conviction",
+        type=float,
+        default=0.4,
+        help="Minimum conviction score (0-1)",
+    )
+    backtest_parser.add_argument("-t", "--tickers", help="Comma-separated tickers (default: full universe)")
+    backtest_parser.add_argument("-o", "--output", help="Output file path")
+    backtest_parser.add_argument(
+        "-f", "--format",
+        choices=["text", "json"],
+        default="text",
+        help="Output format",
+    )
+    backtest_parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
+    backtest_parser.set_defaults(func=cmd_backtest)
 
     args = parser.parse_args(argv)
     return args.func(args)

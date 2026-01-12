@@ -805,10 +805,9 @@ class InsiderTransaction:
     """
     Insider transaction for cluster detection.
 
-    NOTE: Form 4 data does not currently exist in the codebase.
-    This is a DATA GAP - insider cluster detection requires a
-    Form 4 adapter to be implemented (see SEC EDGAR Form 4 filings).
+    Data source: Finnhub /stock/insider-transactions (Form 4 filings).
     """
+    ticker: str  # Stock ticker
     officer_title: str  # CEO, CFO, COO, Director, etc.
     transaction_type: str  # buy, sell
     shares: int
@@ -1064,6 +1063,9 @@ def observations_to_insider_transactions(
     for obs in observations:
         data = getattr(obs, "data", obs) if hasattr(obs, "data") else obs
 
+        # Get ticker from observation
+        ticker = getattr(obs, "ticker", None) or data.get("ticker", "")
+
         # Parse transaction date
         txn_date_str = data.get("transaction_date", "")
         try:
@@ -1072,6 +1074,7 @@ def observations_to_insider_transactions(
             txn_date = datetime.now()
 
         result.append(InsiderTransaction(
+            ticker=ticker,
             officer_title=data.get("officer_title", "Unknown"),
             transaction_type=data.get("transaction_type", "buy"),
             shares=data.get("shares_change", 0),
@@ -1116,6 +1119,7 @@ def db_transactions_to_insider(
             txn_date = datetime.now()
 
         result.append(InsiderTransaction(
+            ticker=getattr(txn, "ticker", ""),
             officer_title=getattr(txn, "officer_title", "Unknown"),
             transaction_type=getattr(txn, "transaction_type", "buy"),
             shares=getattr(txn, "shares", 0),

@@ -32,6 +32,7 @@ from db import (
     NewsItem as DBNewsItem,
     HedgeFundHolding,
 )
+from domain.backtest import run_backtest, BacktestConfig, BacktestResult
 
 
 def map_sector(sector: str | None) -> str:
@@ -66,6 +67,104 @@ def map_trend(trend: Trend) -> str:
         Trend.FALLING: "down",
         Trend.STABLE: "flat",
     }.get(trend, "flat")
+
+
+def backtest_result_to_frontend(result: BacktestResult) -> dict:
+    """Convert BacktestResult to frontend format."""
+    return {
+        "startDate": result.start_date.isoformat(),
+        "endDate": result.end_date.isoformat(),
+        "timeframe": result.timeframe,
+        "totalTrades": result.total_trades,
+        "tickersAnalyzed": result.tickers_analyzed,
+        "performance": {
+            "totalReturn": round(result.total_return, 2),
+            "benchmarkReturn": round(result.benchmark_return, 2),
+            "alpha": round(result.alpha, 2),
+            "hitRate": round(result.hit_rate, 1),
+            "winRate": round(result.win_rate, 1),
+            "avgTradeReturn": round(result.avg_trade_return, 2),
+            "avgAlphaPerTrade": round(result.avg_alpha_per_trade, 2),
+            "sharpeRatio": round(result.sharpe_ratio, 2),
+            "maxDrawdown": round(result.max_drawdown, 2),
+            "winLossRatio": round(result.win_loss_ratio, 2),
+        },
+        "bestTrade": {
+            "ticker": result.best_trade.ticker,
+            "returnPct": round(result.best_trade.return_pct, 2),
+        } if result.best_trade else None,
+        "worstTrade": {
+            "ticker": result.worst_trade.ticker,
+            "returnPct": round(result.worst_trade.return_pct, 2),
+        } if result.worst_trade else None,
+        "monthlyReturns": [
+            {
+                "month": mr.month.isoformat(),
+                "portfolioReturn": round(mr.portfolio_return, 2),
+                "benchmarkReturn": round(mr.benchmark_return, 2),
+                "numPicks": mr.num_picks,
+                "topPerformer": mr.top_performer,
+                "worstPerformer": mr.worst_performer,
+            }
+            for mr in result.monthly_returns
+        ],
+        "limitations": [
+            "Uses current fundamentals (lookahead bias for value/quality)",
+            "No transaction costs modeled",
+            "Survivorship bias if universe changed",
+        ],
+        "executedAt": result.executed_at.isoformat(),
+    }
+
+
+def generate_backtest_data(universe: list[str]) -> dict | None:
+    """
+    Run backtests for all timeframes and return frontend-formatted data.
+
+    Returns None if backtest fails or insufficient data.
+    """
+    from datetime import date
+
+    # Define backtest period - use available historical data
+    # Data range: July 2024 to present
+    start_date = date(2024, 8, 1)
+    end_date = date(2025, 12, 31)
+
+    config = BacktestConfig(
+        top_n_picks=5,
+        min_conviction=0.4,
+    )
+
+    results = {}
+    now = datetime.now().isoformat()
+
+    for timeframe in ["short", "medium", "long"]:
+        try:
+            print(f"  Running {timeframe} timeframe backtest...")
+            result = run_backtest(
+                start_date=start_date,
+                end_date=end_date,
+                timeframe=timeframe,
+                config=config,
+                universe=universe[:30],  # Use top 30 tickers for speed
+                verbose=False,
+            )
+            results[timeframe] = backtest_result_to_frontend(result)
+            print(f"    {timeframe}: {result.alpha:+.1f}% alpha, {result.hit_rate:.0f}% hit rate")
+        except Exception as e:
+            print(f"    {timeframe} backtest failed: {e}")
+            results[timeframe] = None
+
+    # Return None if all failed
+    if all(r is None for r in results.values()):
+        return None
+
+    return {
+        "short": results.get("short"),
+        "medium": results.get("medium"),
+        "long": results.get("long"),
+        "lastUpdated": now,
+    }
 
 
 def pick_to_frontend(pick, metrics=None) -> dict:
@@ -718,7 +817,7 @@ def fetch_briefing_data(sp500_tickers: list[str] | None = None) -> dict | None:
         return None
 
 
-def generate_report_json(result, config: PipelineConfig, stock_details: dict, sp500_prices: dict | None = None, briefing_data: dict | None = None) -> dict:
+def generate_report_json(result, config: PipelineConfig, stock_details: dict, sp500_prices: dict | None = None, briefing_data: dict | None = None, backtest_data: dict | None = None) -> dict:
     """Convert pipeline ReportData to frontend FinancialReport format."""
     now = datetime.now().isoformat()
 
@@ -880,6 +979,7 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict, sp
             "lastUpdated": now,
         },
         "briefing": briefing_data,
+        "backtest": backtest_data,
         "summary": {
             "totalPicks": len(all_picks_list),
             "totalStocks": len(sp500_prices) if sp500_prices else 0,
@@ -950,8 +1050,19 @@ def main():
     else:
         print("  Briefing unavailable (check Finnhub API key)")
 
+    # Generate backtest data (historical performance validation)
+    print("\nGenerating backtest data...")
+    backtest_data = generate_backtest_data(sp500_tickers)
+    if backtest_data:
+        for tf in ["short", "medium", "long"]:
+            if backtest_data.get(tf):
+                perf = backtest_data[tf]["performance"]
+                print(f"  {tf.upper()}: {perf['alpha']:+.1%} alpha, {perf['hitRate']:.1%} hit rate")
+    else:
+        print("  Backtest data unavailable")
+
     # Convert to frontend format
-    report = generate_report_json(result, config, stock_details, sp500_prices, briefing_data)
+    report = generate_report_json(result, config, stock_details, sp500_prices, briefing_data, backtest_data)
 
     # Write to frontend data directory
     output_path = Path(__file__).parent.parent / "frontend" / "src" / "data" / "report.json"

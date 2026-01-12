@@ -47,10 +47,13 @@ from domain import (
     TimeframeRules,
     score_stock_v2,
     score_stocks,
+    # Insider transactions
+    InsiderTransaction,
+    observations_to_insider_transactions,
 )
 from domain.models import Timeframe
 from domain.analysis_types import RiskCategory
-from adapters import YahooAdapter, FredAdapter, RedditAdapter, RssAdapter, CongressAdapter, SEC13FAdapter, get_universe_provider
+from adapters import YahooAdapter, FredAdapter, RedditAdapter, RssAdapter, CongressAdapter, SEC13FAdapter, FinnhubAdapter, get_universe_provider
 from ports import FetchError, RateLimitError
 from presentation.report import ReportData
 
@@ -369,6 +372,7 @@ class DataFetcher:
         self._rss: RssAdapter | None = None
         self._congress: CongressAdapter | None = None
         self._sec_13f: SEC13FAdapter | None = None
+        self._finnhub: FinnhubAdapter | None = None
 
     @property
     def yahoo(self) -> YahooAdapter:
@@ -406,6 +410,12 @@ class DataFetcher:
             self._sec_13f = SEC13FAdapter()
         return self._sec_13f
 
+    @property
+    def finnhub(self) -> FinnhubAdapter:
+        if self._finnhub is None:
+            self._finnhub = FinnhubAdapter()
+        return self._finnhub
+
     def _log(self, msg: str) -> None:
         """Log if verbose mode enabled."""
         if self.config.verbose:
@@ -437,6 +447,7 @@ class DataFetcher:
             "news": [],
             "social": [],
             "smart_money": [],
+            "insider_transactions": [],
         }
 
         # Resolve universe
@@ -520,6 +531,20 @@ class DataFetcher:
                 )
                 if result.status == SourceStatus.OK:
                     results["smart_money"].extend(result.observations)
+
+            # Insider transactions (Form 4) - top 35 tickers to respect rate limits
+            self._log("Fetching insider transactions (Form 4)...")
+            insider_count = 0
+            for ticker in tickers[:35]:
+                result = self._fetch_source(
+                    f"insider_{ticker}",
+                    lambda t=ticker: self.finnhub.get_insider_transactions(t, days=90),
+                )
+                if result.status == SourceStatus.OK:
+                    results["insider_transactions"].extend(result.observations)
+                    insider_count += len(result.observations)
+            if insider_count > 0:
+                self._log(f"  insider_transactions: {insider_count} observations")
 
         self.status.completed_at = datetime.now()
 
@@ -933,9 +958,16 @@ class Analyzer:
         metrics: dict[str, StockMetrics],
         sectors: dict[str, str],
         macro_context: MacroContext,
+        insider_transactions: list[InsiderTransaction] | None = None,
     ) -> tuple[list[StockPick], dict[str, ConvictionScore], list[ScoredPick]]:
         """
         Analyze stocks using the v2 systematic scoring algorithm.
+
+        Args:
+            metrics: Stock metrics by ticker
+            sectors: Sector mapping by ticker
+            macro_context: Macro economic context
+            insider_transactions: Form 4 insider transactions for cluster detection
 
         Returns:
             (picks, scores, scored_picks) - StockPick for report compatibility,
@@ -954,6 +986,13 @@ class Analyzer:
                 sector.lower(), 20.0  # Default PE if sector unknown
             )
 
+            # Filter insider transactions for this ticker
+            ticker_insider = (
+                [t for t in insider_transactions if t.ticker == ticker]
+                if insider_transactions
+                else None
+            )
+
             # Score using v2 algorithm
             scored = score_stock_v2(
                 metrics=m,
@@ -964,6 +1003,7 @@ class Analyzer:
                 weights=self.config.scoring_weights,
                 sensitivities=self.config.sector_sensitivities,
                 timeframe_rules=self.config.timeframe_rules,
+                insider_transactions=ticker_insider,
             )
             scored_picks.append(scored)
 
@@ -1081,6 +1121,12 @@ class Pipeline:
             raw_data.get("social", []),
         )
 
+        # Convert insider observations to InsiderTransaction format
+        insider_obs = raw_data.get("insider_transactions", [])
+        insider_transactions = observations_to_insider_transactions(insider_obs) if insider_obs else None
+        if insider_transactions:
+            self._log(f"  Converted {len(insider_transactions)} insider transactions for scoring")
+
         # Phase 3: Analyze
         self._log("Phase 3: Running analysis...")
 
@@ -1088,7 +1134,7 @@ class Pipeline:
             # Use v2 systematic scoring
             self._log("Using v2 systematic scoring algorithm...")
             picks, scores, scored_picks = self.analyzer.analyze_stocks_v2(
-                metrics, sectors, macro_context
+                metrics, sectors, macro_context, insider_transactions
             )
         else:
             # Use legacy v1 scoring

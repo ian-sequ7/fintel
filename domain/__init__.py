@@ -50,6 +50,9 @@ from .scoring import (
     classify_timeframe as classify_timeframe_v2,
     generate_thesis as generate_thesis_v2,
     identify_risks,
+    # Insider transactions
+    InsiderTransaction,
+    observations_to_insider_transactions,
 )
 from .news import (
     NewsCategory,
@@ -77,6 +80,14 @@ from .briefing import (
     DailyBriefing,
     generate_daily_briefing,
     briefing_to_dict,
+)
+from .backtest import (
+    BacktestConfig,
+    BacktestTrade,
+    BacktestResult,
+    MonthlyReturn,
+    TradeOutcome,
+    run_backtest,
 )
 from .smart_money import (
     SmartMoneySignalType,
@@ -145,6 +156,9 @@ __all__ = [
     "classify_timeframe_v2",
     "generate_thesis_v2",
     "identify_risks",
+    # Insider transactions
+    "InsiderTransaction",
+    "observations_to_insider_transactions",
     # Serialization
     "to_json_dict",
     "from_json_dict",
@@ -186,4 +200,11 @@ __all__ = [
     "DailyBriefing",
     "generate_daily_briefing",
     "briefing_to_dict",
+    # Backtesting
+    "BacktestConfig",
+    "BacktestTrade",
+    "BacktestResult",
+    "MonthlyReturn",
+    "TradeOutcome",
+    "run_backtest",
 ]
