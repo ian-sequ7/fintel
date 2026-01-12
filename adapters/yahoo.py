@@ -849,7 +849,10 @@ class YahooAdapter(BaseAdapter):
                     price = float(latest["Close"])
                     change = price - prev_close
                     change_pct = (change / prev_close * 100) if prev_close else 0
-                    volume = int(latest["Volume"]) if latest["Volume"] else 0
+
+                    # Sum all pre-market 1-minute volumes for total volume
+                    today_data = data[data.index.date == data.index[-1].date()]
+                    volume = int(today_data["Volume"].sum()) if len(today_data) > 0 else 0
 
                     if abs(change_pct) >= min_change_pct:
                         movers.append({
@@ -886,12 +889,14 @@ class YahooAdapter(BaseAdapter):
                         change = price - prev_close
                         change_pct = (change / prev_close * 100) if prev_close else 0
 
-                        # Get volume
+                        # Get volume - sum all pre-market 1-minute intervals for total volume
                         volume = 0
                         if "Volume" in data.columns.get_level_values(0):
                             vol_data = data["Volume"][ticker].dropna()
                             if len(vol_data) >= 1:
-                                volume = int(vol_data.iloc[-1])
+                                # Sum all 1-minute volumes to get total pre-market volume
+                                today_vol = vol_data[vol_data.index.date == vol_data.index[-1].date()]
+                                volume = int(today_vol.sum()) if len(today_vol) > 0 else 0
 
                         if abs(change_pct) >= min_change_pct:
                             movers.append({

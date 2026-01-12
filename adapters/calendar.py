@@ -9,6 +9,27 @@ Provides economic calendar data for daily market briefings using a hybrid approa
 
 Note: Finnhub /calendar/economic requires premium tier (403 on free).
 
+TRACKED EVENT TYPES (via FRED API):
+- Employment Situation (NFP) - First Friday of month
+- Consumer Price Index (CPI) - Mid-month
+- GDP - End of quarter
+- Personal Income/PCE - End of month
+- Retail Sales - Mid-month
+- Housing Starts - Mid-month
+- ISM Manufacturing PMI - First business day
+
+NOT TRACKED (require premium APIs or manual curation):
+- CB Employment Trends Index (Conference Board - no free API)
+- FOMC Member Speeches (Fed calendar - manual only, frequently change)
+- Treasury Auctions (Treasury operations, not economic data)
+- Regional Fed surveys (Philly Fed, Empire, etc.)
+- Consumer confidence surveys (non-govt)
+
+SETUP REQUIRED:
+- FRED API key: Set FINTEL_FRED_KEY in .env
+  Get free key at: https://fred.stlouisfed.org/docs/api/api_key.html
+- Without FRED key, only Finnhub premium economic calendar will be attempted
+
 Free tier limits: 60 API calls/minute (Finnhub), unlimited (FRED CSV).
 """
 
@@ -28,12 +49,13 @@ logger = logging.getLogger(__name__)
 
 
 # Major FRED release IDs for high-impact economic events
+# Note: FOMC (release 101) removed - FRED returns daily Fed communications, not actual meeting dates.
+# FOMC meeting dates should be sourced from Federal Reserve calendar directly.
 FRED_MAJOR_RELEASES = {
     50: ("Employment Situation", "NFP", "high"),        # Nonfarm Payrolls
     10: ("Consumer Price Index", "CPI", "high"),        # Inflation
     53: ("Gross Domestic Product", "GDP", "high"),      # GDP
     54: ("Personal Income and Outlays", "PCE", "high"), # PCE Inflation
-    101: ("FOMC Press Release", "FOMC", "high"),        # Fed decisions
     46: ("Retail Sales", "Retail", "medium"),           # Consumer spending
     13: ("Housing Starts", "Housing", "medium"),        # Housing market
     83: ("ISM Manufacturing PMI", "PMI", "medium"),     # Business activity
@@ -42,7 +64,7 @@ FRED_MAJOR_RELEASES = {
 
 class EventImpact(str, Enum):
     """Impact level of economic event."""
-    HIGH = "high"      # FOMC, NFP, CPI - major market movers
+    HIGH = "high"      # NFP, CPI, GDP, PCE - major market movers
     MEDIUM = "medium"  # Housing starts, consumer sentiment
     LOW = "low"        # Minor regional data
 
@@ -395,7 +417,15 @@ class CalendarAdapter(BaseAdapter):
         Fetch major economic release dates from FRED API.
 
         Uses FRED releases/dates endpoint to get scheduled dates for
-        high-impact economic indicators (NFP, CPI, GDP, PCE, FOMC).
+        high-impact economic indicators (NFP, CPI, GDP, PCE, Retail, Housing, PMI).
+
+        IMPORTANT: Requires FRED API key. Set FINTEL_FRED_KEY in .env.
+        Get free key at: https://fred.stlouisfed.org/docs/api/api_key.html
+
+        Events NOT included (require other sources):
+        - CB Employment Trends Index (Conference Board)
+        - FOMC Member Speeches (Fed calendar)
+        - Treasury Auctions (TreasuryDirect.gov)
 
         Args:
             from_date: Start date (default: today)
@@ -407,7 +437,11 @@ class CalendarAdapter(BaseAdapter):
         """
         api_key = self._get_fred_api_key()
         if not api_key:
-            logger.warning("FRED API key not configured for release dates")
+            logger.warning(
+                "FRED API key not configured. Set FINTEL_FRED_KEY in .env "
+                "to enable economic calendar. Get free key at: "
+                "https://fred.stlouisfed.org/docs/api/api_key.html"
+            )
             return []
 
         from_date = from_date or date.today()
@@ -427,7 +461,6 @@ class CalendarAdapter(BaseAdapter):
                 f"?release_id={release_id}"
                 f"&realtime_start={from_date.isoformat()}"
                 f"&realtime_end={to_date.isoformat()}"
-                f"&include_release_dates_with_no_data=true"
                 f"&api_key={api_key}"
                 f"&file_type=json"
             )
@@ -568,15 +601,25 @@ class CalendarAdapter(BaseAdapter):
                     for e in fred_events
                 ]
                 result["sources_used"].append("fred_releases")
+                logger.info(f"Fetched {len(fred_events)} FRED economic events")
             else:
                 # Fallback: try Finnhub economic calendar (premium, may 403)
+                logger.debug("FRED calendar unavailable, trying Finnhub premium...")
                 try:
                     finnhub_events = self.fetch(from_date=from_date, to_date=to_date)
                     result["economic_events"] = [obs.data for obs in finnhub_events]
                     if finnhub_events:
                         result["sources_used"].append("finnhub_economic")
+                        logger.info(f"Fetched {len(finnhub_events)} Finnhub economic events")
                 except (FetchError, DataError) as e:
-                    logger.debug(f"Finnhub economic calendar not available: {e}")
+                    logger.warning(
+                        f"Economic calendar unavailable: {e}. "
+                        "FRED API key not configured and Finnhub premium not available. "
+                        "Set FINTEL_FRED_KEY in .env to enable economic calendar. "
+                        "Note: Only major releases tracked (NFP, CPI, GDP, PCE, Retail, Housing, PMI). "
+                        "Events like CB Employment Trends, Fed speeches, and Treasury auctions "
+                        "require premium data sources."
+                    )
                     # Both FRED and Finnhub failed - calendar will be empty
                     pass
 
@@ -658,28 +701,23 @@ class CalendarAdapter(BaseAdapter):
         import yfinance as yf
 
         # Key events to track with their FRED series for actual values
-        # Format: event_type -> (series_id, display_name, unit, is_inverse)
+        # Format: event_type -> (series_id, display_name, unit, is_inverse, transform_type)
         # is_inverse=True means lower is better (like CPI, unemployment)
+        # transform_type: how to transform raw data into reported values
+        #   - "mom_change": Month-over-month change (NFP)
+        #   - "yoy_pct": Year-over-year percentage change (CPI)
+        #   - "mom_pct": Month-over-month percentage change (Retail)
+        #   - "level": Use raw value as-is (Unemployment, Housing)
+        #   - "qoq_annualized": Quarterly % change annualized (GDP)
         EVENT_SERIES = {
-            "NFP": ("PAYEMS", "Nonfarm Payrolls", "Thousands", False),
-            "CPI": ("CPIAUCSL", "Consumer Price Index", "% YoY", True),
-            "GDP": ("GDP", "Gross Domestic Product", "% QoQ", False),
-            "UNEMPLOYMENT": ("UNRATE", "Unemployment Rate", "%", True),
-            "RETAIL": ("RSXFS", "Retail Sales", "% MoM", False),
-            "HOUSING": ("HOUST", "Housing Starts", "Thousands", False),
-            "PMI": ("MANEMP", "ISM Manufacturing", "Index", False),
-        }
-
-        # Recent consensus forecasts (updated periodically)
-        # These represent what the market expected before the release
-        RECENT_FORECASTS = {
-            "NFP": 165.0,      # Thousands of jobs expected
-            "CPI": 2.9,        # % YoY inflation expected
-            "GDP": 2.8,        # % QoQ growth expected
-            "UNEMPLOYMENT": 4.2,  # % unemployment expected
-            "RETAIL": 0.4,     # % MoM change expected
-            "HOUSING": 1400.0, # Thousands of units expected
-            "PMI": 50.0,       # Index (>50 = expansion)
+            "NFP": ("PAYEMS", "Nonfarm Payrolls", "K", False, "mom_change"),
+            "CPI": ("CPIAUCSL", "Consumer Price Index", "% YoY", True, "yoy_pct"),
+            "GDP": ("GDP", "Gross Domestic Product", "% QoQ", False, "qoq_annualized"),
+            "UNEMPLOYMENT": ("UNRATE", "Unemployment Rate", "%", True, "level"),
+            "RETAIL": ("RSXFS", "Retail Sales", "% MoM", False, "mom_pct"),
+            "HOUSING": ("HOUST", "Housing Starts", "K", False, "level"),
+            # PMI: ISM Manufacturing PMI is not available in FRED (proprietary index)
+            # MANEMP (Manufacturing Employment) is not a suitable proxy for the PMI index
         }
 
         reactions = {}
@@ -700,11 +738,11 @@ class CalendarAdapter(BaseAdapter):
             logger.warning(f"Failed to fetch SPY data: {e}")
             return {}
 
-        for event_type, (series_id, event_name, unit, is_inverse) in EVENT_SERIES.items():
+        for event_type, (series_id, event_name, unit, is_inverse, transform_type) in EVENT_SERIES.items():
             try:
                 # Get historical release dates and values from FRED
                 release_dates = self._get_fred_release_history(
-                    series_id, lookback_months
+                    series_id, lookback_months, transform_type
                 )
 
                 if not release_dates:
@@ -716,8 +754,13 @@ class CalendarAdapter(BaseAdapter):
                 release_date = latest_release["date"]
                 actual_value = latest_release["value"]
 
-                # Get forecast (use stored consensus or default)
-                forecast = RECENT_FORECASTS.get(event_type)
+                # Calculate forecast from historical trend
+                # Use average of 3 prior values as proxy for market expectation
+                forecast = None
+                if len(release_dates) >= 4:
+                    # Use 3 values before the latest (exclude latest actual)
+                    prior_values = [r["value"] for r in release_dates[-4:-1]]
+                    forecast = sum(prior_values) / len(prior_values)
 
                 # Determine surprise direction
                 if forecast is None or actual_value is None:
@@ -772,15 +815,32 @@ class CalendarAdapter(BaseAdapter):
         self,
         series_id: str,
         lookback_months: int = 6,
+        transform_type: str = "level",
     ) -> list[dict]:
         """
-        Get historical values for a FRED series.
+        Get historical values for a FRED series with transformations.
 
-        Returns list of {"date": date, "value": float} dicts.
+        Args:
+            series_id: FRED series ID (e.g., "PAYEMS", "CPIAUCSL")
+            lookback_months: How far back to fetch data
+            transform_type: How to transform raw data:
+                - "level": Use raw value as-is
+                - "mom_change": Month-over-month change (current - previous)
+                - "mom_pct": Month-over-month percentage change
+                - "yoy_pct": Year-over-year percentage change
+                - "qoq_annualized": Quarter-over-quarter % change annualized
+
+        Returns:
+            List of {"date": date, "value": float} dicts with transformed values.
         """
         import csv
         import urllib.request
         from io import StringIO
+
+        # Fetch extra data for transformations that need historical context
+        # YoY needs 12 months prior, others need 1-3 months
+        extra_months = 13 if transform_type == "yoy_pct" else 2
+        fetch_start = date.today() - timedelta(days=(lookback_months + extra_months) * 30)
 
         url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
 
@@ -794,21 +854,92 @@ class CalendarAdapter(BaseAdapter):
                 reader = csv.reader(StringIO(content))
                 next(reader)  # Skip header
 
-                releases = []
-                cutoff = date.today() - timedelta(days=lookback_months * 30)
-
+                # First pass: collect all raw data points
+                raw_data = []
                 for row in reader:
                     if len(row) >= 2 and row[1] != ".":
                         try:
                             release_date = datetime.strptime(row[0], "%Y-%m-%d").date()
-                            if release_date >= cutoff:
+                            if release_date >= fetch_start:
                                 value = float(row[1])
-                                releases.append({
+                                raw_data.append({
                                     "date": release_date,
                                     "value": value,
                                 })
                         except (ValueError, IndexError):
                             continue
+
+                if not raw_data:
+                    return []
+
+                # Second pass: apply transformations
+                releases = []
+                cutoff = date.today() - timedelta(days=lookback_months * 30)
+
+                for i, item in enumerate(raw_data):
+                    release_date = item["date"]
+
+                    # Only include dates within the requested lookback period
+                    if release_date < cutoff:
+                        continue
+
+                    if transform_type == "level":
+                        # Use raw value as-is
+                        transformed_value = item["value"]
+
+                    elif transform_type == "mom_change":
+                        # Month-over-month change (e.g., NFP jobs added)
+                        if i == 0:
+                            continue  # Skip first entry (no prior data)
+                        transformed_value = item["value"] - raw_data[i - 1]["value"]
+
+                    elif transform_type == "mom_pct":
+                        # Month-over-month percentage change (e.g., Retail Sales)
+                        if i == 0:
+                            continue
+                        prev_value = raw_data[i - 1]["value"]
+                        if prev_value == 0:
+                            continue
+                        transformed_value = ((item["value"] - prev_value) / prev_value) * 100
+
+                    elif transform_type == "yoy_pct":
+                        # Year-over-year percentage change (e.g., CPI inflation)
+                        # Find value from 12 months ago
+                        year_ago_value = None
+                        target_date = release_date - timedelta(days=365)
+
+                        # Find closest data point to 12 months ago (within 45 days)
+                        for j in range(max(0, i - 15), i):
+                            days_diff = abs((raw_data[j]["date"] - target_date).days)
+                            if days_diff <= 45:
+                                year_ago_value = raw_data[j]["value"]
+                                break
+
+                        if year_ago_value is None or year_ago_value == 0:
+                            continue
+
+                        transformed_value = ((item["value"] - year_ago_value) / year_ago_value) * 100
+
+                    elif transform_type == "qoq_annualized":
+                        # Quarter-over-quarter percentage change, annualized (e.g., GDP)
+                        # GDP data is quarterly, so previous entry is prior quarter
+                        if i == 0:
+                            continue
+                        prev_value = raw_data[i - 1]["value"]
+                        if prev_value == 0:
+                            continue
+                        qoq_pct = ((item["value"] - prev_value) / prev_value) * 100
+                        # Annualize: compound 4 quarters
+                        transformed_value = ((1 + qoq_pct / 100) ** 4 - 1) * 100
+
+                    else:
+                        logger.warning(f"Unknown transform_type: {transform_type}, using level")
+                        transformed_value = item["value"]
+
+                    releases.append({
+                        "date": release_date,
+                        "value": transformed_value,
+                    })
 
                 return releases
 
