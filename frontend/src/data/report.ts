@@ -22,6 +22,8 @@ import type {
   SmartMoneySignalType,
   HedgeFundDetails,
   DailyBriefing,
+  BacktestContext,
+  BacktestResult,
 } from "./types";
 
 // =============================================================================
@@ -292,6 +294,56 @@ export function formatEventTime(isoDateTime: string): string {
     minute: "2-digit",
     hour12: true,
   });
+}
+
+// =============================================================================
+// Backtest / Performance
+// =============================================================================
+
+/**
+ * Get backtest context (historical performance validation).
+ */
+export function getBacktestData(): BacktestContext | null {
+  const report = getReportSync();
+  return report.backtest ?? null;
+}
+
+/**
+ * Get backtest result for a specific timeframe.
+ */
+export function getBacktestByTimeframe(timeframe: Timeframe): BacktestResult | null {
+  const backtest = getBacktestData();
+  if (!backtest) return null;
+  return backtest[timeframe] ?? null;
+}
+
+/**
+ * Get the best performing timeframe from backtest results.
+ */
+export function getBestBacktestTimeframe(): { timeframe: Timeframe; alpha: number } | null {
+  const backtest = getBacktestData();
+  if (!backtest) return null;
+
+  let best: { timeframe: Timeframe; alpha: number } | null = null;
+  const timeframes: Timeframe[] = ["short", "medium", "long"];
+
+  for (const tf of timeframes) {
+    const result = backtest[tf];
+    if (result && (best === null || result.performance.alpha > best.alpha)) {
+      best = { timeframe: tf, alpha: result.performance.alpha };
+    }
+  }
+
+  return best;
+}
+
+/**
+ * Format percentage with sign.
+ * Note: Backtest values are already in percentage form (e.g., 7.61 means 7.61%, not 0.0761).
+ */
+export function formatPercent(value: number, decimals: number = 1): string {
+  const sign = value >= 0 ? "+" : "";
+  return `${sign}${value.toFixed(decimals)}%`;
 }
 
 // =============================================================================

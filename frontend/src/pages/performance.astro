@@ -1,0 +1,386 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/primitives/Card.astro";
+import { getBacktestData, formatPercent, getBestBacktestTimeframe } from "../data/report";
+import type { BacktestResult, Timeframe } from "../data/types";
+
+const backtest = getBacktestData();
+const bestTimeframe = getBestBacktestTimeframe();
+
+// Helper to get color based on value
+function getValueColor(value: number): string {
+  if (value > 0) return "text-success";
+  if (value < 0) return "text-danger";
+  return "text-text-secondary";
+}
+
+// Helper to format timeframe label
+function formatTimeframe(tf: Timeframe): string {
+  switch (tf) {
+    case "short": return "Short (1-4 weeks)";
+    case "medium": return "Medium (1-3 months)";
+    case "long": return "Long (3-12 months)";
+  }
+}
+
+// Get all available results
+const results: { timeframe: Timeframe; result: BacktestResult }[] = [];
+if (backtest?.short) results.push({ timeframe: "short", result: backtest.short });
+if (backtest?.medium) results.push({ timeframe: "medium", result: backtest.medium });
+if (backtest?.long) results.push({ timeframe: "long", result: backtest.long });
+
+// Get best result for headline metrics
+const bestResult = bestTimeframe && backtest?.[bestTimeframe.timeframe];
+---
+
+<Layout title="Performance" description="Historical performance validation of stock picks algorithm.">
+  <!-- Page header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-text-primary">Algorithm Performance</h1>
+    <p class="text-text-secondary">
+      Historical backtest validation of scoring methodology
+    </p>
+  </div>
+
+  {backtest && results.length > 0 ? (
+    <>
+      <!-- Best Performer Highlight -->
+      {bestResult && bestTimeframe && (
+        <section class="mb-6">
+          <div class="bg-gradient-to-r from-success/10 to-transparent border border-success/30 rounded-lg p-4">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">&#127942;</span>
+              <div>
+                <div class="text-sm text-text-secondary uppercase tracking-wide">Best Performing Strategy</div>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-xl font-bold text-text-primary capitalize">{bestTimeframe.timeframe}</span>
+                  <span class="text-success font-mono font-bold">
+                    {formatPercent(bestTimeframe.alpha)} alpha
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <!-- Summary Metrics Cards -->
+      {bestResult && (
+        <section class="mb-8">
+          <h2 class="text-sm font-medium text-text-secondary mb-3 flex items-center gap-2">
+            <span>&#128200;</span> Key Metrics ({bestTimeframe?.timeframe} timeframe)
+          </h2>
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Total Return -->
+            <Card>
+              <div class="text-center">
+                <div class="text-xs text-text-secondary uppercase tracking-wide mb-1">Total Return</div>
+                <div class={`text-2xl font-mono font-bold ${getValueColor(bestResult.performance.totalReturn)}`}>
+                  {formatPercent(bestResult.performance.totalReturn)}
+                </div>
+              </div>
+            </Card>
+
+            <!-- Alpha vs SPY -->
+            <Card>
+              <div class="text-center">
+                <div class="text-xs text-text-secondary uppercase tracking-wide mb-1">Alpha vs SPY</div>
+                <div class={`text-2xl font-mono font-bold ${getValueColor(bestResult.performance.alpha)}`}>
+                  {formatPercent(bestResult.performance.alpha)}
+                </div>
+              </div>
+            </Card>
+
+            <!-- Sharpe Ratio -->
+            <Card>
+              <div class="text-center">
+                <div class="text-xs text-text-secondary uppercase tracking-wide mb-1">Sharpe Ratio</div>
+                <div class={`text-2xl font-mono font-bold ${bestResult.performance.sharpeRatio >= 1 ? "text-success" : bestResult.performance.sharpeRatio >= 0.5 ? "text-warning" : "text-text-primary"}`}>
+                  {bestResult.performance.sharpeRatio.toFixed(2)}
+                </div>
+              </div>
+            </Card>
+
+            <!-- Hit Rate -->
+            <Card>
+              <div class="text-center">
+                <div class="text-xs text-text-secondary uppercase tracking-wide mb-1">Hit Rate</div>
+                <div class={`text-2xl font-mono font-bold ${bestResult.performance.hitRate >= 50 ? "text-success" : "text-danger"}`}>
+                  {bestResult.performance.hitRate.toFixed(1)}%
+                </div>
+              </div>
+            </Card>
+          </div>
+        </section>
+      )}
+
+      <!-- Timeframe Comparison Table -->
+      <section class="mb-8">
+        <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
+          <span>&#128202;</span> Timeframe Comparison
+        </h2>
+        <Card>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-border">
+                  <th class="text-left py-3 px-4 font-medium text-text-secondary">Timeframe</th>
+                  <th class="text-right py-3 px-4 font-medium text-text-secondary">Total Return</th>
+                  <th class="text-right py-3 px-4 font-medium text-text-secondary">Benchmark</th>
+                  <th class="text-right py-3 px-4 font-medium text-text-secondary">Alpha</th>
+                  <th class="text-right py-3 px-4 font-medium text-text-secondary">Hit Rate</th>
+                  <th class="text-right py-3 px-4 font-medium text-text-secondary">Win Rate</th>
+                  <th class="text-right py-3 px-4 font-medium text-text-secondary">Sharpe</th>
+                  <th class="text-right py-3 px-4 font-medium text-text-secondary">Max DD</th>
+                  <th class="text-right py-3 px-4 font-medium text-text-secondary">Trades</th>
+                </tr>
+              </thead>
+              <tbody>
+                {results.map(({ timeframe, result }) => {
+                  const isBest = timeframe === bestTimeframe?.timeframe;
+                  return (
+                    <tr class:list={[
+                      "border-b border-border/50 hover:bg-bg-elevated transition-colors",
+                      isBest && "bg-success/5"
+                    ]}>
+                      <td class="py-3 px-4">
+                        <div class="flex items-center gap-2">
+                          {isBest && <span class="text-success text-xs">&#9733;</span>}
+                          <span class="font-medium text-text-primary capitalize">{timeframe}</span>
+                        </div>
+                      </td>
+                      <td class={`py-3 px-4 text-right font-mono ${getValueColor(result.performance.totalReturn)}`}>
+                        {formatPercent(result.performance.totalReturn)}
+                      </td>
+                      <td class={`py-3 px-4 text-right font-mono ${getValueColor(result.performance.benchmarkReturn)}`}>
+                        {formatPercent(result.performance.benchmarkReturn)}
+                      </td>
+                      <td class={`py-3 px-4 text-right font-mono font-bold ${getValueColor(result.performance.alpha)}`}>
+                        {formatPercent(result.performance.alpha)}
+                      </td>
+                      <td class={`py-3 px-4 text-right font-mono ${result.performance.hitRate >= 50 ? "text-success" : "text-danger"}`}>
+                        {result.performance.hitRate.toFixed(1)}%
+                      </td>
+                      <td class={`py-3 px-4 text-right font-mono ${result.performance.winRate >= 50 ? "text-success" : "text-danger"}`}>
+                        {result.performance.winRate.toFixed(1)}%
+                      </td>
+                      <td class={`py-3 px-4 text-right font-mono ${result.performance.sharpeRatio >= 1 ? "text-success" : "text-text-primary"}`}>
+                        {result.performance.sharpeRatio.toFixed(2)}
+                      </td>
+                      <td class="py-3 px-4 text-right font-mono text-danger">
+                        {formatPercent(result.performance.maxDrawdown)}
+                      </td>
+                      <td class="py-3 px-4 text-right font-mono text-text-secondary">
+                        {result.totalTrades}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </section>
+
+      <!-- Best & Worst Trades -->
+      <section class="mb-8">
+        <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
+          <span>&#128176;</span> Notable Trades
+        </h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {results.map(({ timeframe, result }) => (
+            <Card>
+              <h3 class="text-sm font-medium text-text-secondary mb-3 capitalize">{timeframe} Timeframe</h3>
+              <div class="space-y-3">
+                {result.bestTrade && (
+                  <div class="flex items-center justify-between p-2 rounded bg-success/10 border border-success/20">
+                    <div class="flex items-center gap-2">
+                      <span class="text-success">&#9650;</span>
+                      <span class="font-mono font-bold text-text-primary">{result.bestTrade.ticker}</span>
+                      <span class="text-xs text-text-secondary">Best</span>
+                    </div>
+                    <span class="font-mono font-bold text-success">
+                      {formatPercent(result.bestTrade.returnPct)}
+                    </span>
+                  </div>
+                )}
+                {result.worstTrade && (
+                  <div class="flex items-center justify-between p-2 rounded bg-danger/10 border border-danger/20">
+                    <div class="flex items-center gap-2">
+                      <span class="text-danger">&#9660;</span>
+                      <span class="font-mono font-bold text-text-primary">{result.worstTrade.ticker}</span>
+                      <span class="text-xs text-text-secondary">Worst</span>
+                    </div>
+                    <span class="font-mono font-bold text-danger">
+                      {formatPercent(result.worstTrade.returnPct)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <!-- Additional Metrics -->
+      {bestResult && (
+        <section class="mb-8">
+          <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <span>&#128202;</span> Detailed Metrics
+          </h2>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <Card>
+              <div class="text-center">
+                <div class="text-xs text-text-secondary mb-1">Avg Trade Return</div>
+                <div class={`text-lg font-mono font-bold ${getValueColor(bestResult.performance.avgTradeReturn)}`}>
+                  {formatPercent(bestResult.performance.avgTradeReturn)}
+                </div>
+              </div>
+            </Card>
+            <Card>
+              <div class="text-center">
+                <div class="text-xs text-text-secondary mb-1">Avg Alpha/Trade</div>
+                <div class={`text-lg font-mono font-bold ${getValueColor(bestResult.performance.avgAlphaPerTrade)}`}>
+                  {formatPercent(bestResult.performance.avgAlphaPerTrade)}
+                </div>
+              </div>
+            </Card>
+            <Card>
+              <div class="text-center">
+                <div class="text-xs text-text-secondary mb-1">Win/Loss Ratio</div>
+                <div class={`text-lg font-mono font-bold ${bestResult.performance.winLossRatio >= 1 ? "text-success" : "text-danger"}`}>
+                  {bestResult.performance.winLossRatio.toFixed(2)}
+                </div>
+              </div>
+            </Card>
+            <Card>
+              <div class="text-center">
+                <div class="text-xs text-text-secondary mb-1">Total Trades</div>
+                <div class="text-lg font-mono font-bold text-text-primary">
+                  {bestResult.totalTrades}
+                </div>
+              </div>
+            </Card>
+            <Card>
+              <div class="text-center">
+                <div class="text-xs text-text-secondary mb-1">Tickers Analyzed</div>
+                <div class="text-lg font-mono font-bold text-text-primary">
+                  {bestResult.tickersAnalyzed}
+                </div>
+              </div>
+            </Card>
+          </div>
+        </section>
+      )}
+
+      <!-- Monthly Returns -->
+      {bestResult && bestResult.monthlyReturns && bestResult.monthlyReturns.length > 0 && (
+        <section class="mb-8">
+          <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <span>&#128197;</span> Monthly Returns ({bestTimeframe?.timeframe})
+          </h2>
+          <Card>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="border-b border-border">
+                    <th class="text-left py-3 px-4 font-medium text-text-secondary">Month</th>
+                    <th class="text-right py-3 px-4 font-medium text-text-secondary">Portfolio</th>
+                    <th class="text-right py-3 px-4 font-medium text-text-secondary">Benchmark</th>
+                    <th class="text-right py-3 px-4 font-medium text-text-secondary">Alpha</th>
+                    <th class="text-right py-3 px-4 font-medium text-text-secondary"># Picks</th>
+                    <th class="text-left py-3 px-4 font-medium text-text-secondary">Top Performer</th>
+                    <th class="text-left py-3 px-4 font-medium text-text-secondary">Worst Performer</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bestResult.monthlyReturns.slice(-12).map((month) => {
+                    const alpha = month.portfolioReturn - month.benchmarkReturn;
+                    return (
+                      <tr class="border-b border-border/50 hover:bg-bg-elevated transition-colors">
+                        <td class="py-3 px-4 font-medium text-text-primary">
+                          {new Date(month.month).toLocaleDateString(undefined, { month: "short", year: "numeric" })}
+                        </td>
+                        <td class={`py-3 px-4 text-right font-mono ${getValueColor(month.portfolioReturn)}`}>
+                          {formatPercent(month.portfolioReturn)}
+                        </td>
+                        <td class={`py-3 px-4 text-right font-mono ${getValueColor(month.benchmarkReturn)}`}>
+                          {formatPercent(month.benchmarkReturn)}
+                        </td>
+                        <td class={`py-3 px-4 text-right font-mono font-bold ${getValueColor(alpha)}`}>
+                          {formatPercent(alpha)}
+                        </td>
+                        <td class="py-3 px-4 text-right font-mono text-text-secondary">
+                          {month.numPicks}
+                        </td>
+                        <td class="py-3 px-4">
+                          {month.topPerformer ? (
+                            <span class="font-mono text-success">{month.topPerformer}</span>
+                          ) : (
+                            <span class="text-text-secondary">-</span>
+                          )}
+                        </td>
+                        <td class="py-3 px-4">
+                          {month.worstPerformer ? (
+                            <span class="font-mono text-danger">{month.worstPerformer}</span>
+                          ) : (
+                            <span class="text-text-secondary">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </section>
+      )}
+
+      <!-- Limitations / Methodology -->
+      {bestResult && bestResult.limitations && bestResult.limitations.length > 0 && (
+        <section class="mb-8">
+          <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <span>&#9888;&#65039;</span> Methodology & Limitations
+          </h2>
+          <Card>
+            <ul class="space-y-2 text-sm text-text-secondary">
+              {bestResult.limitations.map((limitation) => (
+                <li class="flex items-start gap-2">
+                  <span class="text-warning mt-0.5">&#8226;</span>
+                  <span>{limitation}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </section>
+      )}
+
+      <!-- Backtest Period Info -->
+      {bestResult && (
+        <div class="text-center text-xs text-text-secondary">
+          <p>
+            Backtest period: {new Date(bestResult.startDate).toLocaleDateString()} - {new Date(bestResult.endDate).toLocaleDateString()}
+          </p>
+          <p class="mt-1">
+            Last updated: {new Date(backtest.lastUpdated).toLocaleString()}
+          </p>
+        </div>
+      )}
+    </>
+  ) : (
+    <!-- No backtest data available -->
+    <Card>
+      <div class="text-center py-12">
+        <span class="text-4xl mb-4 block">&#128202;</span>
+        <h2 class="text-xl font-semibold text-text-primary mb-2">No Performance Data Available</h2>
+        <p class="text-text-secondary max-w-md mx-auto">
+          Backtest results have not been generated yet. Run the data refresh pipeline to generate historical performance validation.
+        </p>
+        <p class="text-sm text-text-secondary mt-4 font-mono">
+          python scripts/generate_frontend_data.py
+        </p>
+      </div>
+    </Card>
+  )}
+</Layout>

@@ -325,6 +325,77 @@ export interface DailyBriefing {
 }
 
 // =============================================================================
+// Backtest/Performance Types
+// =============================================================================
+
+export type TradeOutcome = "win" | "loss" | "flat";
+
+export interface BacktestTrade {
+  ticker: string;
+  entryDate: string;
+  exitDate: string;
+  entryPrice: number;
+  exitPrice: number;
+  conviction: number;
+  timeframe: Timeframe;
+  sector: string | null;
+  returnPct: number;
+  benchmarkReturnPct: number;
+  alpha: number;
+  outcome: TradeOutcome;
+  beatBenchmark: boolean;
+}
+
+export interface MonthlyReturn {
+  month: string; // YYYY-MM-DD
+  portfolioReturn: number;
+  benchmarkReturn: number;
+  numPicks: number;
+  topPerformer: string | null;
+  worstPerformer: string | null;
+}
+
+export interface BacktestMetrics {
+  totalReturn: number;
+  benchmarkReturn: number;
+  alpha: number;
+  hitRate: number;
+  winRate: number;
+  avgTradeReturn: number;
+  avgAlphaPerTrade: number;
+  sharpeRatio: number;
+  maxDrawdown: number;
+  winLossRatio: number;
+}
+
+export interface BacktestResult {
+  startDate: string;
+  endDate: string;
+  timeframe: Timeframe;
+  totalTrades: number;
+  tickersAnalyzed: number;
+  performance: BacktestMetrics;
+  bestTrade: {
+    ticker: string;
+    returnPct: number;
+  } | null;
+  worstTrade: {
+    ticker: string;
+    returnPct: number;
+  } | null;
+  monthlyReturns: MonthlyReturn[];
+  limitations: string[];
+  executedAt: string;
+}
+
+export interface BacktestContext {
+  short: BacktestResult | null;
+  medium: BacktestResult | null;
+  long: BacktestResult | null;
+  lastUpdated: string;
+}
+
+// =============================================================================
 // Report Types (Root)
 // =============================================================================
 
@@ -360,6 +431,9 @@ export interface FinancialReport {
 
   // Daily Briefing
   briefing?: DailyBriefing;
+
+  // Backtest/Performance Results
+  backtest?: BacktestContext;
 
   // Summary metrics
   summary: ReportSummary;
