@@ -1521,6 +1521,49 @@ def score_stock(
         timeframe_rules,
     )
 
+    # Apply timeframe-specific weights (recalculate with appropriate emphasis)
+    # This ensures SHORT picks emphasize momentum, LONG picks emphasize quality/valuation
+    if timeframe == Timeframe.SHORT:
+        tf_weights = TimeframeWeights.for_short()
+    elif timeframe == Timeframe.LONG:
+        tf_weights = TimeframeWeights.for_long()
+    else:
+        tf_weights = TimeframeWeights.for_medium()
+
+    # Recalculate base score with timeframe-appropriate weights
+    tf_base_score = (
+        tf_weights.valuation * valuation_score
+        + tf_weights.growth * growth_score
+        + tf_weights.quality * quality_score
+        + tf_weights.momentum * momentum_score
+        + tf_weights.analyst * analyst_score
+        + tf_weights.smart_money * smart_money_score
+    )
+
+    # Apply macro adjustment to timeframe-weighted score
+    tf_overall_score = max(0.0, min(1.0, tf_base_score + macro_adjustment))
+
+    # Apply score differentiation
+    tf_centered = tf_overall_score - 0.5
+    tf_differentiated = 0.5 + (math.copysign(abs(tf_centered) ** (1/amplification), tf_centered))
+    tf_differentiated = max(0.0, min(1.0, tf_differentiated))
+
+    # Recalculate conviction with timeframe-specific score
+    conviction = max(1, min(10, round(tf_differentiated * 10)))
+
+    # Update score breakdown with timeframe-weighted score
+    score_breakdown = ConvictionScore(
+        overall=round(tf_overall_score, 4),
+        valuation_score=valuation_score,
+        growth_score=growth_score,
+        quality_score=quality_score,
+        momentum_score=momentum_score,
+        macro_adjustment=macro_adjustment,
+        factors_used=factors_used,
+        factors_missing=factors_missing,
+        confidence=round(confidence, 4),
+    )
+
     # Generate thesis
     thesis = generate_thesis(
         metrics.ticker,

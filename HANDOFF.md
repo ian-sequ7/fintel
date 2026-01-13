@@ -3,7 +3,7 @@
 ## Current Work
 
 ### Goal
-Economic calendar improvements and documentation updates (January 2026).
+Full site audit with real-world data validation and pipeline fixes (January 13, 2026).
 
 ### Context
 Fintel is a financial intelligence dashboard with stock picks, smart money tracking, macro indicators, news, and portfolio features. A quant audit revealed gaps between current implementation and institutional standards.
@@ -31,6 +31,8 @@ Fintel is a financial intelligence dashboard with stock picks, smart money track
 | **Backtest validation** | ✅ DONE | +15% alpha (medium), +5% (short), +4% (long) |
 | **Performance page** | ✅ DONE | Frontend page at `/performance` with backtest results |
 | **Economic calendar docs** | ✅ DONE | Clarified tracked events, FRED API key requirement |
+| **Pipeline fixes** | ✅ DONE | TimeframeWeights applied + risk overlay enforced |
+| **Real-world data audit** | ✅ DONE | Jan 13 audit with stale data findings |
 
 **Remaining Work**:
 
@@ -198,8 +200,57 @@ LONG:   Momentum 10% | Quality 30% | Valuation 30% | Growth 15% | Analyst 10% | 
 
 ---
 
+### Full Site Audit (January 13, 2026)
+
+#### Pipeline Code Fixes Applied
+
+**Fix 1: TimeframeWeights not used** (`domain/scoring.py:1515-1565`)
+- Added code after `classify_timeframe()` to recalculate scores with timeframe-specific weights
+- SHORT uses `TimeframeWeights.for_short()` (momentum 35%)
+- LONG uses `TimeframeWeights.for_long()` (quality/valuation 30% each)
+- MEDIUM uses `TimeframeWeights.for_medium()` (balanced)
+
+**Fix 2: Risk overlay not called** (`orchestration/pipeline.py:1136-1220`)
+- Added `apply_risk_overlay_by_timeframe()` call after v2 scoring
+- Config: `max_picks_per_sector=2`, `min_daily_liquidity=$10M`, `max_days_to_cover=10`
+- Picks per timeframe: min 3, max 7
+
+**Fix 3: Exports added** (`domain/__init__.py`)
+- Added: `RiskOverlayConfig`, `apply_risk_overlay`, `apply_risk_overlay_by_timeframe`, `FilteredPick`
+
+**Pipeline test verified:** Dry-run shows SHORT=3, MEDIUM=1, LONG=1 picks after filtering
+
+#### Real-World Data Validation Results
+
+| Area | Status | Findings |
+|------|--------|----------|
+| **Stock Prices** | ⚠️ STALE | Data from Dec 29, 2025 (2+ weeks old); NVDA has +32% gap to real price |
+| **Economic Calendar** | ❌ EMPTY | Shows "No events" when CPI release was Jan 14 (requires FRED API key) |
+| **Macro Indicators** | ✅ ACCURATE | Unemployment 4.4%, CPI 2.7%, GDP values match real-world sources |
+| **News Headlines** | ✅ CURRENT | Headlines accurate for Jan 12, 2026 (Fed subpoenas, record highs) |
+| **Smart Money** | ⚠️ PARTIAL | 13F data present (100 funds), but insider/options showing 0 counts |
+| **Pick Catalysts** | ⚠️ MIXED | 50% have near-term catalysts (BLK Jan 15, IBKR Jan 20, BSX Jan 13, AMD CES); 50% too far out (5-6 weeks) |
+
+#### Data Issues to Address
+
+1. **Price staleness** - Last refresh was Dec 29, 2025
+   - Run `python scripts/generate_frontend_data.py` to update
+
+2. **Economic calendar empty** - FRED API key not configured
+   - Set `FINTEL_FRED_KEY` in `.env` file
+
+3. **Smart money gaps** - Insider/options data pipelines returning 0
+   - Insider: Check Finnhub API response format
+   - Options: Congress/unusual options adapters may need fixes
+
+4. **Pick catalyst timing** - SHORT picks should have catalysts within 1-4 weeks
+   - Consider filtering picks without near-term catalysts from SHORT bucket
+
+---
+
 ## History
 
+- (uncommitted): fix: apply TimeframeWeights and risk overlay in pipeline (Jan 13 audit)
 - (uncommitted): docs: clarify economic calendar tracked events and FRED API requirement
 - 00f445f: docs: add README and .env.example
 - e0d7451: chore: refresh market data with historical reactions [skip ci]
@@ -234,6 +285,15 @@ LONG:   Momentum 10% | Quality 30% | Valuation 30% | Growth 15% | Analyst 10% | 
 **Resolution:** Grouped dropdown navigation (Markets | Analysis | My Stocks)
 **Prevention:** Plan navigation hierarchy upfront; use dropdowns for >5 top-level items
 
+### 5. Stale Frontend Data
+**Problem:** Frontend shows Dec 29 prices while market is 2+ weeks ahead
+**Prevention:** Automate `generate_frontend_data.py` via cron or pre-commit hook
+
+### 6. Defined But Not Used
+**Problem:** `TimeframeWeights` class existed but `score_stocks()` never applied it
+**Resolution:** Added recalculation in `score_stock()` after `classify_timeframe()`
+**Prevention:** Trace data flow from definition → usage; unit test that weights affect output
+
 ---
 
 ## Anti-Pattern Cache
@@ -245,3 +305,5 @@ LONG:   Momentum 10% | Quality 30% | Valuation 30% | Growth 15% | Analyst 10% | 
 | (briefing) | Finnhub calendar 403 | Check API tier before assuming free |
 | (adapters) | New adapter before checking existing | Check Finnhub/Yahoo first |
 | (nav) | Flat tabs don't scale | Use grouped dropdowns for >5 items |
+| (frontend) | Stale data display | Automate pipeline via cron/hook |
+| (scoring) | Defined but not used | Trace flow and add unit tests |

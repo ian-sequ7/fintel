@@ -47,6 +47,9 @@ from domain import (
     TimeframeRules,
     score_stock_v2,
     score_stocks,
+    # Risk overlay
+    RiskOverlayConfig,
+    apply_risk_overlay_by_timeframe,
     # Insider transactions
     InsiderTransaction,
     observations_to_insider_transactions,
@@ -1136,23 +1139,84 @@ class Pipeline:
             picks, scores, scored_picks = self.analyzer.analyze_stocks_v2(
                 metrics, sectors, macro_context, insider_transactions
             )
+
+            # Apply risk overlay to enforce portfolio-level constraints
+            # - Max 2 picks per sector
+            # - $10M minimum daily liquidity
+            # - No picks with DTC > 10 (crowded shorts)
+            # - 3-7 picks per timeframe
+            self._log("Applying risk overlay filters...")
+            # metrics is already a dict[str, StockMetrics] from transform_to_metrics
+            metrics_by_ticker = metrics
+            risk_config = RiskOverlayConfig(
+                max_picks_per_sector=2,
+                min_daily_liquidity=10_000_000.0,
+                max_days_to_cover=10.0,
+                min_conviction=5,
+            )
+            filtered_by_tf = apply_risk_overlay_by_timeframe(
+                scored_picks,
+                metrics_by_ticker,
+                risk_config,
+                picks_per_timeframe=(3, 7),  # Min 3, max 7 per timeframe
+            )
+
+            # Convert filtered ScoredPicks back to StockPicks for report
+            short_picks = []
+            medium_picks = []
+            long_picks = []
+
+            for tf, tf_scored in filtered_by_tf.items():
+                for sp in tf_scored:
+                    m = metrics_by_ticker.get(sp.ticker)
+                    if not m:
+                        continue
+                    # Calculate stop loss based on conviction
+                    if sp.conviction >= 8:
+                        stop_pct = 0.05
+                    elif sp.conviction >= 5:
+                        stop_pct = 0.08
+                    else:
+                        stop_pct = 0.12
+                    stop_loss = m.price * (1 - stop_pct) if m.price else None
+
+                    pick = StockPick(
+                        ticker=sp.ticker,
+                        timeframe=sp.timeframe,
+                        conviction_score=sp.conviction_normalized,
+                        thesis=sp.thesis,
+                        risk_factors=sp.risks[:3],
+                        entry_price=m.price,
+                        target_price=m.price * (1 + sp.conviction_normalized * 0.3) if m.price and sp.conviction > 5 else None,
+                        stop_loss=stop_loss,
+                    )
+
+                    if tf == Timeframe.SHORT:
+                        short_picks.append(pick)
+                    elif tf == Timeframe.MEDIUM:
+                        medium_picks.append(pick)
+                    else:
+                        long_picks.append(pick)
+
+            self._log(f"  Risk overlay: SHORT={len(short_picks)}, MEDIUM={len(medium_picks)}, LONG={len(long_picks)} picks after filtering")
         else:
             # Use legacy v1 scoring
             picks, scores = self.analyzer.analyze_stocks(metrics, macro_context)
 
-        macro_risks = self.analyzer.analyze_macro(macro_indicators)
+            # Organize picks by timeframe (legacy path)
+            short_picks = [p for p in picks if p.timeframe == Timeframe.SHORT]
+            medium_picks = [p for p in picks if p.timeframe == Timeframe.MEDIUM]
+            long_picks = [p for p in picks if p.timeframe == Timeframe.LONG]
 
-        # Phase 4: Organize picks by timeframe
-        self._log("Phase 4: Organizing results...")
-        short_picks = [p for p in picks if p.timeframe == Timeframe.SHORT]
-        medium_picks = [p for p in picks if p.timeframe == Timeframe.MEDIUM]
-        long_picks = [p for p in picks if p.timeframe == Timeframe.LONG]
-
-        # V2 scoring already sorts by conviction, v1 needs ranking
-        if not self.config.use_v2_scoring:
+            # V1 needs ranking
             short_picks = rank_picks(short_picks, self.config.strategy, scores)
             medium_picks = rank_picks(medium_picks, self.config.strategy, scores)
             long_picks = rank_picks(long_picks, self.config.strategy, scores)
+
+        macro_risks = self.analyzer.analyze_macro(macro_indicators)
+
+        # Phase 4: Finalize picks
+        self._log("Phase 4: Finalizing results...")
 
         # Apply limits (now configurable for production scale)
         max_picks = self.config.max_picks_per_timeframe

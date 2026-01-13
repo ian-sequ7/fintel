@@ -50,6 +50,11 @@ from .scoring import (
     classify_timeframe as classify_timeframe_v2,
     generate_thesis as generate_thesis_v2,
     identify_risks,
+    # Risk overlay
+    RiskOverlayConfig,
+    apply_risk_overlay,
+    apply_risk_overlay_by_timeframe,
+    FilteredPick,
     # Insider transactions
     InsiderTransaction,
     observations_to_insider_transactions,
@@ -159,6 +164,11 @@ __all__ = [
     # Insider transactions
     "InsiderTransaction",
     "observations_to_insider_transactions",
+    # Risk overlay
+    "RiskOverlayConfig",
+    "apply_risk_overlay",
+    "apply_risk_overlay_by_timeframe",
+    "FilteredPick",
     # Serialization
     "to_json_dict",
     "from_json_dict",
