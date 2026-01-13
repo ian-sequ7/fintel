@@ -31,7 +31,7 @@ class StockPick:
             return []
         try:
             return json.loads(self.risk_factors)
-        except:
+        except (json.JSONDecodeError, TypeError, ValueError):
             return []
 
 
@@ -123,7 +123,7 @@ class NewsItem:
             return []
         try:
             return json.loads(self.tickers_mentioned)
-        except:
+        except (json.JSONDecodeError, TypeError, ValueError):
             return []
 
 

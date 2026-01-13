@@ -24,8 +24,12 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any
 
+import hashlib
+
 from domain import Observation, Category
 from ports import FetchError, DataError, ValidationError
+from db import get_db
+from db.models import InsiderTransaction as DBInsiderTransaction
 
 from .base import BaseAdapter
 from .cache import get_cache
@@ -261,6 +265,7 @@ class FinnhubAdapter(BaseAdapter):
         ticker: str,
         from_date: str | None = None,
         to_date: str | None = None,
+        store_in_db: bool = True,
     ) -> list[Observation]:
         """
         Fetch insider transactions from Finnhub.
@@ -272,6 +277,7 @@ class FinnhubAdapter(BaseAdapter):
             ticker: Stock symbol (e.g., "AAPL")
             from_date: Optional start date (YYYY-MM-DD)
             to_date: Optional end date (YYYY-MM-DD)
+            store_in_db: Whether to persist to database (default True)
 
         Returns:
             List of Observations with insider transaction data.
@@ -303,6 +309,11 @@ class FinnhubAdapter(BaseAdapter):
         if not transactions:
             logger.debug(f"No insider transactions found for {ticker}")
             return []
+
+        # Get database reference if storing
+        db = get_db() if store_in_db else None
+        added = 0
+        skipped = 0
 
         observations = []
         for txn in transactions:
@@ -345,8 +356,16 @@ class FinnhubAdapter(BaseAdapter):
                 # Parse transaction date for observation timestamp
                 try:
                     txn_dt = datetime.strptime(insider_txn.transaction_date, "%Y-%m-%d")
+                    txn_date = txn_dt.date()
                 except ValueError:
                     txn_dt = datetime.now()
+                    txn_date = None
+
+                # Parse filing date
+                try:
+                    filing_date = datetime.strptime(insider_txn.filing_date, "%Y-%m-%d").date()
+                except ValueError:
+                    filing_date = None
 
                 observations.append(Observation(
                     source=self.source_name,
@@ -357,11 +376,36 @@ class FinnhubAdapter(BaseAdapter):
                     reliability=self.reliability,
                 ))
 
+                # Store in database
+                if db:
+                    # Generate unique ID from ticker + name + date + shares
+                    id_str = f"{ticker}:{insider_txn.name}:{insider_txn.transaction_date}:{insider_txn.change}"
+                    txn_id = hashlib.md5(id_str.encode()).hexdigest()[:12]
+
+                    db_txn = DBInsiderTransaction(
+                        id=txn_id,
+                        ticker=ticker,
+                        insider_name=insider_txn.name,
+                        transaction_type=txn_type,
+                        shares=abs(insider_txn.change),
+                        shares_after=insider_txn.share if insider_txn.share > 0 else None,
+                        transaction_date=txn_date,
+                        filing_date=filing_date,
+                        transaction_code=insider_txn.transaction_code,
+                        transaction_price=insider_txn.transaction_price,
+                        officer_title="Unknown",
+                        is_c_suite=is_c_suite,
+                    )
+                    if db.upsert_insider_transaction(db_txn):
+                        added += 1
+                    else:
+                        skipped += 1
+
             except (ValueError, KeyError) as e:
                 logger.debug(f"Skipping malformed insider transaction: {e}")
                 continue
 
-        logger.debug(f"Fetched {len(observations)} insider transactions for {ticker}")
+        logger.debug(f"Fetched {len(observations)} insider transactions for {ticker} (added={added}, skipped={skipped})")
         return observations
 
     def _is_likely_c_suite(self, name: str, change: int) -> bool:
@@ -406,6 +450,7 @@ class FinnhubAdapter(BaseAdapter):
         self,
         ticker: str,
         days: int = 90,
+        store_in_db: bool = True,
     ) -> list[Observation]:
         """
         Get insider transactions for a ticker.
@@ -413,15 +458,16 @@ class FinnhubAdapter(BaseAdapter):
         Args:
             ticker: Stock symbol
             days: Number of days of history (default 90 for cluster detection)
+            store_in_db: Whether to persist to database (default True)
 
         Returns:
             List of Observations with insider transaction data
         """
         from_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
         to_date = datetime.now().strftime("%Y-%m-%d")
-        return self.fetch(
+        return self._fetch_insider_transactions(
             ticker=ticker,
-            data_type="insider_transactions",
             from_date=from_date,
             to_date=to_date,
+            store_in_db=store_in_db,
         )

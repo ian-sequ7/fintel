@@ -783,7 +783,7 @@ class Database:
                      point.low, point.close, point.volume)
                 )
                 return True
-            except:
+            except Exception:
                 return False
 
     def get_price_history(self, ticker: str, days: int = 365) -> list[PricePoint]:

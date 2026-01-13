@@ -310,7 +310,7 @@ class SEC13FAdapter(BaseAdapter):
             for xml in xml_matches:
                 if "primary" not in xml.lower():
                     infotable_names.insert(0, xml.split("/")[-1])
-        except:
+        except Exception:
             pass
 
         # Try each possible infotable file
@@ -321,7 +321,7 @@ class SEC13FAdapter(BaseAdapter):
                 xml_content = self._http_get_text(url)
                 if "<informationTable" in xml_content or "<infoTable" in xml_content:
                     break
-            except:
+            except Exception:
                 continue
 
         if not xml_content:
