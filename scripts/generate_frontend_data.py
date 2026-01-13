@@ -14,9 +14,14 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-# Load environment variables from .env
+# Load environment variables from .env BEFORE any other imports
+# (imports may trigger config loading which caches env vars)
 from dotenv import load_dotenv
 load_dotenv(project_root / ".env")
+
+# Force reload settings to pick up .env vars (clears @lru_cache)
+from config import reload_settings
+reload_settings()
 
 from orchestration.pipeline import Pipeline, PipelineConfig
 from domain import Timeframe, Trend, Impact
