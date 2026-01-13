@@ -457,25 +457,53 @@ class DataFetcher:
         tickers = self.config.get_tickers()
         self._log(f"Analyzing {len(tickers)} tickers (source: {self.config.universe_source})")
 
-        # Fetch prices
-        self._log("Fetching price data...")
-        for ticker in tickers:
-            result = self._fetch_source(
-                f"yahoo_price_{ticker}",
-                lambda t=ticker: self.yahoo.get_price(t),
+        # Fetch prices (batch - 8-16x faster than individual calls)
+        self._log("Fetching price data (batch)...")
+        try:
+            price_data = self.yahoo.get_prices_batch(tickers)
+            now = datetime.now()
+            for ticker, data in price_data.items():
+                results["prices"].append(Observation(
+                    source="yahoo",
+                    timestamp=now,
+                    category=Category.PRICE,
+                    ticker=ticker,
+                    data=data,
+                    reliability=0.9,
+                ))
+            self._log(f"  yahoo_prices_batch: {len(price_data)} observations")
+            self.status.sources["yahoo_prices_batch"] = SourceResult(
+                source="yahoo_prices_batch",
+                status=SourceStatus.OK,
+                observations=results["prices"],
             )
-            if result.status == SourceStatus.OK:
-                results["prices"].extend(result.observations)
+        except Exception as e:
+            self.status.add_error(f"yahoo_prices_batch: Failed - {e}")
+            self._log(f"  yahoo_prices_batch: FAILED - {e}")
 
-        # Fetch fundamentals
-        self._log("Fetching fundamental data...")
-        for ticker in tickers:
-            result = self._fetch_source(
-                f"yahoo_fund_{ticker}",
-                lambda t=ticker: self.yahoo.get_fundamentals(t),
+        # Fetch fundamentals (batch - 8-16x faster than individual calls)
+        self._log("Fetching fundamental data (batch)...")
+        try:
+            fund_data = self.yahoo.get_fundamentals_batch(tickers)
+            now = datetime.now()
+            for ticker, data in fund_data.items():
+                results["fundamentals"].append(Observation(
+                    source="yahoo",
+                    timestamp=now,
+                    category=Category.FUNDAMENTAL,
+                    ticker=ticker,
+                    data=data,
+                    reliability=0.9,
+                ))
+            self._log(f"  yahoo_fundamentals_batch: {len(fund_data)} observations")
+            self.status.sources["yahoo_fundamentals_batch"] = SourceResult(
+                source="yahoo_fundamentals_batch",
+                status=SourceStatus.OK,
+                observations=results["fundamentals"],
             )
-            if result.status == SourceStatus.OK:
-                results["fundamentals"].extend(result.observations)
+        except Exception as e:
+            self.status.add_error(f"yahoo_fundamentals_batch: Failed - {e}")
+            self._log(f"  yahoo_fundamentals_batch: FAILED - {e}")
 
         # Fetch macro
         self._log("Fetching macro indicators...")
