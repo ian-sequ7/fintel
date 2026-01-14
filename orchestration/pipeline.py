@@ -11,6 +11,7 @@ Handles partial failures gracefully - never crashes on single source failure.
 """
 
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
@@ -517,14 +518,13 @@ class DataFetcher:
         if result.status == SourceStatus.OK:
             results["news"].extend(result.observations)
 
-        # Fetch company news (limit to top 10 tickers to avoid rate limits)
-        for ticker in tickers[:10]:
-            result = self._fetch_source(
-                f"yahoo_news_{ticker}",
-                lambda t=ticker: self.yahoo.get_news(t),
-            )
-            if result.status == SourceStatus.OK:
-                results["news"].extend(result.observations)
+        # Fetch company news (parallel - 10 tickers)
+        news_results = self._fetch_sources_parallel(
+            [(f"yahoo_news_{t}", lambda ticker=t: self.yahoo.get_news(ticker)) for t in tickers[:10]],
+            max_workers=10,
+        )
+        for obs_list in news_results.values():
+            results["news"].extend(obs_list)
 
         # Fetch social sentiment
         if self.config.include_social:
@@ -554,26 +554,25 @@ class DataFetcher:
                 results["smart_money"].extend(result.observations)
                 self._log(f"  sec_13f: {len(result.observations)} observations")
 
-            # Unusual options activity (top 10 tickers)
-            for ticker in tickers[:10]:
-                result = self._fetch_source(
-                    f"options_{ticker}",
-                    lambda t=ticker: self.yahoo.get_unusual_options(t),
-                )
-                if result.status == SourceStatus.OK:
-                    results["smart_money"].extend(result.observations)
+            # Unusual options activity (parallel - 10 tickers)
+            options_results = self._fetch_sources_parallel(
+                [(f"options_{t}", lambda ticker=t: self.yahoo.get_unusual_options(ticker)) for t in tickers[:10]],
+                max_workers=10,
+            )
+            for obs_list in options_results.values():
+                results["smart_money"].extend(obs_list)
 
-            # Insider transactions (Form 4) - top 35 tickers to respect rate limits
+            # Insider transactions (Form 4) - parallel - 35 tickers
+            # Note: max_workers=5 to respect Finnhub rate limits (60 req/min)
             self._log("Fetching insider transactions (Form 4)...")
+            insider_results = self._fetch_sources_parallel(
+                [(f"insider_{t}", lambda ticker=t: self.finnhub.get_insider_transactions(ticker, days=90)) for t in tickers[:35]],
+                max_workers=5,
+            )
             insider_count = 0
-            for ticker in tickers[:35]:
-                result = self._fetch_source(
-                    f"insider_{ticker}",
-                    lambda t=ticker: self.finnhub.get_insider_transactions(t, days=90),
-                )
-                if result.status == SourceStatus.OK:
-                    results["insider_transactions"].extend(result.observations)
-                    insider_count += len(result.observations)
+            for obs_list in insider_results.values():
+                results["insider_transactions"].extend(obs_list)
+                insider_count += len(obs_list)
             if insider_count > 0:
                 self._log(f"  insider_transactions: {insider_count} observations")
 
@@ -630,6 +629,53 @@ class DataFetcher:
 
         self.status.sources[source_name] = result
         return result
+
+    def _fetch_sources_parallel(
+        self,
+        sources: list[tuple[str, Callable[[], list[Observation]]]],
+        max_workers: int = 10,
+    ) -> dict[str, list[Observation]]:
+        """
+        Fetch from multiple sources in parallel using ThreadPoolExecutor.
+
+        Args:
+            sources: List of (source_name, fetch_fn) tuples
+            max_workers: Number of parallel workers (default 10)
+
+        Returns:
+            Dict of source_name -> list of observations
+        """
+        results: dict[str, list[Observation]] = {}
+
+        if not sources:
+            return results
+
+        def _fetch_single(source_name: str, fetcher: Callable) -> tuple[str, list[Observation]]:
+            """Fetch a single source in worker thread."""
+            try:
+                observations = fetcher()
+                self._log(f"  {source_name}: {len(observations)} observations")
+                return source_name, observations
+            except Exception as e:
+                self.status.add_warning(f"{source_name}: {e}")
+                return source_name, []
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(_fetch_single, name, fn): name
+                for name, fn in sources
+            }
+
+            for future in as_completed(futures):
+                try:
+                    source_name, observations = future.result()
+                    results[source_name] = observations
+                except Exception as e:
+                    source_name = futures[future]
+                    self.status.add_error(f"{source_name}: Unexpected error - {e}")
+                    results[source_name] = []
+
+        return results
 
     def _fetch_mock_data(
         self,
