@@ -1062,7 +1062,7 @@ def main():
         for tf in ["short", "medium", "long"]:
             if backtest_data.get(tf):
                 perf = backtest_data[tf]["performance"]
-                print(f"  {tf.upper()}: {perf['alpha']:+.1%} alpha, {perf['hitRate']:.1%} hit rate")
+                print(f"  {tf.upper()}: {perf['alpha']:+.1f}% alpha, {perf['hitRate']:.0f}% hit rate")
     else:
         print("  Backtest data unavailable")
 
