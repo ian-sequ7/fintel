@@ -14,6 +14,7 @@ import hashlib
 import logging
 import re
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import datetime, date, timedelta
 from typing import Optional
@@ -131,22 +132,21 @@ class SEC13FAdapter(BaseAdapter):
 
     def _fetch_impl(self, **kwargs) -> list[Observation]:
         """
-        Fetch 13F holdings for tracked hedge funds.
+        Fetch 13F holdings for tracked hedge funds using parallel fetching.
 
         Args:
             limit: Maximum number of holdings to return (default 100)
             fund_cik: Optional specific fund CIK to fetch
+            max_workers: Number of parallel workers (default 6)
 
         Returns:
             List of Observations containing hedge fund holdings
         """
         limit = kwargs.get("limit", 100)
         fund_cik = kwargs.get("fund_cik", None)
+        max_workers = kwargs.get("max_workers", 6)
 
-        logger.info(f"Fetching 13F holdings (limit={limit})")
-
-        db = get_db()
-        all_observations = []
+        logger.info(f"Fetching 13F holdings (limit={limit}, workers={max_workers})")
 
         # Get funds to process
         if fund_cik:
@@ -159,53 +159,88 @@ class SEC13FAdapter(BaseAdapter):
         else:
             funds = TOP_HEDGE_FUNDS
 
-        for cik, name, manager, style in funds:
-            try:
-                # Ensure fund exists in database
-                fund = self._ensure_fund_exists(cik, name, manager, style)
-                if not fund:
-                    continue
+        # Use ThreadPoolExecutor for parallel fetching (matches yahoo.py pattern)
+        all_observations = []
 
-                # Get latest 13F filing
-                filing = self._get_latest_13f_filing(cik)
-                if not filing:
-                    logger.warning(f"No 13F filing found for {name} (CIK: {cik})")
-                    continue
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Submit all fund fetches in parallel
+            futures = {
+                executor.submit(self._fetch_single_fund, cik, name, manager, style, limit): (cik, name)
+                for cik, name, manager, style in funds
+            }
 
-                # Check if we already have this filing
-                if fund.last_filing_date == filing.filing_date:
-                    logger.debug(f"Already have latest filing for {name}")
-                    # Load from database instead
-                    holdings = db.get_holdings_for_fund(fund.id, limit=limit)
-                    for h in holdings:
-                        obs = self._holding_to_observation(fund, h)
-                        all_observations.append(obs)
-                    continue
+            # Collect results as they complete
+            for future in as_completed(futures):
+                cik, name = futures[future]
+                try:
+                    observations = future.result()
+                    all_observations.extend(observations)
+                except Exception as e:
+                    logger.warning(f"Failed to fetch 13F for {name} (CIK: {cik}): {e}")
 
-                # Fetch and parse holdings
-                holdings = self._fetch_holdings(cik, filing)
-                if not holdings:
-                    continue
-
-                logger.info(f"Found {len(holdings)} holdings for {name}")
-
-                # Store holdings in database
-                stored = self._store_holdings(fund, filing, holdings)
-
-                # Update fund's last filing date
-                fund.last_filing_date = filing.filing_date
-                db.upsert_hedge_fund(fund)
-
-                # Convert to observations
-                for db_holding in stored[:limit]:
-                    obs = self._holding_to_observation(fund, db_holding)
-                    all_observations.append(obs)
-
-            except Exception as e:
-                logger.warning(f"Failed to fetch 13F for {name}: {e}")
-                continue
-
+        logger.info(f"Fetched {len(all_observations)} 13F observations from {len(funds)} funds")
         return all_observations[:limit]
+
+    def _fetch_single_fund(
+        self, cik: str, name: str, manager: str, style: str, limit: int
+    ) -> list[Observation]:
+        """
+        Fetch 13F holdings for a single fund. Runs in parallel worker thread.
+
+        Args:
+            cik: Fund CIK number
+            name: Fund name
+            manager: Fund manager name
+            style: Investment style
+            limit: Max holdings per fund
+
+        Returns:
+            List of Observations for this fund's holdings
+        """
+        db = get_db()
+        observations = []
+
+        # Ensure fund exists in database
+        fund = self._ensure_fund_exists(cik, name, manager, style)
+        if not fund:
+            return observations
+
+        # Get latest 13F filing
+        filing = self._get_latest_13f_filing(cik)
+        if not filing:
+            logger.warning(f"No 13F filing found for {name} (CIK: {cik})")
+            return observations
+
+        # Check if we already have this filing
+        if fund.last_filing_date == filing.filing_date:
+            logger.debug(f"Already have latest filing for {name}")
+            # Load from database instead
+            holdings = db.get_holdings_for_fund(fund.id, limit=limit)
+            for h in holdings:
+                obs = self._holding_to_observation(fund, h)
+                observations.append(obs)
+            return observations
+
+        # Fetch and parse holdings
+        holdings = self._fetch_holdings(cik, filing)
+        if not holdings:
+            return observations
+
+        logger.info(f"Found {len(holdings)} holdings for {name}")
+
+        # Store holdings in database
+        stored = self._store_holdings(fund, filing, holdings)
+
+        # Update fund's last filing date
+        fund.last_filing_date = filing.filing_date
+        db.upsert_hedge_fund(fund)
+
+        # Convert to observations
+        for db_holding in stored[:limit]:
+            obs = self._holding_to_observation(fund, db_holding)
+            observations.append(obs)
+
+        return observations
 
     def _ensure_fund_exists(
         self, cik: str, name: str, manager: str, style: str
@@ -684,9 +719,19 @@ class SEC13FAdapter(BaseAdapter):
 
         return observations
 
-    def refresh_all_funds(self) -> dict:
-        """Refresh 13F data for all tracked funds."""
-        logger.info("Refreshing 13F data for all tracked funds...")
+    def refresh_all_funds(self, max_workers: int = 6) -> dict:
+        """
+        Refresh 13F data for all tracked funds using parallel fetching.
+
+        Args:
+            max_workers: Number of parallel workers (default 6)
+
+        Returns:
+            Dictionary with processing results
+        """
+        import time
+        start_time = time.time()
+        logger.info(f"Refreshing 13F data for {len(TOP_HEDGE_FUNDS)} funds (workers={max_workers})...")
 
         results = {
             "funds_processed": 0,
@@ -694,23 +739,26 @@ class SEC13FAdapter(BaseAdapter):
             "errors": [],
         }
 
-        db = get_db()
+        def _refresh_single_fund(fund_info: tuple) -> dict:
+            """Refresh a single fund. Runs in parallel worker thread."""
+            cik, name, manager, style = fund_info
+            db = get_db()
+            result = {"processed": False, "holdings": 0, "error": None}
 
-        for cik, name, manager, style in TOP_HEDGE_FUNDS:
             try:
                 fund = self._ensure_fund_exists(cik, name, manager, style)
                 if not fund:
-                    continue
+                    return result
 
                 filing = self._get_latest_13f_filing(cik)
                 if not filing:
-                    results["errors"].append(f"No filing for {name}")
-                    continue
+                    result["error"] = f"No filing for {name}"
+                    return result
 
                 if fund.last_filing_date == filing.filing_date:
                     logger.debug(f"Already have latest filing for {name}")
-                    results["funds_processed"] += 1
-                    continue
+                    result["processed"] = True
+                    return result
 
                 holdings = self._fetch_holdings(cik, filing)
                 if holdings:
@@ -718,12 +766,31 @@ class SEC13FAdapter(BaseAdapter):
                     fund.last_filing_date = filing.filing_date
                     db.upsert_hedge_fund(fund)
 
-                    results["funds_processed"] += 1
-                    results["holdings_updated"] += len(stored)
+                    result["processed"] = True
+                    result["holdings"] = len(stored)
                     logger.info(f"Updated {len(stored)} holdings for {name}")
 
             except Exception as e:
-                results["errors"].append(f"{name}: {str(e)}")
+                result["error"] = f"{name}: {str(e)}"
                 logger.warning(f"Error processing {name}: {e}")
 
+            return result
+
+        # Parallel fetch using ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(_refresh_single_fund, fund_info): fund_info
+                for fund_info in TOP_HEDGE_FUNDS
+            }
+
+            for future in as_completed(futures):
+                result = future.result()
+                if result["processed"]:
+                    results["funds_processed"] += 1
+                    results["holdings_updated"] += result["holdings"]
+                if result["error"]:
+                    results["errors"].append(result["error"])
+
+        elapsed = time.time() - start_time
+        logger.info(f"13F refresh complete in {elapsed:.1f}s: {results['funds_processed']} funds, {results['holdings_updated']} holdings")
         return results
