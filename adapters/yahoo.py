@@ -765,6 +765,18 @@ class YahooAdapter(BaseAdapter):
                 "average_volume": info.get("averageVolume"),
                 "gross_profit": info.get("grossProfits"),
                 "total_assets": info.get("totalAssets"),
+                # Keys from non-batch method for scoring parity
+                "analyst_rating": info.get("recommendationMean"),
+                "price_target": info.get("targetMeanPrice"),
+                "target_high": info.get("targetHighPrice"),
+                "target_low": info.get("targetLowPrice"),
+                "company_name": info.get("shortName") or info.get("longName") or ticker,
+                "current_price": info.get("regularMarketPrice"),
+                "fifty_day_average": info.get("fiftyDayAverage"),
+                "two_hundred_day_average": info.get("twoHundredDayAverage"),
+                "fifty_two_week_high": info.get("fiftyTwoWeekHigh"),
+                "fifty_two_week_low": info.get("fiftyTwoWeekLow"),
+                "short_percent_of_float": info.get("shortPercentOfFloat"),
             }
 
         try:
