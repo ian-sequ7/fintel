@@ -7,6 +7,7 @@ Runs the pipeline and exports data in the format expected by the Astro frontend.
 
 import json
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 
@@ -124,7 +125,7 @@ def backtest_result_to_frontend(result: BacktestResult) -> dict:
 
 def generate_backtest_data(universe: list[str]) -> dict | None:
     """
-    Run backtests for all timeframes and return frontend-formatted data.
+    Run backtests for all timeframes in parallel and return frontend-formatted data.
 
     Returns None if backtest fails or insufficient data.
     """
@@ -143,9 +144,9 @@ def generate_backtest_data(universe: list[str]) -> dict | None:
     results = {}
     now = datetime.now().isoformat()
 
-    for timeframe in ["short", "medium", "long"]:
+    def _run_single_backtest(timeframe: str) -> tuple[str, dict | None, str | None]:
+        """Run backtest for a single timeframe. Returns (timeframe, result, error)."""
         try:
-            print(f"  Running {timeframe} timeframe backtest...")
             result = run_backtest(
                 start_date=start_date,
                 end_date=end_date,
@@ -154,11 +155,22 @@ def generate_backtest_data(universe: list[str]) -> dict | None:
                 universe=universe[:30],  # Use top 30 tickers for speed
                 verbose=False,
             )
-            results[timeframe] = backtest_result_to_frontend(result)
-            print(f"    {timeframe}: {result.alpha:+.1f}% alpha, {result.hit_rate:.0f}% hit rate")
+            return timeframe, backtest_result_to_frontend(result), f"{result.alpha:+.1f}% alpha, {result.hit_rate:.0f}% hit rate"
         except Exception as e:
-            print(f"    {timeframe} backtest failed: {e}")
-            results[timeframe] = None
+            return timeframe, None, str(e)
+
+    # Run all 3 backtests in parallel
+    timeframes = ["short", "medium", "long"]
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        futures = {executor.submit(_run_single_backtest, tf): tf for tf in timeframes}
+
+        for future in as_completed(futures):
+            timeframe, result, info = future.result()
+            results[timeframe] = result
+            if result:
+                print(f"    {timeframe}: {info}")
+            else:
+                print(f"    {timeframe} backtest failed: {info}")
 
     # Return None if all failed
     if all(r is None for r in results.values()):
@@ -572,35 +584,28 @@ def fetch_sp500_batch_prices() -> dict[str, dict]:
 
 
 def fetch_stock_details(tickers: list[str]) -> dict:
-    """Fetch detailed stock data including price history and fundamentals."""
+    """Fetch detailed stock data using batch methods for speed."""
     from adapters.yahoo import YahooAdapter
-    import time
 
     yahoo = YahooAdapter()
     details = {}
 
     print(f"Fetching detailed data for {len(tickers)} stocks...")
 
-    # Batch fetch price history first (single API call, avoids rate limiting)
+    # Batch fetch all data in parallel
     print("  Fetching price history (batch)...")
     price_history_batch = yahoo.get_price_history_batch(tickers, days=365)
     print(f"  Got price history for {len(price_history_batch)}/{len(tickers)} stocks")
 
-    # Fetch fundamentals individually (these are more resilient to rate limits)
-    for i, ticker in enumerate(tickers):
+    # Batch fetch fundamentals and prices (parallel, much faster than serial)
+    fund_batch = yahoo.get_fundamentals_batch(tickers)
+    price_batch = yahoo.get_prices_batch(tickers)
+
+    # Combine all data
+    for ticker in tickers:
         try:
-            # Rate limit for fundamentals
-            time.sleep(0.2)
-
-            # Get fundamentals (includes 52W high/low, PE forward, etc.)
-            fund_obs = yahoo.get_fundamentals(ticker)
-            fund_data = fund_obs[0].data if fund_obs else {}
-
-            # Get current price data
-            price_obs = yahoo.get_price(ticker)
-            price_data = price_obs[0].data if price_obs else {}
-
-            # Use batch-fetched price history
+            fund_data = fund_batch.get(ticker, {})
+            price_data = price_batch.get(ticker, {})
             price_history = price_history_batch.get(ticker, [])
 
             details[ticker] = {
@@ -626,13 +631,11 @@ def fetch_stock_details(tickers: list[str]) -> dict:
                 "price_history": price_history,
             }
 
-            if (i + 1) % 10 == 0:
-                print(f"  Fetched {i + 1}/{len(tickers)} stocks...")
-
         except Exception as e:
             print(f"  Warning: Could not fetch details for {ticker}: {e}")
             details[ticker] = {"price_history": price_history_batch.get(ticker, [])}
 
+    print(f"  Fetched {len(details)}/{len(tickers)} stocks")
     return details
 
 
