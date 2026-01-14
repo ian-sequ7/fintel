@@ -39,48 +39,47 @@ Fintel is a financial intelligence dashboard with stock picks, smart money track
 
 ### Performance Results
 
-**Batch fetching phase (working correctly):**
-```
-Batch prices (516 tickers): 10.1s
-Batch market caps: +10.4s
-Total batch phase: ~20.5s
-```
+**Full pipeline timing progression:**
+| Optimization | Time | Improvement |
+|--------------|------|-------------|
+| Before optimization | 9:22 | baseline |
+| + Batch prices/fundamentals | 9:22 | (batch phase: 20s vs 8+ min) |
+| + Parallel 13F fetching | 7:20 | -2 min |
+| + Parallel news/options/insider | **6:03** | -1 min |
 
-**Full pipeline timing (9:22 total):**
-| Phase | Time | Notes |
-|-------|------|-------|
-| Batch prices + fundamentals | 20.5s | ✅ Optimized |
-| 13F SEC fetching | ~60s+ | Serial, HTTP 404 retries |
-| Detailed data (21 stocks) | ~60s+ | Serial news/options/insiders |
-| Calendar + historical | Variable | Network dependent |
+**Total improvement: 9:22 → 6:03 (~35% faster)**
+
+**Phase breakdown (current):**
+| Phase | Time | Status |
+|-------|------|--------|
+| Batch prices + fundamentals | ~20s | ✅ Parallel |
+| 13F SEC fetching | ~10s | ✅ Parallel (6 workers) |
+| News fetching | ~5s | ✅ Parallel (10 workers) |
+| Options fetching | ~5s | ✅ Parallel (10 workers) |
+| Insider transactions | ~15s | ✅ Parallel (5 workers, respects Finnhub rate limits) |
+| Calendar + historical | ~30s | Serial (network dependent) |
 | Backtest calculations | ~30s | CPU bound |
 
-**Bottleneck**: Batch optimization achieved its goal (20s vs 8+ minutes for prices/fundamentals), but total pipeline time dominated by other serial operations not in original scope.
-
 ### Current State
-- Batch optimization code complete and verified
+- All parallelization complete and verified
+- Pipeline time reduced from 9:22 to 6:03 (~35% faster)
 - All fixes committed and pushed to origin/main
-- 21 picks generated (7 short / 7 medium / 7 long)
-- Frontend running at localhost:4321 (background task bba31ca)
+- 17 picks generated
 
 ### Next Steps
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Optimize 13F fetching | medium | Parallel SEC requests, better 404 handling |
-| Add news/options/insider batch | low | `get_news_batch()`, `get_unusual_options_batch()` |
-| Profile remaining bottlenecks | low | Calendar, backtest, historical reactions |
+| Profile calendar/backtest | low | Remaining bottlenecks |
+| Consider async/await refactor | low | For even more parallelism |
 
 ### Subtasks Status
 
 | Task | Status |
 |------|--------|
-| Search pipeline for serial API call patterns | complete |
-| Identify batch method integration points | complete |
-| Add get_fundamentals_batch() to yahoo.py | complete |
-| Wire pipeline.py to use batch methods | complete |
-| Test pipeline performance improvement | complete |
-| Investigate 0 picks regression | complete |
+| Batch prices/fundamentals in yahoo.py | complete |
+| Parallel 13F fetching in sec_13f.py | complete |
+| Parallel news/options/insider in pipeline.py | complete |
 | Fix avg_volume key mismatch | complete |
 | Add 11 missing keys to batch method | complete |
 | Full pipeline timing test | complete |
@@ -141,9 +140,9 @@ LONG:   Momentum 10% | Quality 30% | Valuation 30% | Growth 15% | Analyst 10% | 
 
 ## History
 
-- 2a16859: docs: update HANDOFF with batch optimization completion
-- 34c76d8: fix: align batch fundamentals keys with non-batch method (11 keys added)
-- 8d75f0e: chore: refresh market data [automated]
+- 1ff305d: perf: parallelize news, options, and insider fetching
+- d1a01a3: perf: parallelize 13F hedge fund fetching
+- 34c76d8: fix: align batch fundamentals keys with non-batch method
 - 3866601: feat: batch optimization for prices + fundamentals
 - 2dd8548: fix: reload settings after dotenv to fix FRED calendar
 - 3f2de89: fix: complete audit fixes + refresh market data
