@@ -8,7 +8,7 @@ Pipeline performance optimization via batch API methods (January 13, 2026).
 ### Context
 Fintel is a financial intelligence dashboard with stock picks, smart money tracking, macro indicators, news, and portfolio features. Previous audit resolved 7 issues. Current session focused on implementing batch optimization to reduce pipeline runtime from ~5 minutes to ~1 minute.
 
-### Session Summary (Jan 13, 2026) - BATCH OPTIMIZATION + BUG FIX
+### Session Summary (Jan 13, 2026) - BATCH OPTIMIZATION + BUG FIXES
 
 **Batch optimization complete and verified:**
 
@@ -16,6 +16,7 @@ Fintel is a financial intelligence dashboard with stock picks, smart money track
 |------|--------|--------|
 | `adapters/yahoo.py:693-783` | Added `get_fundamentals_batch()` with ThreadPoolExecutor | complete |
 | `adapters/yahoo.py:765` | Fixed key mismatch: `avg_volume` → `average_volume` | complete |
+| `adapters/yahoo.py:765-779` | Added 11 missing keys for batch/non-batch parity | complete |
 | `orchestration/pipeline.py:460-506` | Replaced serial price/fundamental loops with batch calls | complete |
 
 **Changes made:**
@@ -41,7 +42,7 @@ The batch `get_fundamentals_batch()` returned `"avg_volume"` but the transformer
 **Fix:** Changed line 765 in `adapters/yahoo.py` from `"avg_volume"` to `"average_volume"` to match the non-batch method.
 
 **Before fix:** 0 short / 0 medium / 0 long picks
-**After fix:** 3 short / 7 medium / 7 long picks (17 total, 71% avg conviction)
+**After fix:** 7 short / 7 medium / 7 long picks (21 total)
 
 ### Verified Performance
 
@@ -51,19 +52,17 @@ Batch market caps (516 tickers): +8.3s
 Total for full universe: ~19s
 ```
 
-**Pipeline now generates 17 picks with batch optimization working correctly.**
+**Pipeline now generates 21 picks with batch optimization working correctly.**
 
 ### Current State
 - Batch optimization code complete and verified
-- Bug fix applied: `avg_volume` → `average_volume` key alignment
-- Changes in: `adapters/yahoo.py`, `orchestration/pipeline.py`
-- Ready for commit
+- All fixes committed and pushed to origin/main
+- 21 picks generated (7 short / 7 medium / 7 long)
 
 ### Next Steps
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Commit batch optimization + fix | high | Ready to commit |
 | Add more batch methods | low | `get_news_batch()`, `get_unusual_options_batch()` |
 
 ### Subtasks Status
@@ -77,6 +76,7 @@ Total for full universe: ~19s
 | Test pipeline performance improvement | complete |
 | Investigate 0 picks regression | complete |
 | Fix avg_volume key mismatch | complete |
+| Add 11 missing keys to batch method | complete |
 
 ---
 
@@ -137,10 +137,11 @@ LONG:   Momentum 10% | Quality 30% | Valuation 30% | Growth 15% | Analyst 10% | 
 
 ## History
 
-- (uncommitted): feat: batch optimization for prices and fundamentals
+- 9a5a4bd: fix: align batch fundamentals keys with non-batch method
+- 3866601: feat: batch optimization for prices + fundamentals
 - 2dd8548: fix: reload settings after dotenv to fix FRED calendar
 - 3f2de89: fix: complete audit fixes + refresh market data
-- 98f44e7: fix: wire timeframe weights + enforce risk overlay limits
+- cfb7313: fix: wire timeframe weights + enforce risk overlay limits
 - b8d7336: chore: refresh market data
 - 2308d28: chore: refresh market data with corrected historical reactions
 - 8d843c7: docs: FRED API setup + economic calendar limitations
