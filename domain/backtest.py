@@ -649,6 +649,7 @@ def _score_stocks_point_in_time(
     Historical fundamentals would require IBES/FactSet data.
     """
     from adapters import YahooAdapter
+    from adapters.cache import get_cache
     from domain.scoring import (
         score_stock,
         ScoringWeights,
@@ -686,8 +687,23 @@ def _score_stocks_point_in_time(
     yahoo = YahooAdapter()
     scored: list[dict] = []
 
+    # Initialize cache for score results
+    cache = get_cache()
+    cache_ttl = timedelta(hours=24)
+
     for ticker in tickers:
         try:
+            # Check cache first
+            cached = cache.get(
+                "backtest_score",
+                ticker=ticker,
+                date=as_of_date.isoformat(),
+                timeframe=timeframe
+            )
+            if cached is not None:
+                scored.append(cached)
+                continue
+
             # Get price at this date
             ticker_prices = prices.get(ticker, {})
             current_price = _get_price_at_date(ticker_prices, as_of_date)
@@ -738,11 +754,21 @@ def _score_stocks_point_in_time(
             )
 
             if pick.conviction_normalized >= config.min_conviction:
-                scored.append({
+                result = {
                     "ticker": ticker,
                     "conviction": pick.conviction_normalized,
                     "sector": pick.sector,
-                })
+                }
+                # Cache the score result
+                cache.set(
+                    "backtest_score",
+                    result,
+                    cache_ttl,
+                    ticker=ticker,
+                    date=as_of_date.isoformat(),
+                    timeframe=timeframe
+                )
+                scored.append(result)
 
         except Exception as e:
             if verbose:

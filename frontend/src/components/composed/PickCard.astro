@@ -91,7 +91,7 @@ const priceChangePositive = pick.priceChange >= 0;
     </div>
     {priceHistory && priceHistory.length >= 2 && (
       <Sparkline
-        client:load
+        client:visible
         data={priceHistory.map(p => ({ time: p.time, close: p.close }))}
         width={80}
         height={32}

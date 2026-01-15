@@ -3,7 +3,7 @@
  * Interactive Finviz-style heat map visualization of stock picks
  */
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import type { StockPick } from "../../data/types";
 import {
   _transformToHeatMapData,
@@ -501,56 +501,71 @@ interface TileProps {
   onClick: (ticker: string) => void;
 }
 
-function HeatMapTile({ tile, layout, onHover, onClick }: TileProps) {
-  const isSmall = layout.width < 60 || layout.height < 40;
-  const isTiny = layout.width < 40 || layout.height < 30;
+const HeatMapTile = React.memo(
+  ({ tile, layout, onHover, onClick }: TileProps) => {
+    const isSmall = layout.width < 60 || layout.height < 40;
+    const isTiny = layout.width < 40 || layout.height < 30;
 
-  return (
-    <div
-      className="absolute cursor-pointer transition-all duration-150 hover:z-10 hover:scale-[1.02] hover:shadow-lg border border-black/10"
-      style={{
-        left: layout.x,
-        top: layout.y,
-        width: layout.width,
-        height: layout.height,
-        backgroundColor: _getColorForChange(tile.priceChangePercent),
-        color: _getTextColorForChange(tile.priceChangePercent),
-      }}
-      onMouseEnter={(e) => onHover(tile.ticker, e)}
-      onMouseMove={(e) => onHover(tile.ticker, e)}
-      onMouseLeave={() => onHover(null)}
-      onClick={() => onClick(tile.ticker)}
-    >
-      <div className="absolute inset-0 p-1 overflow-hidden flex flex-col justify-center items-center">
-        {/* Ticker */}
-        <div
-          className={`font-mono font-bold leading-none ${
-            isTiny ? "text-[8px]" : isSmall ? "text-xs" : "text-sm"
-          }`}
-        >
-          {tile.ticker}
-        </div>
-
-        {/* Change % - hidden on tiny tiles */}
-        {!isTiny && (
+    return (
+      <div
+        className="absolute cursor-pointer transition-all duration-150 hover:z-10 hover:scale-[1.02] hover:shadow-lg border border-black/10"
+        style={{
+          left: layout.x,
+          top: layout.y,
+          width: layout.width,
+          height: layout.height,
+          backgroundColor: _getColorForChange(tile.priceChangePercent),
+          color: _getTextColorForChange(tile.priceChangePercent),
+        }}
+        onMouseEnter={(e) => onHover(tile.ticker, e)}
+        onMouseMove={(e) => onHover(tile.ticker, e)}
+        onMouseLeave={() => onHover(null)}
+        onClick={() => onClick(tile.ticker)}
+      >
+        <div className="absolute inset-0 p-1 overflow-hidden flex flex-col justify-center items-center">
+          {/* Ticker */}
           <div
-            className={`leading-none mt-0.5 ${
-              isSmall ? "text-[8px]" : "text-xs"
+            className={`font-mono font-bold leading-none ${
+              isTiny ? "text-[8px]" : isSmall ? "text-xs" : "text-sm"
             }`}
           >
-            {_formatPercent(tile.priceChangePercent)}
+            {tile.ticker}
           </div>
-        )}
 
-        {/* Watchlist star */}
-        {tile.isWatchlist && !isTiny && (
-          <div className="absolute top-0.5 right-0.5 text-yellow-300 text-xs">
-            ★
-          </div>
-        )}
+          {/* Change % - hidden on tiny tiles */}
+          {!isTiny && (
+            <div
+              className={`leading-none mt-0.5 ${
+                isSmall ? "text-[8px]" : "text-xs"
+              }`}
+            >
+              {_formatPercent(tile.priceChangePercent)}
+            </div>
+          )}
+
+          {/* Watchlist star */}
+          {tile.isWatchlist && !isTiny && (
+            <div className="absolute top-0.5 right-0.5 text-yellow-300 text-xs">
+              ★
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  },
+  (prevProps, nextProps) => {
+    // WHY: Custom comparison prevents re-renders when only parent callbacks change.
+    // Only re-render if tile data or layout position/size actually changed.
+    return (
+      prevProps.tile.ticker === nextProps.tile.ticker &&
+      prevProps.tile.priceChangePercent === nextProps.tile.priceChangePercent &&
+      prevProps.tile.isWatchlist === nextProps.tile.isWatchlist &&
+      prevProps.layout.x === nextProps.layout.x &&
+      prevProps.layout.y === nextProps.layout.y &&
+      prevProps.layout.width === nextProps.layout.width &&
+      prevProps.layout.height === nextProps.layout.height
+    );
+  }
+);
 
 export { HeatMap };

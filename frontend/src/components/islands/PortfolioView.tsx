@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import type {
   PaperTrade,
   TradePerformance,
@@ -181,17 +181,17 @@ export default function PortfolioView({ stockDetails }: PortfolioViewProps) {
   const [activeTab, setActiveTab] = useState<"open" | "closed" | "insights">("open");
   const [mounted, setMounted] = useState(false);
 
-  // Get current price for a ticker
-  const getCurrentPrice = (ticker: string): number | null => {
+  // Get current price for a ticker (memoized to prevent analytics recalculation)
+  const getCurrentPrice = useCallback((ticker: string): number | null => {
     const detail = stockDetails[ticker];
     return detail?.currentPrice ?? null;
-  };
+  }, [stockDetails]);
 
   // Calculate analytics (memoized)
   const analytics = useMemo(() => {
     if (trades.length === 0) return null;
     return calculatePortfolioAnalytics(trades, stockDetails, getCurrentPrice);
-  }, [trades, stockDetails]);
+  }, [trades, stockDetails, getCurrentPrice]);
 
   // Refresh data from localStorage
   const refreshData = () => {

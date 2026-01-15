@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   _getWatchlist,
   removeFromWatchlist,
@@ -61,20 +61,20 @@ export default function WatchlistView({ stockDetails }: Props) {
     };
   }, []);
 
-  const handleRemove = (ticker: string) => {
+  const handleRemove = useCallback((ticker: string) => {
     removeFromWatchlist(ticker);
-  };
+  }, []);
 
-  const handleEditNotes = (ticker: string, currentNotes?: string) => {
+  const handleEditNotes = useCallback((ticker: string, currentNotes?: string) => {
     setEditingNotes(ticker);
     setNoteText(currentNotes || "");
-  };
+  }, []);
 
-  const handleSaveNotes = (ticker: string) => {
+  const handleSaveNotes = useCallback((ticker: string) => {
     updateWatchlistNotes(ticker, noteText);
     setEditingNotes(null);
     setNoteText("");
-  };
+  }, [noteText]);
 
   if (!mounted) {
     return (
@@ -105,21 +105,25 @@ export default function WatchlistView({ stockDetails }: Props) {
   }
 
   // Calculate portfolio summary
-  const totalValue = watchlist.reduce((sum, item) => {
-    const detail = stockDetails[item.ticker];
-    return sum + (detail?.currentPrice || 0);
-  }, 0);
-
-  const totalChange = watchlist.reduce((sum, item) => {
-    const detail = stockDetails[item.ticker];
-    return sum + (detail?.priceChange || 0);
-  }, 0);
-
-  const avgConviction =
-    watchlist.reduce((sum, item) => {
+  const { totalValue, totalChange, avgConviction } = useMemo(() => {
+    const totalValue = watchlist.reduce((sum, item) => {
       const detail = stockDetails[item.ticker];
-      return sum + (detail?.convictionScore || 0);
-    }, 0) / watchlist.length;
+      return sum + (detail?.currentPrice || 0);
+    }, 0);
+
+    const totalChange = watchlist.reduce((sum, item) => {
+      const detail = stockDetails[item.ticker];
+      return sum + (detail?.priceChange || 0);
+    }, 0);
+
+    const avgConviction =
+      watchlist.reduce((sum, item) => {
+        const detail = stockDetails[item.ticker];
+        return sum + (detail?.convictionScore || 0);
+      }, 0) / watchlist.length;
+
+    return { totalValue, totalChange, avgConviction };
+  }, [watchlist, stockDetails]);
 
   return (
     <div>

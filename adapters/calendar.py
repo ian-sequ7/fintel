@@ -44,6 +44,7 @@ from domain import Observation, Category
 from ports import FetchError, DataError, ValidationError
 
 from .base import BaseAdapter
+from .cache import get_cache
 
 logger = logging.getLogger(__name__)
 
@@ -723,20 +724,43 @@ class CalendarAdapter(BaseAdapter):
         reactions = {}
         lookback_start = date.today() - timedelta(days=lookback_months * 30)
 
-        # Get SPY historical prices for reaction calculation
-        try:
-            spy_data = yf.download(
-                "SPY",
-                start=lookback_start.isoformat(),
-                end=date.today().isoformat(),
-                progress=False,
-            )
-            if spy_data.empty:
-                logger.warning("No SPY data for historical reactions")
+        # Get SPY historical prices for reaction calculation (cached 7 days)
+        cache = get_cache()
+        spy_cache_ttl = timedelta(days=7)
+
+        cached_spy = cache.get(
+            "spy_historical",
+            start=lookback_start.isoformat(),
+            end=date.today().isoformat()
+        )
+
+        if cached_spy is not None:
+            logger.debug("Using cached SPY historical data")
+            import pandas as pd
+            spy_data = pd.DataFrame(cached_spy)
+            spy_data.index = pd.to_datetime(spy_data.index)
+        else:
+            try:
+                spy_data = yf.download(
+                    "SPY",
+                    start=lookback_start.isoformat(),
+                    end=date.today().isoformat(),
+                    progress=False,
+                )
+                if spy_data.empty:
+                    logger.warning("No SPY data for historical reactions")
+                    return {}
+                # Cache the SPY data (convert to serializable dict)
+                cache.set(
+                    "spy_historical",
+                    spy_data.to_dict(),
+                    spy_cache_ttl,
+                    start=lookback_start.isoformat(),
+                    end=date.today().isoformat()
+                )
+            except Exception as e:
+                logger.warning(f"Failed to fetch SPY data: {e}")
                 return {}
-        except Exception as e:
-            logger.warning(f"Failed to fetch SPY data: {e}")
-            return {}
 
         for event_type, (series_id, event_name, unit, is_inverse, transform_type) in EVENT_SERIES.items():
             try:
@@ -836,6 +860,24 @@ class CalendarAdapter(BaseAdapter):
         import csv
         import urllib.request
         from io import StringIO
+
+        # Check cache first (24h TTL)
+        cache = get_cache()
+        cache_ttl = timedelta(hours=24)
+
+        cached_releases = cache.get(
+            "fred_release_history",
+            series_id=series_id,
+            lookback_months=lookback_months,
+            transform_type=transform_type
+        )
+        if cached_releases is not None:
+            logger.debug(f"Using cached FRED data for {series_id}")
+            # Convert date strings back to date objects
+            return [
+                {"date": datetime.fromisoformat(r["date"]).date(), "value": r["value"]}
+                for r in cached_releases
+            ]
 
         # Fetch extra data for transformations that need historical context
         # YoY needs 12 months prior, others need 1-3 months
@@ -940,6 +982,17 @@ class CalendarAdapter(BaseAdapter):
                         "date": release_date,
                         "value": transformed_value,
                     })
+
+                # Cache the results (convert dates to isoformat for serialization)
+                if releases:
+                    cache.set(
+                        "fred_release_history",
+                        [{"date": r["date"].isoformat(), "value": r["value"]} for r in releases],
+                        cache_ttl,
+                        series_id=series_id,
+                        lookback_months=lookback_months,
+                        transform_type=transform_type
+                    )
 
                 return releases
 
