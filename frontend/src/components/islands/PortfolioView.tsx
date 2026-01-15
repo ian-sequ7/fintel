@@ -13,9 +13,10 @@ import {
   calculateTradePerformance,
   calculatePortfolioSummary,
 } from "../../data/portfolio";
+import { getStockDetails } from "../../data/lazy";
 
 interface PortfolioViewProps {
-  stockDetails: Record<string, StockDetail>;
+  stockDetails?: Record<string, StockDetail>;
 }
 
 // =============================================================================
@@ -175,11 +176,13 @@ function calculatePortfolioAnalytics(
   };
 }
 
-export default function PortfolioView({ stockDetails }: PortfolioViewProps) {
+export default function PortfolioView({ stockDetails: initialStockDetails }: PortfolioViewProps) {
   const [trades, setTrades] = useState<PaperTrade[]>([]);
   const [summary, setSummary] = useState<PortfolioSummary | null>(null);
   const [activeTab, setActiveTab] = useState<"open" | "closed" | "insights">("open");
   const [mounted, setMounted] = useState(false);
+  const [stockDetails, setStockDetails] = useState<Record<string, StockDetail>>(initialStockDetails ?? {});
+  const [loading, setLoading] = useState(!initialStockDetails);
 
   // Get current price for a ticker (memoized to prevent analytics recalculation)
   const getCurrentPrice = useCallback((ticker: string): number | null => {
@@ -189,9 +192,9 @@ export default function PortfolioView({ stockDetails }: PortfolioViewProps) {
 
   // Calculate analytics (memoized)
   const analytics = useMemo(() => {
-    if (trades.length === 0) return null;
+    if (trades.length === 0 || loading) return null;
     return calculatePortfolioAnalytics(trades, stockDetails, getCurrentPrice);
-  }, [trades, stockDetails, getCurrentPrice]);
+  }, [trades, stockDetails, getCurrentPrice, loading]);
 
   // Refresh data from localStorage
   const refreshData = () => {
@@ -202,6 +205,15 @@ export default function PortfolioView({ stockDetails }: PortfolioViewProps) {
 
   useEffect(() => {
     setMounted(true);
+
+    // Lazy load stock details if not provided
+    if (!initialStockDetails) {
+      getStockDetails().then((data) => {
+        setStockDetails(data);
+        setLoading(false);
+      });
+    }
+
     refreshData();
 
     const handleUpdate = () => refreshData();

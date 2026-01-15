@@ -156,19 +156,21 @@ export function getTopPicks(): StockPick[] {
 
 /**
  * Get detailed stock data for a specific ticker.
+ * Note: stockDetails is now lazy-loaded. Use getStockDetails() from lazy.ts for async access.
  */
 export function getStockDetail(ticker: string): StockDetail | null {
   const report = getReportSync();
-  return report.stockDetails[ticker.toUpperCase()] ?? null;
+  return report.stockDetails?.[ticker.toUpperCase()] ?? null;
 }
 
 /**
  * Get all S&P 500 stocks with prices (lite data for heatmap).
  * Returns ~500 stocks with current price, change, and sector.
+ * Note: allStocks is now lazy-loaded. Use getAllStocksLazy() from lazy.ts for async access.
  */
 export function getAllStocks(): LiteStock[] {
   const report = getReportSync();
-  return report.allStocks || [];
+  return report.allStocks ?? [];
 }
 
 /**

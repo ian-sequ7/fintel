@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { _getCompareStocks, removeFromCompare, clearCompare, type CompareStock } from "./CompareManager";
+import { getStockDetails } from "../../data/lazy";
 
 interface StockDetail {
   ticker: string;
@@ -28,7 +29,7 @@ interface StockDetail {
 }
 
 interface Props {
-  stockDetails: Record<string, StockDetail>;
+  stockDetails?: Record<string, StockDetail>;
 }
 
 function _formatPrice(price?: number): string {
@@ -59,13 +60,23 @@ function _getChangeColor(change: number): string {
   return change >= 0 ? "text-success" : "text-danger";
 }
 
-export default function CompareView({ stockDetails }: Props) {
+export default function CompareView({ stockDetails: initialStockDetails }: Props) {
   const [stocks, setStocks] = useState<CompareStock[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [stockDetails, setStockDetails] = useState<Record<string, StockDetail>>(initialStockDetails ?? {});
+  const [loading, setLoading] = useState(!initialStockDetails);
 
   useEffect(() => {
     setMounted(true);
     setStocks(_getCompareStocks());
+
+    // Lazy load stock details if not provided
+    if (!initialStockDetails) {
+      getStockDetails().then((data) => {
+        setStockDetails(data as Record<string, StockDetail>);
+        setLoading(false);
+      });
+    }
 
     const handleUpdate = () => setStocks(_getCompareStocks());
     window.addEventListener("compare-updated", handleUpdate);

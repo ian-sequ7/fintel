@@ -5,6 +5,7 @@ import {
   updateWatchlistNotes,
   type WatchlistStock,
 } from "./WatchlistManager";
+import { getStockDetails } from "../../data/lazy";
 
 interface StockDetail {
   ticker: string;
@@ -20,7 +21,7 @@ interface StockDetail {
 }
 
 interface Props {
-  stockDetails: Record<string, StockDetail>;
+  stockDetails?: Record<string, StockDetail>;
 }
 
 function _formatPrice(price?: number): string {
@@ -41,15 +42,25 @@ function _formatRelativeTime(isoDate: string): string {
   return date.toLocaleDateString();
 }
 
-export default function WatchlistView({ stockDetails }: Props) {
+export default function WatchlistView({ stockDetails: initialStockDetails }: Props) {
   const [watchlist, setWatchlist] = useState<WatchlistStock[]>([]);
   const [mounted, setMounted] = useState(false);
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
+  const [stockDetails, setStockDetails] = useState<Record<string, StockDetail>>(initialStockDetails ?? {});
+  const [loading, setLoading] = useState(!initialStockDetails);
 
   useEffect(() => {
     setMounted(true);
     setWatchlist(_getWatchlist());
+
+    // Lazy load stock details if not provided
+    if (!initialStockDetails) {
+      getStockDetails().then((data) => {
+        setStockDetails(data as Record<string, StockDetail>);
+        setLoading(false);
+      });
+    }
 
     const handleUpdate = () => setWatchlist(_getWatchlist());
     window.addEventListener("watchlist-updated", handleUpdate);

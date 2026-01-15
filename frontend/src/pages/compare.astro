@@ -1,11 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import CompareView from "../components/islands/CompareView";
-import { getReportSync } from "../data/report";
-
-// Get all stock details for the compare view
-const report = getReportSync();
-const stockDetails = report.stockDetails;
 ---
 
 <Layout title="Compare Stocks" description="Compare stock picks side-by-side with key metrics, fundamentals, and investment thesis.">
@@ -27,6 +22,6 @@ const stockDetails = report.stockDetails;
     </div>
   </div>
 
-  <!-- Compare view (React island) -->
-  <CompareView client:load stockDetails={stockDetails} />
+  <!-- Compare view (React island) - loads stockDetails lazily -->
+  <CompareView client:load />
 </Layout>

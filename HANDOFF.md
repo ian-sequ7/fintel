@@ -3,47 +3,54 @@
 ## Current Work
 
 ### Goal
-Website optimization (January 15, 2026) - Backend caching complete, massive pipeline speedup achieved.
+Website optimization (January 15, 2026) - All major optimizations complete (Groups A, B, C).
 
 ### Context
-Fintel is a financial intelligence dashboard. Previous sessions completed pipeline parallelization (9:22 → 3:55) and frontend memoization. This session completed backend caching (Group A).
+Fintel is a financial intelligence dashboard. This session completed backend caching (Group A) and JSON splitting (Group B).
 
-### Session Summary - BACKEND CACHING COMPLETE
+### Session Summary - ALL OPTIMIZATIONS COMPLETE
 
-**Pipeline performance improvement:**
+**Performance improvements:**
 
 | Metric | Before | After | Improvement |
 |--------|--------|-------|-------------|
-| Cold cache | 3:55 | 42s | **82% faster** |
-| Warm cache | 3:55 | 12s | **95% faster** |
+| Pipeline (cold) | 3:55 | 42s | **82% faster** |
+| Pipeline (warm) | 3:55 | 12s | **95% faster** |
+| Core bundle | 1.3 MB | 87 KB | **93% smaller** |
 
-**Backend caching (Group A) completed:**
+**Backend caching (Group A):**
 
-| Cache | File | TTL | Impact |
-|-------|------|-----|--------|
-| Backtest scores | `domain/backtest.py:697-770` | 24h | Skip expensive stock scoring |
-| SPY historical | `adapters/calendar.py:728-763` | 7d | Skip yf.download() for SPY |
-| FRED releases | `adapters/calendar.py:864-995` | 24h | Skip FRED API calls |
+| Cache | File | TTL |
+|-------|------|-----|
+| Backtest scores | `domain/backtest.py:697-770` | 24h |
+| SPY historical | `adapters/calendar.py:728-763` | 7d |
+| FRED releases | `adapters/calendar.py:864-995` | 24h |
 
-**Implementation pattern:** All use existing `PersistentCache` from `adapters/cache.py` with:
-- `cache.get("source", key=value)` - check cache first
-- `cache.set("source", data, ttl, key=value)` - store on miss
-- Date serialization via `.isoformat()` for cache keys
+**JSON splitting (Group B):**
+
+| File | Size | Loaded |
+|------|------|--------|
+| Core report.json | 87 KB | Always (SSG) |
+| stockDetails.json | 439 KB | Portfolio/Compare/Watchlist pages |
+| allStocks.json | 112 KB | Heatmap page |
+| smartMoney.json | 121 KB | Smart money section |
+
+**Implementation:** Components lazy-load data via `frontend/src/data/lazy.ts`:
+- `getStockDetails()` - fetches `/data/stockDetails.json`
+- `getAllStocksLazy()` - fetches `/data/allStocks.json`
+- `getSmartMoney()` - fetches `/data/smartMoney.json`
 
 ### Current State
 - All Group A (backend caching) complete
+- All Group B (JSON splitting) complete
 - All Group C (frontend memoization) complete
 - Pipeline time: 12s (warm) / 42s (cold)
+- Core bundle: 87 KB
 - Build verified
 
-### Next Steps - GROUP B (Optional)
+### Next Steps - GROUP D (Optional)
 
-**Group B - Split report.json (1.3MB → ~400KB):**
-- Lazy-load sections: historical prices, backtest results
-- Keep core data in main bundle
-- Load detail data on-demand
-
-**Group D - HTTP cache headers (optional):**
+**Group D - HTTP cache headers:**
 - Add Cache-Control headers to static JSON
 - Browser caching for repeat visits
 
@@ -52,7 +59,7 @@ Fintel is a financial intelligence dashboard. Previous sessions completed pipeli
 | Group | Description | Status |
 |-------|-------------|--------|
 | A | Backend caching (scores, SPY, FRED) | **complete** |
-| B | Split report.json (1.3MB → ~400KB) | pending |
+| B | Split report.json (1.3MB → 87KB core) | **complete** |
 | C | Frontend React memoization | **complete** |
 | D | HTTP cache headers, vectorization | optional |
 
@@ -65,16 +72,28 @@ Fintel is a financial intelligence dashboard. Previous sessions completed pipeli
 | HeatMapTile React.memo | complete |
 | PortfolioView useMemo | complete |
 | Sparkline client:visible fix | complete |
-| Backtest score caching | **complete** |
-| SPY historical caching | **complete** |
-| FRED release caching | **complete** |
-| Split report.json | not started |
+| Backtest score caching | complete |
+| SPY historical caching | complete |
+| FRED release caching | complete |
+| Split report.json | **complete** |
 
 ### Key Files Modified This Session
 
 **Backend:**
 - `domain/backtest.py:652,691-770` - Backtest score caching
 - `adapters/calendar.py:47,728-763,864-995` - SPY + FRED caching
+- `scripts/generate_frontend_data.py:1075-1111` - JSON splitting
+
+**Frontend:**
+- `src/data/lazy.ts` - New lazy-loading utilities
+- `src/data/types.ts` - Made split fields optional
+- `src/data/report.ts` - Handle optional fields
+- `src/components/islands/PortfolioView.tsx` - Lazy load stockDetails
+- `src/components/islands/WatchlistView.tsx` - Lazy load stockDetails
+- `src/components/islands/CompareView.tsx` - Lazy load stockDetails
+- `src/pages/portfolio.astro` - Removed stockDetails prop
+- `src/pages/watchlist.astro` - Removed stockDetails prop
+- `src/pages/compare.astro` - Removed stockDetails prop
 
 ---
 

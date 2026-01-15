@@ -1,11 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import WatchlistView from "../components/islands/WatchlistView";
-import { getReportSync } from "../data/report";
-
-// Get all stock details for the watchlist view
-const report = getReportSync();
-const stockDetails = report.stockDetails;
 ---
 
 <Layout title="My Watchlist" description="Track your favorite stocks with personal notes and price alerts.">
@@ -27,6 +22,6 @@ const stockDetails = report.stockDetails;
     </div>
   </div>
 
-  <!-- Watchlist view (React island) -->
-  <WatchlistView client:load stockDetails={stockDetails} />
+  <!-- Watchlist view (React island) - loads stockDetails lazily -->
+  <WatchlistView client:load />
 </Layout>

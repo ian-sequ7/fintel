@@ -1072,23 +1072,52 @@ def main():
     # Convert to frontend format
     report = generate_report_json(result, config, stock_details, sp500_prices, briefing_data, backtest_data)
 
-    # Write to frontend data directory
+    # Write split JSON files for lazy loading (heavy data to public/)
+    public_data_dir = Path(__file__).parent.parent / "frontend" / "public" / "data"
+    public_data_dir.mkdir(parents=True, exist_ok=True)
+
+    # Extract heavy sections for lazy loading
+    stock_details = report.pop("stockDetails", {})
+    all_stocks = report.pop("allStocks", [])
+    smart_money = report.pop("smartMoney", {})
+
+    # Write split files (minified for smaller size)
+    with open(public_data_dir / "stockDetails.json", "w") as f:
+        json.dump(stock_details, f, separators=(',', ':'), default=str)
+    with open(public_data_dir / "allStocks.json", "w") as f:
+        json.dump(all_stocks, f, separators=(',', ':'), default=str)
+    with open(public_data_dir / "smartMoney.json", "w") as f:
+        json.dump(smart_money, f, separators=(',', ':'), default=str)
+
+    # Calculate sizes
+    core_size = len(json.dumps(report, default=str))
+    details_size = len(json.dumps(stock_details, default=str))
+    stocks_size = len(json.dumps(all_stocks, default=str))
+    smart_size = len(json.dumps(smart_money, default=str))
+
+    print(f"\nSplit JSON sizes:")
+    print(f"  Core report: {core_size/1024:.1f} KB")
+    print(f"  stockDetails: {details_size/1024:.1f} KB")
+    print(f"  allStocks: {stocks_size/1024:.1f} KB")
+    print(f"  smartMoney: {smart_size/1024:.1f} KB")
+
+    # Write core report to src/data (for SSG imports)
     output_path = Path(__file__).parent.parent / "frontend" / "src" / "data" / "report.json"
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     with open(output_path, "w") as f:
         json.dump(report, f, indent=2, default=str)
 
-    print(f"\nWrote report to {output_path}")
+    print(f"\nWrote core report to {output_path}")
     print(f"Total S&P 500 stocks: {report['summary']['totalStocks']}")
     print(f"Total picks: {report['summary']['totalPicks']}")
     print(f"Avg conviction: {report['summary']['avgConviction']:.0%}")
     print(f"Top sector: {report['summary']['topSector']}")
 
-    # Show sample stock detail
-    sample_ticker = list(report["stockDetails"].keys())[0] if report["stockDetails"] else None
+    # Show sample stock detail (from the split file)
+    sample_ticker = list(stock_details.keys())[0] if stock_details else None
     if sample_ticker:
-        detail = report["stockDetails"][sample_ticker]
+        detail = stock_details[sample_ticker]
         print(f"\nSample stock ({sample_ticker}):")
         print(f"  Price: ${detail['currentPrice']} ({detail['priceChange']:+.2f}, {detail['priceChangePercent']:+.2f}%)")
         print(f"  Price history points: {len(detail.get('priceHistory', []))}")

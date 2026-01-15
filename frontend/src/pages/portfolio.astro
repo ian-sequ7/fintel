@@ -1,11 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import PortfolioView from "../components/islands/PortfolioView";
-import { getReportSync } from "../data/report";
-
-// Get stock details for current price lookups
-const report = getReportSync();
-const stockDetails = report.stockDetails;
 ---
 
 <Layout title="Paper Trading Portfolio" description="Track your paper trades and test investment strategies.">
@@ -27,6 +22,6 @@ const stockDetails = report.stockDetails;
     </div>
   </div>
 
-  <!-- Portfolio view (React island) -->
-  <PortfolioView client:load stockDetails={stockDetails} />
+  <!-- Portfolio view (React island) - loads stockDetails lazily -->
+  <PortfolioView client:load />
 </Layout>

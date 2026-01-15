@@ -411,11 +411,11 @@ export interface FinancialReport {
     long: StockPick[];
   };
 
-  // Detailed stock data with price history
-  stockDetails: Record<string, StockDetail>;
+  // Detailed stock data with price history (lazy-loaded from /data/stockDetails.json)
+  stockDetails?: Record<string, StockDetail>;
 
-  // All S&P 500 stocks with prices (for heatmap)
-  allStocks: LiteStock[];
+  // All S&P 500 stocks with prices (lazy-loaded from /data/allStocks.json)
+  allStocks?: LiteStock[];
 
   // Macro data
   macro: MacroContext;
@@ -426,8 +426,8 @@ export interface FinancialReport {
     company: NewsItem[];
   };
 
-  // Smart Money
-  smartMoney: SmartMoneyContext;
+  // Smart Money (lazy-loaded from /data/smartMoney.json)
+  smartMoney?: SmartMoneyContext;
 
   // Daily Briefing
   briefing?: DailyBriefing;
