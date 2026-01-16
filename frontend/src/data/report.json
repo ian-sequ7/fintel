@@ -1,435 +1,707 @@
 {
-  "generatedAt": "2026-01-15T15:24:43.343536",
+  "generatedAt": "2026-01-16T14:55:11.303194",
   "version": "1.0.0",
   "watchlist": [
-    "INTC",
-    "SW",
-    "BLK",
-    "PODD",
-    "GM",
-    "KR",
-    "VTRS",
+    "ZS",
+    "FANG",
     "WTW",
-    "MCD",
-    "ARES",
-    "RSG",
-    "HON",
-    "ANET",
-    "V",
-    "AES",
-    "KVUE",
-    "MTB",
-    "CBRE",
-    "CF",
-    "ORLY"
+    "ZBRA",
+    "PWR",
+    "GNRC",
+    "MCK",
+    "RVTY",
+    "ADSK",
+    "CRWD",
+    "BRO",
+    "PNC",
+    "GPN",
+    "BRK-B",
+    "AZN",
+    "SNPS",
+    "PLTR",
+    "MTD",
+    "PHM",
+    "AVY"
   ],
   "picks": {
     "short": [
       {
-        "ticker": "ARES",
-        "companyName": "Ares Management Corporation",
-        "currentPrice": 169.57,
-        "priceChange": -0.35,
-        "priceChangePercent": -0.21,
-        "convictionScore": 0.8,
+        "ticker": "FSLR",
+        "companyName": "First Solar, Inc.",
+        "currentPrice": 245.01,
+        "priceChange": 1.37,
+        "priceChangePercent": 0.56,
+        "convictionScore": 0.9,
         "timeframe": "short",
-        "thesis": "Strong conviction in ARES driven by multiple tailwinds. Strong revenue growth of 46.7%. Excellent earnings growth of 108.8%.",
-        "riskFactors": [
-          "P/E Ratio: Premium P/E of 71.9x vs sector 12.0x",
-          "P/B Ratio: High P/B of 12.40x"
-        ],
-        "sector": "finance",
-        "entryPrice": 169.57,
-        "targetPrice": 210.27,
-        "stopLoss": 161.09,
-        "marketCap": 55555305472,
-        "peRatio": 71.8517,
-        "volume": 1302398
-      },
-      {
-        "ticker": "ANET",
-        "companyName": "Arista Networks, Inc.",
-        "currentPrice": 130.59,
-        "priceChange": 5.5,
-        "priceChangePercent": 4.4,
-        "convictionScore": 0.8,
-        "timeframe": "short",
-        "thesis": "ANET shows compelling characteristics across key metrics. Strong revenue growth of 27.5%. Strong Buy consensus (1.5).",
-        "riskFactors": [
-          "P/E Ratio: Premium P/E of 49.7x vs sector 28.0x",
-          "P/B Ratio: High P/B of 13.81x"
-        ],
+        "thesis": "FSLR stands out with exceptional fundamentals. Strong revenue growth of 79.7%. Buy consensus (1.7) (technology sector).",
+        "riskFactors": [],
         "sector": "technology",
-        "entryPrice": 130.59,
-        "targetPrice": 161.93,
-        "stopLoss": 124.06,
-        "marketCap": 164450041856,
-        "peRatio": 49.653988,
-        "volume": 8559017
+        "entryPrice": 244.93,
+        "targetPrice": 311.06,
+        "stopLoss": 232.68,
+        "marketCap": 26282983424,
+        "peRatio": 18.79739,
+        "volume": 195096
       },
       {
-        "ticker": "DASH",
-        "companyName": "DoorDash, Inc.",
-        "currentPrice": 210.11,
-        "priceChange": -3.02,
-        "priceChangePercent": -1.42,
+        "ticker": "FANG",
+        "companyName": "Diamondback Energy, Inc.",
+        "currentPrice": 151.05,
+        "priceChange": 0.23,
+        "priceChangePercent": 0.16,
         "convictionScore": 0.8,
         "timeframe": "short",
-        "thesis": "Strong conviction in DASH driven by multiple tailwinds. Strong revenue growth of 27.3%. Insider cluster: 25 C-suite buys in 60 days.",
-        "riskFactors": [
-          "P/E Ratio: Premium P/E of 106.1x vs sector 20.0x",
-          "P/B Ratio: High P/B of 9.54x"
-        ],
-        "sector": "consumer",
-        "entryPrice": 210.11,
-        "targetPrice": 260.54,
-        "stopLoss": 199.6,
-        "marketCap": 90557104128,
-        "peRatio": 106.11616,
-        "volume": 3879034
+        "thesis": "FANG shows compelling characteristics across key metrics. Strong revenue growth of 42.0%. Strong Buy consensus (1.4).",
+        "riskFactors": [],
+        "sector": "energy",
+        "entryPrice": 151.14,
+        "targetPrice": 187.41,
+        "stopLoss": 143.58,
+        "marketCap": 43752931328,
+        "peRatio": 10.613764,
+        "volume": 158038
       },
       {
         "ticker": "ADSK",
         "companyName": "Autodesk, Inc.",
-        "currentPrice": 262.26,
-        "priceChange": 0.98,
-        "priceChangePercent": 0.38,
+        "currentPrice": 261.91,
+        "priceChange": -0.35,
+        "priceChangePercent": -0.13,
         "convictionScore": 0.8,
         "timeframe": "short",
         "thesis": "ADSK stands out with exceptional fundamentals. Strong Buy consensus (1.5). Moderate revenue growth of 18.0% (technology sector).",
         "riskFactors": [
-          "P/E Ratio: Premium P/E of 50.9x vs sector 28.0x",
-          "P/B Ratio: High P/B of 19.22x",
-          "1M Momentum: Negative momentum of -11.2% monthly"
+          "P/E Ratio: Premium P/E of 51.0x vs sector 28.0x",
+          "P/B Ratio: High P/B of 19.19x",
+          "1M Momentum: Negative momentum of -11.1% monthly"
         ],
         "sector": "technology",
-        "entryPrice": 262.26,
-        "targetPrice": 325.2,
-        "stopLoss": 249.15,
-        "marketCap": 55861383168,
-        "peRatio": 50.924274,
-        "volume": 1738536
+        "entryPrice": 261.93,
+        "targetPrice": 324.79,
+        "stopLoss": 248.83,
+        "marketCap": 55791620096,
+        "peRatio": 50.95963,
+        "volume": 183105
       },
       {
-        "ticker": "BLK",
-        "companyName": "BlackRock, Inc.",
-        "currentPrice": 1156.65,
-        "priceChange": 64.8,
-        "priceChangePercent": 5.93,
-        "convictionScore": 0.7,
+        "ticker": "PNC",
+        "companyName": "PNC Financial Services Group, I",
+        "currentPrice": 221.49,
+        "priceChange": 6.45,
+        "priceChangePercent": 3.0,
+        "convictionScore": 0.8,
         "timeframe": "short",
-        "thesis": "BLK demonstrates strong growth trajectory. Strong revenue growth of 25.2%. Buy consensus (1.8) (financial services sector).",
+        "thesis": "Strong conviction in PNC driven by multiple tailwinds. Buy consensus (2.0). Positive earnings growth of 24.6%.",
         "riskFactors": [
-          "P/E Ratio: Premium P/E of 29.8x vs sector 12.0x",
-          "Earnings Growth: Negative earnings growth of -22.6%"
+          "Revenue Growth: Moderate revenue growth of 10.8%"
         ],
         "sector": "finance",
-        "entryPrice": 1156.65,
-        "targetPrice": 1399.55,
-        "stopLoss": 1064.12,
-        "marketCap": 179455311872,
-        "peRatio": 29.756884,
-        "volume": 1400678
+        "entryPrice": 221.81,
+        "targetPrice": 275.04,
+        "stopLoss": 210.72,
+        "marketCap": 87139672064,
+        "peRatio": 14.325905,
+        "volume": 873163
       },
       {
-        "ticker": "PODD",
-        "companyName": "Insulet Corporation",
-        "currentPrice": 286.49,
-        "priceChange": 3.6,
-        "priceChangePercent": 1.27,
-        "convictionScore": 0.7,
+        "ticker": "LLY",
+        "companyName": "Eli Lilly and Company",
+        "currentPrice": 1036.62,
+        "priceChange": 3.65,
+        "priceChangePercent": 0.35,
+        "convictionScore": 0.8,
         "timeframe": "short",
-        "thesis": "PODD positioned for continued expansion. Strong revenue growth of 29.9%. Strong Buy consensus (1.4).",
+        "thesis": "LLY shows compelling characteristics across key metrics. Strong revenue growth of 53.9%. Buy consensus (1.7).",
         "riskFactors": [
-          "P/E Ratio: Premium P/E of 83.8x vs sector 22.0x",
-          "P/B Ratio: High P/B of 14.56x"
+          "P/E Ratio: Premium P/E of 50.8x vs sector 22.0x",
+          "P/B Ratio: High P/B of 39.11x"
         ],
         "sector": "healthcare",
-        "entryPrice": 286.49,
-        "targetPrice": 346.65,
-        "stopLoss": 263.57,
-        "marketCap": 20166756352,
-        "peRatio": 83.769005,
-        "volume": 709952
+        "entryPrice": 1038.58,
+        "targetPrice": 1287.84,
+        "stopLoss": 986.65,
+        "marketCap": 931122774016,
+        "peRatio": 50.79071,
+        "volume": 646003
       },
       {
-        "ticker": "MRK",
-        "companyName": "Merck & Company, Inc.",
-        "currentPrice": 110.97,
-        "priceChange": -0.04,
-        "priceChangePercent": -0.04,
+        "ticker": "AZN",
+        "companyName": "Astrazeneca PLC",
+        "currentPrice": 93.79,
+        "priceChange": -0.2,
+        "priceChangePercent": -0.21,
         "convictionScore": 0.7,
         "timeframe": "short",
-        "thesis": "MRK presents a balanced opportunity. Buy consensus (1.9). Excellent earnings growth of 87.0% (healthcare sector).",
+        "thesis": "AZN scores well on key fundamentals. Strong Buy consensus (1.4). Excellent earnings growth of 78.0%.",
         "riskFactors": [
-          "P/B Ratio: High P/B of 5.32x",
-          "Revenue Growth: Weak revenue growth of 3.7%"
+          "P/E Ratio: Premium P/E of 31.2x vs sector 22.0x"
         ],
         "sector": "healthcare",
-        "entryPrice": 110.97,
-        "targetPrice": 134.27,
-        "stopLoss": 102.09,
-        "marketCap": 277179006976,
-        "peRatio": 14.678572,
-        "volume": 11765171
+        "entryPrice": 93.82,
+        "targetPrice": 113.52,
+        "stopLoss": 86.31,
+        "marketCap": 290879700992,
+        "peRatio": 31.167774,
+        "volume": 646692
+      },
+      {
+        "ticker": "ARES",
+        "companyName": "Ares Management Corporation",
+        "currentPrice": 169.4,
+        "priceChange": -0.17,
+        "priceChangePercent": -0.1,
+        "convictionScore": 0.7,
+        "timeframe": "short",
+        "thesis": "Growth metrics favor ARES. Strong revenue growth of 46.7%. Excellent earnings growth of 108.8%.",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 71.7x vs sector 12.0x",
+          "P/B Ratio: High P/B of 12.42x"
+        ],
+        "sector": "finance",
+        "entryPrice": 169.88,
+        "targetPrice": 205.55,
+        "stopLoss": 156.29,
+        "marketCap": 55656869888,
+        "peRatio": 71.67933,
+        "volume": 163397
       }
     ],
     "medium": [
       {
-        "ticker": "HON",
-        "companyName": "Honeywell International Inc.",
-        "currentPrice": 215.02,
-        "priceChange": 1.98,
-        "priceChangePercent": 0.93,
+        "ticker": "PLTR",
+        "companyName": "Palantir Technologies Inc.",
+        "currentPrice": 176.35,
+        "priceChange": -0.73,
+        "priceChangePercent": -0.41,
         "convictionScore": 0.7,
         "timeframe": "medium",
-        "thesis": "HON demonstrates strong growth trajectory. Excellent earnings growth of 32.4%. Buy consensus (2.2) (industrials sector).",
+        "thesis": "PLTR positioned for continued expansion. Strong revenue growth of 62.8%. Excellent earnings growth of 200.0%.",
         "riskFactors": [
-          "P/E Ratio: Fair P/E of 22.7x near sector average",
-          "P/B Ratio: High P/B of 8.13x",
-          "Revenue Growth: Moderate revenue growth of 7.0%"
+          "P/E Ratio: Premium P/E of 420.0x vs sector 28.0x",
+          "P/B Ratio: High P/B of 63.79x"
         ],
-        "sector": "industrials",
-        "entryPrice": 215.02,
-        "targetPrice": 260.17,
-        "stopLoss": 197.82,
-        "marketCap": 144895459328,
-        "peRatio": 22.681437,
-        "volume": 5567741
+        "sector": "technology",
+        "entryPrice": 176.38,
+        "targetPrice": 213.42,
+        "stopLoss": 162.27,
+        "marketCap": 420404068352,
+        "peRatio": 419.96594,
+        "volume": 9516066
       },
       {
-        "ticker": "SPG",
-        "companyName": "Simon Property Group, Inc.",
-        "currentPrice": 182.31,
-        "priceChange": -3.41,
-        "priceChangePercent": -1.84,
-        "convictionScore": 0.7,
-        "timeframe": "medium",
-        "thesis": "SPG demonstrates strong growth trajectory. Excellent earnings growth of 27.4%. Buy consensus (2.3) (real estate sector).",
-        "riskFactors": [
-          "P/B Ratio: High P/B of 25.78x",
-          "Revenue Growth: Moderate revenue growth of 8.2%"
-        ],
-        "sector": "real_estate",
-        "entryPrice": 182.31,
-        "targetPrice": 220.6,
-        "stopLoss": 167.73,
-        "marketCap": 68768612352,
-        "peRatio": 26.537119,
-        "volume": 1643853
-      },
-      {
-        "ticker": "AES",
-        "companyName": "The AES Corporation",
-        "currentPrice": 14.44,
-        "priceChange": 0.44,
-        "priceChangePercent": 3.14,
-        "convictionScore": 0.7,
-        "timeframe": "medium",
-        "thesis": "Growth metrics favor AES. Excellent earnings growth of 25.3%. Attractive P/E of 9.5x vs sector 18.0x.",
-        "riskFactors": [
-          "Revenue Growth: Weak revenue growth of 1.9%",
-          "ROE: Adequate ROE of 5.1%"
-        ],
-        "sector": "utilities",
-        "entryPrice": 14.44,
-        "targetPrice": 17.47,
-        "stopLoss": 13.28,
-        "marketCap": 10283026432,
-        "peRatio": 9.5,
-        "volume": 13428547
-      },
-      {
-        "ticker": "NDAQ",
-        "companyName": "Nasdaq, Inc.",
-        "currentPrice": 100.33,
-        "priceChange": 0.26,
-        "priceChangePercent": 0.26,
+        "ticker": "EXPE",
+        "companyName": "Expedia Group, Inc.",
+        "currentPrice": 291.14,
+        "priceChange": -3.14,
+        "priceChangePercent": -1.07,
         "convictionScore": 0.6,
         "timeframe": "medium",
-        "thesis": "NDAQ presents a balanced opportunity. Buy consensus (1.9). Excellent earnings growth of 37.7% (financial services sector).",
+        "thesis": "EXPE positioned for continued expansion. Excellent earnings growth of 45.4%. Buy consensus (2.3).",
         "riskFactors": [
-          "P/E Ratio: Premium P/E of 35.8x vs sector 12.0x",
-          "P/B Ratio: Reasonable P/B of 4.78x",
-          "Revenue Growth: Weak revenue growth of 2.9%"
+          "P/E Ratio: Premium P/E of 28.0x vs sector 20.0x",
+          "P/B Ratio: High P/B of 26.78x",
+          "Revenue Growth: Moderate revenue growth of 8.7%"
         ],
-        "sector": "finance",
-        "entryPrice": 100.33,
-        "targetPrice": 118.39,
-        "stopLoss": 92.3,
-        "marketCap": 57568878592,
-        "peRatio": 35.832146,
-        "volume": 2399289
+        "sector": "consumer",
+        "entryPrice": 291.06,
+        "targetPrice": 343.45,
+        "stopLoss": 267.78,
+        "marketCap": 36008656896,
+        "peRatio": 28.013474,
+        "volume": 98366
       },
       {
-        "ticker": "O",
-        "companyName": "Realty Income Corporation",
-        "currentPrice": 60.72,
-        "priceChange": 0.41,
-        "priceChangePercent": 0.68,
+        "ticker": "DPZ",
+        "companyName": "Domino's Pizza Inc",
+        "currentPrice": 402.99,
+        "priceChange": -6.1,
+        "priceChangePercent": -1.49,
+        "convictionScore": 0.6,
+        "timeframe": "medium",
+        "thesis": "Growth metrics favor DPZ. Excellent earnings growth of 30.1%. Buy consensus (2.0).",
+        "riskFactors": [
+          "P/E Ratio: Fair P/E of 23.5x near sector average",
+          "Revenue Growth: Weak revenue growth of 3.1%"
+        ],
+        "sector": "consumer",
+        "entryPrice": 402.48,
+        "targetPrice": 474.93,
+        "stopLoss": 370.28,
+        "marketCap": 13663761408,
+        "peRatio": 23.536842,
+        "volume": 37235
+      },
+      {
+        "ticker": "CRWD",
+        "companyName": "CrowdStrike Holdings, Inc.",
+        "currentPrice": 446.58,
+        "priceChange": -8.42,
+        "priceChangePercent": -1.85,
         "convictionScore": 0.5,
         "timeframe": "medium",
-        "thesis": "O may suit risk-tolerant investors. Hold consensus (2.6). Positive earnings growth of 15.2%.",
+        "thesis": "Selective opportunity in CRWD. Strong revenue growth of 22.2%. Buy consensus (1.9).",
         "riskFactors": [
-          "P/E Ratio: Premium P/E of 56.7x vs sector 35.0x",
-          "Revenue Growth: Moderate revenue growth of 10.3%",
-          "ROE: Adequate ROE of 2.5%"
+          "P/B Ratio: High P/B of 28.01x",
+          "Profit Margin: Negative margin of -6.9%",
+          "ROE: Negative ROE of -8.8%"
         ],
-        "sector": "real_estate",
-        "entryPrice": 60.72,
+        "sector": "technology",
+        "entryPrice": 446.71,
         "targetPrice": null,
-        "stopLoss": 55.86,
-        "marketCap": 55747383296,
-        "peRatio": 56.74766,
-        "volume": 6746151
+        "stopLoss": 410.97,
+        "marketCap": 112506486784,
+        "peRatio": null,
+        "volume": 401136
+      },
+      {
+        "ticker": "CBOE",
+        "companyName": "Cboe Global Markets, Inc.",
+        "currentPrice": 269.4,
+        "priceChange": -1.43,
+        "priceChangePercent": -0.53,
+        "convictionScore": 0.5,
+        "timeframe": "medium",
+        "thesis": "CBOE warrants consideration despite mixed signals. Excellent earnings growth of 37.7%. No insider data (Form 4 adapter needed) (financial services sector).",
+        "riskFactors": [
+          "P/E Ratio: Premium P/E of 29.1x vs sector 12.0x",
+          "P/B Ratio: High P/B of 5.78x",
+          "Revenue Growth: Moderate revenue growth of 8.1%"
+        ],
+        "sector": "finance",
+        "entryPrice": 269.95,
+        "targetPrice": null,
+        "stopLoss": 248.35,
+        "marketCap": 28248786944,
+        "peRatio": 29.058128,
+        "volume": 68123
       }
     ],
     "long": [
       {
-        "ticker": "CF",
-        "companyName": "CF Industries Holdings, Inc.",
-        "currentPrice": 86.6,
-        "priceChange": 1.55,
-        "priceChangePercent": 1.82,
+        "ticker": "RF",
+        "companyName": "Regions Financial Corporation",
+        "currentPrice": 27.59,
+        "priceChange": -0.93,
+        "priceChangePercent": -3.26,
         "convictionScore": 0.9,
         "timeframe": "long",
-        "thesis": "CF stands out with exceptional fundamentals. Strong revenue growth of 21.1%. Excellent earnings growth of 41.6% (basic materials sector).",
+        "thesis": "RF shows compelling characteristics across key metrics. Moderate revenue growth of 15.6%. Buy consensus (2.5).",
         "riskFactors": [],
-        "sector": "materials",
-        "entryPrice": 86.6,
-        "targetPrice": 109.98,
-        "stopLoss": 82.27,
-        "marketCap": 14026858496,
-        "peRatio": 10.471583,
-        "volume": 2205279
+        "sector": "finance",
+        "entryPrice": 27.54,
+        "targetPrice": 34.98,
+        "stopLoss": 26.16,
+        "marketCap": 24560787456,
+        "peRatio": 12.12555,
+        "volume": 4769677
       },
       {
-        "ticker": "MTB",
-        "companyName": "M&T Bank Corporation",
-        "currentPrice": 212.57,
-        "priceChange": 2.78,
-        "priceChangePercent": 1.33,
+        "ticker": "GPN",
+        "companyName": "Global Payments Inc.",
+        "currentPrice": 74.78,
+        "priceChange": -0.21,
+        "priceChangePercent": -0.28,
         "convictionScore": 0.8,
         "timeframe": "long",
-        "thesis": "MTB shows compelling characteristics across key metrics. Moderate insider buying: 2 C-suite buys. Buy consensus (2.5).",
+        "thesis": "Strong conviction in GPN driven by multiple tailwinds. Excellent earnings growth of 113.1%. Significant upside of 37.8% to target.",
         "riskFactors": [
-          "Revenue Growth: Moderate revenue growth of 8.0%"
+          "Revenue Growth: Weak revenue growth of 0.5%"
+        ],
+        "sector": "industrials",
+        "entryPrice": 74.76,
+        "targetPrice": 92.7,
+        "stopLoss": 71.02,
+        "marketCap": 20933679104,
+        "peRatio": 11.344461,
+        "volume": 361267
+      },
+      {
+        "ticker": "BRK-B",
+        "companyName": "Berkshire Hathaway Inc. New",
+        "currentPrice": 491.24,
+        "priceChange": -1.38,
+        "priceChangePercent": -0.28,
+        "convictionScore": 0.8,
+        "timeframe": "long",
+        "thesis": "BRK-B stands out with exceptional fundamentals. Buy consensus (2.0). Positive earnings growth of 17.2% (financial services sector).",
+        "riskFactors": [
+          "Revenue Growth: Weak revenue growth of 2.1%"
         ],
         "sector": "finance",
-        "entryPrice": 212.57,
-        "targetPrice": 263.59,
-        "stopLoss": 201.94,
-        "marketCap": 33218164736,
-        "peRatio": 13.121605,
-        "volume": 998286
+        "entryPrice": 490.91,
+        "targetPrice": 608.73,
+        "stopLoss": 466.36,
+        "marketCap": 1059057238016,
+        "peRatio": 15.694054,
+        "volume": 1094002
       },
       {
-        "ticker": "CMCSA",
-        "companyName": "Comcast Corporation",
-        "currentPrice": 28.35,
-        "priceChange": -0.07,
-        "priceChangePercent": -0.25,
+        "ticker": "PHM",
+        "companyName": "PulteGroup, Inc.",
+        "currentPrice": 134.12,
+        "priceChange": 1.25,
+        "priceChangePercent": 0.94,
         "convictionScore": 0.8,
         "timeframe": "long",
-        "thesis": "CMCSA shows compelling characteristics across key metrics. Attractive P/E of 4.7x vs sector 18.0x. Hold consensus (2.6).",
+        "thesis": "PHM shows compelling characteristics across key metrics. Buy consensus (2.2). Attractive P/E of 10.4x vs sector 20.0x.",
         "riskFactors": [
-          "Revenue Growth: Weak revenue growth of -2.7%",
-          "Earnings Growth: Negative earnings growth of -4.2%"
+          "Revenue Growth: Weak revenue growth of -1.6%",
+          "Earnings Growth: Negative earnings growth of -11.6%"
+        ],
+        "sector": "consumer",
+        "entryPrice": 134.07,
+        "targetPrice": 166.25,
+        "stopLoss": 127.37,
+        "marketCap": 26450698240,
+        "peRatio": 10.35251,
+        "volume": 201288
+      },
+      {
+        "ticker": "MTCH",
+        "companyName": "Match Group, Inc.",
+        "currentPrice": 31.33,
+        "priceChange": -0.27,
+        "priceChangePercent": -0.85,
+        "convictionScore": 0.8,
+        "timeframe": "long",
+        "thesis": "MTCH shows compelling characteristics across key metrics. Positive earnings growth of 23.3%. Buy consensus (2.4).",
+        "riskFactors": [
+          "Revenue Growth: Weak revenue growth of 2.1%"
         ],
         "sector": "communications",
-        "entryPrice": 28.35,
-        "targetPrice": 35.15,
-        "stopLoss": 26.93,
-        "marketCap": 111732015104,
-        "peRatio": 4.7093024,
-        "volume": 27870621
+        "entryPrice": 31.4,
+        "targetPrice": 38.94,
+        "stopLoss": 29.83,
+        "marketCap": 7555535360,
+        "peRatio": 14.672896,
+        "volume": 191683
       },
       {
-        "ticker": "WTW",
-        "companyName": "Willis Towers Watson Public Lim",
-        "currentPrice": 328.49,
-        "priceChange": 0.3,
-        "priceChangePercent": 0.09,
-        "convictionScore": 0.7,
-        "timeframe": "long",
-        "thesis": "WTW scores well on key fundamentals. Buy consensus (1.9). 26 non-C-suite insider buy(s).",
-        "riskFactors": [
-          "P/B Ratio: Reasonable P/B of 4.08x",
-          "Revenue Growth: Weak revenue growth of -0.0%"
-        ],
-        "sector": "finance",
-        "entryPrice": 328.49,
-        "targetPrice": 397.47,
-        "stopLoss": 302.21,
-        "marketCap": 32043538432,
-        "peRatio": 15.717225,
-        "volume": 475723
-      },
-      {
-        "ticker": "DHI",
-        "companyName": "D.R. Horton, Inc.",
-        "currentPrice": 161.0,
-        "priceChange": 1.7,
-        "priceChangePercent": 1.07,
-        "convictionScore": 0.7,
-        "timeframe": "long",
-        "thesis": "DHI presents a balanced opportunity. Buy consensus (2.5). Attractive P/E of 13.9x vs sector 20.0x (consumer cyclical sector).",
-        "riskFactors": [
-          "Revenue Growth: Weak revenue growth of -3.2%",
-          "Earnings Growth: Negative earnings growth of -22.2%"
-        ],
-        "sector": "consumer",
-        "entryPrice": 161.0,
-        "targetPrice": 194.81,
-        "stopLoss": 148.12,
-        "marketCap": 47021748224,
-        "peRatio": 13.915298,
-        "volume": 2397762
-      },
-      {
-        "ticker": "CLX",
-        "companyName": "Clorox Company (The)",
-        "currentPrice": 111.23,
-        "priceChange": -0.18,
-        "priceChangePercent": -0.16,
+        "ticker": "GEHC",
+        "companyName": "GE HealthCare Technologies Inc.",
+        "currentPrice": 81.95,
+        "priceChange": -0.56,
+        "priceChangePercent": -0.68,
         "convictionScore": 0.6,
         "timeframe": "long",
-        "thesis": "CLX presents a balanced opportunity. Fair P/E of 17.5x near sector average. 27 non-C-suite insider buy(s) (consumer defensive sector).",
+        "thesis": "GEHC presents a balanced opportunity. Buy consensus (1.9). Fair P/E of 17.0x near sector average (healthcare sector).",
         "riskFactors": [
-          "Revenue Growth: Weak revenue growth of -18.9%",
-          "Earnings Growth: Negative earnings growth of -18.7%"
+          "P/B Ratio: Reasonable P/B of 3.74x",
+          "Revenue Growth: Moderate revenue growth of 5.8%",
+          "Earnings Growth: Negative earnings growth of -4.1%"
         ],
-        "sector": "consumer",
-        "entryPrice": 111.23,
-        "targetPrice": 131.25,
-        "stopLoss": 102.33,
-        "marketCap": 13567877120,
-        "peRatio": 17.46154,
-        "volume": 1617669
+        "sector": "healthcare",
+        "entryPrice": 82.07,
+        "targetPrice": 96.84,
+        "stopLoss": 75.5,
+        "marketCap": 37470048256,
+        "peRatio": 16.991718,
+        "volume": 425173
       }
     ]
   },
   "macro": {
-    "indicators": [],
-    "risks": [],
-    "marketSentiment": "flat",
-    "lastUpdated": "2026-01-15T15:24:43.343536"
+    "indicators": [
+      {
+        "id": "UNRATE",
+        "name": "Unemployment Rate",
+        "value": 4.4,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303375",
+        "description": "Unemployment Rate indicator"
+      },
+      {
+        "id": "PAYEMS",
+        "name": "Nonfarm Payrolls",
+        "value": 159526.0,
+        "previousValue": null,
+        "unit": "Thousands",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303382",
+        "description": "Nonfarm Payrolls indicator"
+      },
+      {
+        "id": "ICSA",
+        "name": "Initial Jobless Claims",
+        "value": 198000.0,
+        "previousValue": null,
+        "unit": "Count",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303387",
+        "description": "Initial Jobless Claims indicator"
+      },
+      {
+        "id": "JTSJOR",
+        "name": "Job Openings Rate",
+        "value": 4.3,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303390",
+        "description": "Job Openings Rate indicator"
+      },
+      {
+        "id": "CPIAUCSL",
+        "name": "CPI (Inflation)",
+        "value": 2.7,
+        "previousValue": null,
+        "unit": "% YoY",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303394",
+        "description": "CPI (Inflation) indicator"
+      },
+      {
+        "id": "PCEPI",
+        "name": "PCE Price Index",
+        "value": 2.8,
+        "previousValue": null,
+        "unit": "% YoY",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303399",
+        "description": "PCE Price Index indicator"
+      },
+      {
+        "id": "T5YIE",
+        "name": "5-Year Inflation Expectations",
+        "value": 2.36,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303406",
+        "description": "5-Year Inflation Expectations indicator"
+      },
+      {
+        "id": "GDP",
+        "name": "Gross Domestic Product",
+        "value": 31095.09,
+        "previousValue": null,
+        "unit": "Billions USD",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303412",
+        "description": "Gross Domestic Product indicator"
+      },
+      {
+        "id": "INDPRO",
+        "name": "Industrial Production",
+        "value": 102.33,
+        "previousValue": null,
+        "unit": "Index",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303418",
+        "description": "Industrial Production indicator"
+      },
+      {
+        "id": "FEDFUNDS",
+        "name": "Federal Funds Rate",
+        "value": 3.72,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303439",
+        "description": "Federal Funds Rate indicator"
+      },
+      {
+        "id": "DGS10",
+        "name": "10-Year Treasury Yield",
+        "value": 4.15,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303446",
+        "description": "10-Year Treasury Yield indicator"
+      },
+      {
+        "id": "DGS2",
+        "name": "2-Year Treasury Yield",
+        "value": 3.51,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303452",
+        "description": "2-Year Treasury Yield indicator"
+      },
+      {
+        "id": "T10Y2Y",
+        "name": "10Y-2Y Treasury Spread",
+        "value": 0.61,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303456",
+        "description": "10Y-2Y Treasury Spread indicator"
+      },
+      {
+        "id": "T10Y3M",
+        "name": "10Y-3M Treasury Spread",
+        "value": 0.49,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303462",
+        "description": "10Y-3M Treasury Spread indicator"
+      },
+      {
+        "id": "BAMLH0A0HYM2",
+        "name": "High Yield Spread",
+        "value": 2.76,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303466",
+        "description": "High Yield Spread indicator"
+      },
+      {
+        "id": "BAMLC0A4CBBB",
+        "name": "BBB Corporate Spread",
+        "value": 0.98,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303472",
+        "description": "BBB Corporate Spread indicator"
+      },
+      {
+        "id": "TEDRATE",
+        "name": "TED Spread",
+        "value": 0.09,
+        "previousValue": null,
+        "unit": "%",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303478",
+        "description": "TED Spread indicator"
+      },
+      {
+        "id": "VIXCLS",
+        "name": "VIX Volatility Index",
+        "value": 15.84,
+        "previousValue": null,
+        "unit": "Index",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303484",
+        "description": "VIX Volatility Index indicator"
+      },
+      {
+        "id": "STLFSI4",
+        "name": "St. Louis Fed Financial Stress Index",
+        "value": -0.66,
+        "previousValue": null,
+        "unit": "Index",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303490",
+        "description": "St. Louis Fed Financial Stress Index indicator"
+      },
+      {
+        "id": "SAHMREALTIME",
+        "name": "Sahm Rule Recession Indicator",
+        "value": 0.35,
+        "previousValue": null,
+        "unit": "Percentage Points",
+        "trend": "flat",
+        "source": "FRED",
+        "updatedAt": "2026-01-16T14:55:11.303500",
+        "description": "Sahm Rule Recession Indicator indicator"
+      }
+    ],
+    "risks": [
+      {
+        "id": "dollar_strength",
+        "name": "Dollar Strength",
+        "severity": "medium",
+        "description": "Dollar index at 121 - pressures multinational earnings and EM",
+        "affectedSectors": [
+          "technology",
+          "finance"
+        ],
+        "likelihood": 0.7,
+        "potentialImpact": "Risk score: 42%"
+      },
+      {
+        "id": "sahm_rule_warning",
+        "name": "Sahm Rule Warning",
+        "severity": "medium",
+        "description": "Sahm indicator at 0.35pp - approaching recession threshold (0.5)",
+        "affectedSectors": [
+          "technology",
+          "finance"
+        ],
+        "likelihood": 0.6,
+        "potentialImpact": "Risk score: 36%"
+      },
+      {
+        "id": "weak_consumer_sentiment",
+        "name": "Weak Consumer Sentiment",
+        "severity": "medium",
+        "description": "Consumer sentiment at 51 - may reduce spending",
+        "affectedSectors": [
+          "technology",
+          "finance"
+        ],
+        "likelihood": 0.65,
+        "potentialImpact": "Risk score: 32%"
+      },
+      {
+        "id": "sticky_inflation",
+        "name": "Sticky Inflation",
+        "severity": "low",
+        "description": "Inflation at 2.7% YoY, slightly above Fed's 2% target",
+        "affectedSectors": [
+          "technology",
+          "finance"
+        ],
+        "likelihood": 0.5,
+        "potentialImpact": "Risk score: 15%"
+      }
+    ],
+    "marketSentiment": "up",
+    "lastUpdated": "2026-01-16T14:55:11.303194"
   },
   "news": {
     "market": [
       {
         "id": "m0",
-        "headline": "Stock market today: Dow, S&P 500 eke out records, gold soars after Trump amps up fight with Fed, Powell - Yahoo Finance",
-        "source": "Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxOdHNIZ29BeTNhWUhhbnNxSEFMVVFrcG1ybm1CTlVidnpFZ0NxZG9Ebnc3SGh2cjVCV2l0UGxtbklhUWpNTDNlYXJJU25iRnpEcFF1RzVMR2FEbVp4dTJNV1pRaGdqY3dQekR4YnRWRHlTWTBNX0J6blJldXBMaExnX2dWTjFTT2tFckgyVm1qS25jNHBRVWxXcXpEX1RBSDlRWEUzWVB2XzNpc1dYODloZ3ZLanMzSDRtUktfSUpXaVJwUktTMGIyanhkelBZczcxcE9YNVliRlJnVVcycE9aTHNYTQ?oc=5",
-        "publishedAt": "2026-01-12T21:18:21+00:00",
+        "headline": "Stock Market Today: Dow, S&P 500 and Nasdaq futures are mixed, with oil climbing and silver easing. Fed speakers on tap as long holiday weekend awaits. - MarketWatch",
+        "source": "MarketWatch",
+        "url": "https://news.google.com/rss/articles/CBMi2wNBVV95cUxOaVBhaGtRNjdoa09OTGtTT1lMbW1lc3ZSMWJfV3FFSUtndWJPbTJlRmEwZUxkaTE3UUVCeXpLRGRrbnFJUGN6alRLM2diM1BpVVpjVjdJVGFVems2OVJfVVYteXVOd2xZNXhDczkzQkhsX21JdHg4V2V1VmVhUDlpdmxEeVd6QXhHTTZ0WDEwOTlxRnJUaUh4LWR6RDVMMWRSUFlVN2lBejBVYzBZX3ZuYUhwdXRXbmdFWVR6SmRNRUg4S1ZVS29RdmpXUnFLME1yMGRqUnRWSHYxRGQ2WFFJUE5BNEF0azRjZG1RVXVqUWprS3RHd0QxRGNEd2toZTNxSklORjFJWFZ5Wi1xR2o1OW5YblhaZ2x2Rk40SVZ5YU9BWklnWlRUMmtYQUNNMDM0RG8xUHpzODRIWm5pUzk2ZzJPRDJhT2dsMlZCcTVNNlY1NG1pLVNiX3dTWkduWTd6QThUdHl2alR3dnNCVXpQcEdQQkxJcG5yaS1rTjhYOGNscnBtQ2lXTHhRVlBuUUN0eXVNOGYtSnhXRktzbnRYdk56T2xCbTlIMGpBR0NNV2xUMkM1T3puMXZwdC1odDFiSnBvRlJPaTZ5aF9EVjJXN29XVE9hTEJhMmFF?oc=5",
+        "publishedAt": "2026-01-16T14:00:00+00:00",
         "category": "Market",
-        "relevanceScore": 0.43,
+        "relevanceScore": 0.73,
         "tickersMentioned": [],
-        "excerpt": "Stock market today: Dow, S&P 500 eke out records, gold soars after Trump amps up fight with Fed, Powell - Yahoo Finance"
+        "excerpt": "Stock Market Today: Dow, S&P 500 and Nasdaq futures are mixed, with oil climbing and silver easing. Fed speakers on tap as long holiday weekend awaits. - MarketWatch"
       },
       {
         "id": "m1",
+        "headline": "Stock Market Investors Just Got Alarming News on President Trump's Fight With Fed Chair Jerome Powell - The Motley Fool",
+        "source": "The Motley Fool",
+        "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOMEVwcG9mc25vZnZxNWdfdkJRcEpCMHVZRTR3M3U5OFZXektOLVluTFZ0Q3hfQk40RzdndU5JLW9MbHFuTFlBTkhadVJ5QlJTQ1BqRUhKejZ2bkJJaU1VZWt0WVVoRFQ3Y0x2UTVjbW02RDVwN1NXcFppZDNEOGdvYmVBNWFSRExRa2xlVmxiNnVxbEFyRUdPVw?oc=5",
+        "publishedAt": "2026-01-14T08:12:00+00:00",
+        "category": "Market",
+        "relevanceScore": 0.39,
+        "tickersMentioned": [],
+        "excerpt": "Stock Market Investors Just Got Alarming News on President Trump's Fight With Fed Chair Jerome Powell - The Motley Fool"
+      },
+      {
+        "id": "m2",
         "headline": "Why is the stock market shrugging off the criminal probe into Fed Chair Powell? - ABC News",
         "source": "ABC News",
         "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPb1RCMFFWTmRDUTNVV2FnR2pjVTBtV015UFNidGhVeFdJUHJGQ2N5N3JfUUxaX3lETnVMRm9leTRRM1VwY2FkZXVKRF9UN0xhem9GUnZCd2pfRVdtSFVoVVNnZXl3MDBLRVBvX1hmWmRYaU42cXBYQVFtYW9LeElzM3BRNTN4c1ZCdnAwbnVhNjAzUkd0MHd1dDhzOTI0LWowTUQ5YdIBqgFBVV95cUxOMmpCcWZQYWZBajl2M3U0bGkyVFFyY1FrbFNBRkVPWXZLY05jazkwV0FCb3RwVzBvWG1nQjBuOXBNa0tWY1NhMEJsUUU0VVN2TFduTnNaT3Q5VVlZcUtYN01hdHBvNUdXU1htMG1JbWZRX2pnUDRNQ0M1N19LY3J1cUUxM0RRSS1RT2VLYlJrM3ZCR05qUEpFY0ZCY0FzX2tXQ2d3aHRqaHhBUQ?oc=5",
@@ -443,230 +715,78 @@
     "company": [
       {
         "id": "c0",
-        "headline": "Earnings live: TSMC stock jumps; Goldman Sachs, Morgan Stanley find their footing after earnings calls",
-        "source": "Yahoo Finance",
-        "url": "https://finance.yahoo.com/news/live/earnings-live-tsmc-stock-jumps-goldman-sachs-morgan-stanley-find-their-footing-after-earnings-calls-212202108.html",
-        "publishedAt": "2026-01-15T13:22:02",
-        "category": "Company",
+        "headline": "AI chip trade, Saks' bankruptcy woes, Trump's health-care plan and more in Morning Squawk - CNBC",
+        "source": "CNBC",
+        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPcFhEMlAzVmtuOHcxczVGMnhTTERxWHllMGNJd0M1Y3c2dmV1SHlaa0lBQzkyRjR5SVB6UXlRWF9QajBqTDNMRURxLWV4LUxIbkYzaXVxLXVzeWdGREpLbVJPNzByRVRtaDhQYjZaS1FJMlFhbnZFN3cweW9NX1VrbGtud3lYN2NZY2dZ0gGQAUFVX3lxTE1vSDFZMmczVTE1ZGlVRjNTNkRqdFgyZjVCUmNEbTZ6dlpkaDRhMzFyYndqS0RQNFdqY3pTUjBBZ000QkpXaHg1MTZoQl9sVmNGX1dNTWxyQmhxMWRoN1hPZEpaV19TTEdNN0V1alNIaUVPdDBfS1V4NndWVURBTjBUYUdxM282ZGdIOEwzWjlweQ?oc=5",
+        "publishedAt": "2026-01-16T13:03:11+00:00",
+        "category": "Sector",
         "relevanceScore": 0.74,
-        "tickersMentioned": [
-          "BLK"
-        ],
-        "excerpt": "Earnings live: TSMC stock jumps; Goldman Sachs, Morgan Stanley find their footing after earnings calls"
+        "tickersMentioned": [],
+        "excerpt": "AI chip trade, Saks' bankruptcy woes, Trump's health-care plan and more in Morning Squawk - CNBC"
       },
       {
         "id": "c1",
-        "headline": "State Street At Highs With Earnings Due Amid Economic Optimism",
+        "headline": "Stock Market Today: Dow Wavers Near Record Highs; Nvidia Regains Key Level (Live Coverage) - Investor's Business Daily",
         "source": "Investor's Business Daily",
-        "url": "https://finance.yahoo.com/m/98b26708-f2be-3901-b4f7-ba66461aac0b/state-street-at-highs-with.html",
-        "publishedAt": "2026-01-15T12:45:43",
-        "category": "Company",
-        "relevanceScore": 0.74,
-        "tickersMentioned": [
-          "BLK"
-        ],
-        "excerpt": "State Street At Highs With Earnings Due Amid Economic Optimism"
+        "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxORDI4THVnOFFoTEtMbHpjLVd2S19CZFJ3X0F1RFpWdlR2QmFQVU9Cd0M1aTlNSXF1ZVNDWG1jOHNOX09qck1XdTZiS3JUdWhjN2dZT0JPUVFqbEtyaW95WWZ6Z2M5LUtaWUJaSjBzRjg5dXdfU1M3X2JKSEFoejZidFYtY1JtLWxsMFJqVUVUS2hRN0QxbnF3MVo0OVE0NWpQUHQ2ZlNlOVNVZ0ZiVWZ0RzlR?oc=5",
+        "publishedAt": "2026-01-16T13:31:00+00:00",
+        "category": "Sector",
+        "relevanceScore": 0.68,
+        "tickersMentioned": [],
+        "excerpt": "Stock Market Today: Dow Wavers Near Record Highs; Nvidia Regains Key Level (Live Coverage) - Investor's Business Daily"
       },
       {
         "id": "c2",
-        "headline": "Stock Market Today: Dow Closes Higher; Chip Stocks Rally After TSMC Earnings \u2014 Live Updates - The Wall Street Journal",
+        "headline": "Stock Market News, Jan. 15, 2026: Dow Rises; Chip Stocks Rally After TSMC Earnings - The Wall Street Journal",
         "source": "The Wall Street Journal",
-        "url": "https://news.google.com/rss/articles/CBMijANBVV95cUxNcWVnb1NBNG5uYlBFNFJGVy02N2ZEY295V0xwNzlOVXFpZC1GNVRXZjd1S0ZQUEUydHUtQ1lnc0pySldadUZ0WXFMUW1nOEZ5Z0FuNHAwX0hpa3RGeHVFYWhjZDU0aVZQcnFfMDdvcFpzZ093NlM4TXdlT09reG44OXBFR1dLYXU2c3JQRzkzS1R2Z0M4bGJmZVlERU1JOE53OFVVekZzYU1rMmlFQUloazI2WHR5WC1EQllVRlJuS2Y0MThmcC1Fejkwc09XLTI2YXctRE02UXI4ZW1na1h3N3ZuUXRMY3F4QUF1dnR3aFJOeXFSaFJtRUpiaU5FNmpNRF92MVJmMXJkcThsRVBoaUNaYWhhOXQ4WGxyb0luZmtzUlJYT2tobHBfRTFEQlNsbUJZdHNEUExXOXN4WDQyNDJWSzlQWWw0VG5MdzUzRHpQMVFqcHBhMldBcG5qUDlmU1JqV0ZyT01FODZWaW1uYVRzR2RUdkQ2aTBYWmdxeDZBSDlhUXRkRmRiMFQ?oc=5",
-        "publishedAt": "2026-01-15T21:52:00+00:00",
+        "url": "https://news.google.com/rss/articles/CBMijANBVV95cUxQN09DV0xqaTJqNHBJVmJ5NTVWdGQxQldnczVLZC0yZXhFUVl1VWZkbUItVEJmd0YyUXhSa29TMi1ORlRaOVFPNHJndkt4dFppWml1VThUelphTms2TVFzVHN3cmpVelM3cVNtWFRvTGZNVGl6QWt1MmFXRGYzdUNuSnZWZ2lEanlTb2JMMkF4V2xhTG1vSnhQdjJ4NW9ITnhhYkR1d1RaT0FCUlA5ZjNaSlBfVWktSUNBT19RR1ZSUXFnR0xTWjBQclRLbFdDSXRlSFo3OXg3ckpJa1RrdU0yLVUtRWNHZWZWYXRyN01QSENHWjh5OVpiV0NyNU1CXzRKb2hvbl91MmIxQUNRSGxWSWlCRFJ3azJPR2ZWa3lMRnZXUXFOeGFhbVZNNXNsdWFIenp1OXhxRDR5UVJ3MmtORDFYY1g5V0dGZTFseHlVSTdxZlUxMW9ZUUI4NWJTbDhkeC1CQ2R6X3E5OFZkZE5CeXhucGNpZGFqMmpRUHVQMmFJaURKNHg3dWplZjQ?oc=5",
+        "publishedAt": "2026-01-16T07:13:00+00:00",
         "category": "Sector",
-        "relevanceScore": 0.73,
+        "relevanceScore": 0.67,
         "tickersMentioned": [],
-        "excerpt": "Stock Market Today: Dow Closes Higher; Chip Stocks Rally After TSMC Earnings \u2014 Live Updates - The Wall Street Journal"
+        "excerpt": "Stock Market News, Jan. 15, 2026: Dow Rises; Chip Stocks Rally After TSMC Earnings - The Wall Street Journal"
       },
       {
         "id": "c3",
-        "headline": "Stock market today: Dow, S&P 500, Nasdaq rise as TSMC boosts AI hopes, bank stocks rally",
-        "source": "Yahoo Finance",
-        "url": "https://finance.yahoo.com/news/live/stock-market-today-dow-sp-500-nasdaq-rise-as-tsmc-boosts-ai-hopes-bank-stocks-rally-195049176.html",
-        "publishedAt": "2026-01-15T13:00:48",
+        "headline": "Q3 Earnings Highlights: Autodesk (NASDAQ:ADSK) Vs The Rest Of The Design Software Stocks",
+        "source": "StockStory",
+        "url": "https://finance.yahoo.com/news/q3-earnings-highlights-autodesk-nasdaq-033200704.html",
+        "publishedAt": "2026-01-16T03:32:00",
         "category": "Company",
-        "relevanceScore": 0.73,
+        "relevanceScore": 0.6,
         "tickersMentioned": [
-          "BLK"
+          "ADSK"
         ],
-        "excerpt": "Stock market today: Dow, S&P 500, Nasdaq rise as TSMC boosts AI hopes, bank stocks rally"
+        "excerpt": "Q3 Earnings Highlights: Autodesk (NASDAQ:ADSK) Vs The Rest Of The Design Software Stocks"
       },
       {
         "id": "c4",
-        "headline": "BlackRock Surges On Q4 Beat, Dividend Hike. Shares In Bullish Pattern.",
-        "source": "Investor's Business Daily",
-        "url": "https://finance.yahoo.com/m/01341573-1242-394d-a247-48b1a8a8508c/blackrock-surges-on-q4-beat%2C.html",
-        "publishedAt": "2026-01-15T13:25:36",
-        "category": "Company",
-        "relevanceScore": 0.71,
-        "tickersMentioned": [
-          "BLK"
-        ],
-        "excerpt": "BlackRock Surges On Q4 Beat, Dividend Hike. Shares In Bullish Pattern."
+        "headline": "Stock Market News, Jan. 15, 2026: Dow, S&P 500 and Nasdaq rebound after two days of losses, while the Russell 2000 closes at another record; oil retreats on easing Iran tensions; silver adds to January surge. - MarketWatch",
+        "source": "MarketWatch",
+        "url": "https://news.google.com/rss/articles/CBMi3ANBVV95cUxNXzRCeG5vZjZGSnZ2Z3hLV2lRZEVsbTZxRHdoYkhlT0ZManpnLU1fdXdYR1dYa2F2bWtzTG13QS1LRXlxVkJJNWY1aW1JbER6czlxak01N29McVdnYlprZm16LS0tVWpsRlhGVHF3ZUt6bnF3YXdnMGNNN0J3NDJiMXllU2ZiOV9JSnpXbjhFQjBfazBSVHBEWUdrX2ZHVmdqeDlWaGVLYUtZTE55WlVNX0NXbVdiWGJZTl9oa21OTjM5V0JUNXdNMk5YeklSeFAzN3F1aTFSMGNoeWZ2RlgzUEFJRUpkX19tX0xLQkd0QnBtbDVxMFQxMFBSSDRHcjZxYWFvSkJRZUNxbmtCQW5NNlpuWnVNcl9fYWxfOHVpaXpqLTJmWEdCT0F2dkRxTEFaNlZaYVNWaVlkSnlzaFpjZUhpaE8xTTdwQUNYVXlRaGxtN21GTk9FTWMwYjZkci1HWE11cmNDYS14Q0ptZTY5SnpLM0Foei1zdHNKOEx4YTBhWlVPc2dxNUt5d2hxV2R2bm1DekVONEl5RHRZdzdkU1I2ZWRiRm1aQkVoM1pjRnNsck45cElfMUN4T050eG9nWEgxczBYdmJyQWQzakdGUjktNzI2ZXd4b1dCSA?oc=5",
+        "publishedAt": "2026-01-15T22:03:00+00:00",
+        "category": "Sector",
+        "relevanceScore": 0.58,
+        "tickersMentioned": [],
+        "excerpt": "Stock Market News, Jan. 15, 2026: Dow, S&P 500 and Nasdaq rebound after two days of losses, while the Russell 2000 closes at another record; oil retreats on easing Iran tensions; silver adds to Januar"
       },
       {
         "id": "c5",
-        "headline": "Stocks close higher Thursday as chip, bank stocks rally: Live updates - CNBC",
+        "headline": "The S&P 500 closes higher Thursday as chip, bank stocks rally: Live updates - CNBC",
         "source": "CNBC",
         "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE1DWUZfS0U1RHE5eHBUblhSTDdpYW9fNEZnYm54Q2NGbEdmS1d6ajhLczZQdThPYlBVdXhCb2pDNnhrbmc2dkg1TWZXajYxSDM1QV9yTmViMEV4cHBJWDU3VUVIMGsyTkduMVk0b0M3MUhudDFWbkE40gF8QVVfeXFMUGlDeTUxbFZLRnUwSGUwT0R3ODRTYVZNVWlhX19iWnFLM0pGWmc2UC1hcHdqcGNCWjJsVUJTZm9Da1RxeVBxT2JOQWFHcnV6M05XTm9Tb3hseXlSbW9EdU42RTVURE1wekZRNGtmRVRKZ2pTSHFOVDM0cDU0cg?oc=5",
-        "publishedAt": "2026-01-15T21:24:00+00:00",
+        "publishedAt": "2026-01-15T18:56:07+00:00",
         "category": "Sector",
-        "relevanceScore": 0.7,
+        "relevanceScore": 0.57,
         "tickersMentioned": [],
-        "excerpt": "Stocks close higher Thursday as chip, bank stocks rally: Live updates - CNBC"
+        "excerpt": "The S&P 500 closes higher Thursday as chip, bank stocks rally: Live updates - CNBC"
       },
       {
         "id": "c6",
-        "headline": "Stock market today: Dow, S&P 500, Nasdaq jump as TSMC boosts AI hopes, bank stocks rally - Yahoo Finance",
-        "source": "Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNTWFLM09MaFJNMXNuRWMwS0lpLWZ2M0FGcGJnM3o3Z0p6eXV0dWxmRHh3LUJKYThaeTJkaG1jSjRaZkRfYU8tUjUxQ0tiOFZEcHpyWEwzNjFwamVwQ25LOVZZNTFLQkVYVkxUMXR5RTlUVWZ3aTJHQkhoS1pEMFZzelp3ejZXQVJEYy1wbUtCZjZEVDU1QncyWktuNW13MmhEOEQwUEx4cnJmSTlhWFh3Wk9iUGk0SXRhVk5XSjZlOUlTR05hV1BfSk5kTWptSkE?oc=5",
-        "publishedAt": "2026-01-15T19:50:49+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.69,
-        "tickersMentioned": [],
-        "excerpt": "Stock market today: Dow, S&P 500, Nasdaq jump as TSMC boosts AI hopes, bank stocks rally - Yahoo Finance"
-      },
-      {
-        "id": "c7",
-        "headline": "Greenland talks, oil's retreat, the latest on the Netflix-WBD deal and more in Morning Squawk - CNBC",
-        "source": "CNBC",
-        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQS1VFeU8zb3RzdENqWUFWMGdsTVVUMk13TlhodlZXQllDMGM2Qk9aYkJaYXdETjJMSGRJbGtIUHkyMlFaZlhFSnhkdFc1dzl5WlVRanUxUWtHVnhFMnRheTFOQmkzZ1A5ZVhQWEJERnZwVHM1YWhOZHZUSExzQ0RQX3Q5Y1ZtX3ZteE5N0gGQAUFVX3lxTFA0MFR3aWhYUVJOd3d6Sm5FRTc4aGdoWjM0dWNOLU9qOG5nVGNBYU5GUUphRDdLdUQ1ejh1cWVCcFo3MGNOV1JFQTY0ZXFRUkthTmVSRmgwODQxMjY1ZXJuV0JQekU0dzJXZTZ3LVZSc2Etb0t3dFlyMUJ0eE5nNzNuVzRSek1xc0tWWUxpcFJhOA?oc=5",
-        "publishedAt": "2026-01-15T13:08:12+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.68,
-        "tickersMentioned": [],
-        "excerpt": "Greenland talks, oil's retreat, the latest on the Netflix-WBD deal and more in Morning Squawk - CNBC"
-      },
-      {
-        "id": "c8",
-        "headline": "These 3 Blue Chip Dividend Stocks Are Trading Near Their 52-Week Lows",
-        "source": "Motley Fool",
-        "url": "https://finance.yahoo.com/m/4aa88d7e-a13f-36f1-bd94-db659a11f331/these-3-blue-chip-dividend.html",
-        "publishedAt": "2026-01-15T14:50:00",
-        "category": "Company",
-        "relevanceScore": 0.68,
-        "tickersMentioned": [
-          "MCD"
-        ],
-        "excerpt": "These 3 Blue Chip Dividend Stocks Are Trading Near Their 52-Week Lows"
-      },
-      {
-        "id": "c9",
-        "headline": "Massive Corporate Layoffs Changed Everything, Says Robert Kiyosaki. Calls Going To School For Job Security An 'Obsolete Idea'",
-        "source": "Benzinga",
-        "url": "https://finance.yahoo.com/news/massive-corporate-layoffs-changed-everything-183114744.html",
-        "publishedAt": "2026-01-15T10:31:14",
-        "category": "Company",
-        "relevanceScore": 0.67,
-        "tickersMentioned": [
-          "INTC"
-        ],
-        "excerpt": "Massive Corporate Layoffs Changed Everything, Says Robert Kiyosaki. Calls Going To School For Job Security An 'Obsolete Idea'"
-      },
-      {
-        "id": "c10",
-        "headline": "Microchip, Analog Devices target raised ahead of semiconductor earnings",
-        "source": "Investing.com",
-        "url": "https://finance.yahoo.com/news/microchip-analog-devices-target-raised-201302724.html",
-        "publishedAt": "2026-01-15T12:13:02",
-        "category": "Company",
-        "relevanceScore": 0.65,
-        "tickersMentioned": [
-          "INTC"
-        ],
-        "excerpt": "Microchip, Analog Devices target raised ahead of semiconductor earnings"
-      },
-      {
-        "id": "c11",
-        "headline": "Stock Market Today, Jan. 15: Strong Earnings from Chipmaking Giant Fuels Semiconductor Rally - thestreet.com",
-        "source": "thestreet.com",
-        "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOck5NVjgyNHFlczNMaW9IMVlITTl2a1BOS01XY0hDOUFBN3hZYWtTWktSRnFjeFZnMk8zS2VIS09ZMVhaLVNkZWNfZDV0X3p2RXRQaDQyUlNQazZTdDFBNUlYX1lwV0RHeFVLZjhQLTNaaDRJaTZFRW9xc05PN3NPQ2dZVHBkYUNvbVJIb05EUFJXbS01Z0xEX25PSVVEZkhSQzA2S2xraEE4R3M2MDNXcXJnVjBRWUVLbURIN1ZnVWNRTlQwS2c?oc=5",
-        "publishedAt": "2026-01-15T19:11:21+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.63,
-        "tickersMentioned": [],
-        "excerpt": "Stock Market Today, Jan. 15: Strong Earnings from Chipmaking Giant Fuels Semiconductor Rally - thestreet.com"
-      },
-      {
-        "id": "c12",
-        "headline": "Looking for Stocks with Positive Earnings Momentum? Check Out These 2 Finance Names",
-        "source": "Zacks",
-        "url": "https://finance.yahoo.com/news/looking-stocks-positive-earnings-momentum-140004494.html",
-        "publishedAt": "2026-01-15T06:00:04",
-        "category": "Company",
-        "relevanceScore": 0.61,
-        "tickersMentioned": [
-          "ARES"
-        ],
-        "excerpt": "Looking for Stocks with Positive Earnings Momentum? Check Out These 2 Finance Names"
-      },
-      {
-        "id": "c13",
-        "headline": "Stock market steadies as chips bounce back and oil prices ease - Toledo Blade",
-        "source": "Toledo Blade",
-        "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNa0lVNk9ZU0pvVjRLZE1PQk01R0JjajNiaUJvRVJ6eWFkX3ZLdV9yQTRpcjR0T2hqbmIwVW5qb040dHo4NlpscFRNcGRlT0I3TGE2Nmo1RTNwckZJR29NaXZUVmp0SklTNnh2QVQxZG4wZ3NwaklHVGV3ZlRwbDkyMld4bWFCRmV4WGNmWm41SVUyalBDTmdQbFNPY2RGaVI3bnhYYjJRUnhkby02VFdpQjJwSkx6cks5aWQ0YkJWenBmSHNFWVJyTzBfZlBUUUlPMHpr?oc=5",
-        "publishedAt": "2026-01-15T21:37:24+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.61,
-        "tickersMentioned": [],
-        "excerpt": "Stock market steadies as chips bounce back and oil prices ease - Toledo Blade"
-      },
-      {
-        "id": "c14",
-        "headline": "S&P 500 books back-to-back losses as tech sells off, Bank of America slides after earnings: Live updates - CNBC",
-        "source": "CNBC",
-        "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE00Rk52cFUxbFF1THA4d3VTb2xRVGN0OU81LXBlZUR6ci1CcnN3NHFDd2F4bTRvVFNUTlV6Q3RHYlVmb19WSkdJSVZwZE9FSlItaXlHWmJjblk0VFFvbmxuRUpoRmtKcE9vd0JuTG4tQXJQUjNRRDlF0gF8QVVfeXFMTlRocVBRN1lCVDdhV3NUVW5VV3ZnNFFsMTlEenZ6UURxSlhKTnQyQklWbW1aOUxpTTFiS01OMDhJUU1QUWhDTnBONWwzU3hQanhwYWx1TWNYQ3cwWG4zUE9fclVpUXhRYmN2MEplMkFaaktSNnY3RDRtbGJFYw?oc=5",
-        "publishedAt": "2026-01-14T21:34:54+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.59,
-        "tickersMentioned": [],
-        "excerpt": "S&P 500 books back-to-back losses as tech sells off, Bank of America slides after earnings: Live updates - CNBC"
-      },
-      {
-        "id": "c15",
-        "headline": "What to Expect From Smurfit Westrock\u2019s Q4 2025 Earnings Report",
-        "source": "Barchart",
-        "url": "https://finance.yahoo.com/m/d554049e-85ab-38dc-bac4-6c103a1a60e4/what-to-expect-from-smurfit.html",
-        "publishedAt": "2026-01-15T03:07:07",
-        "category": "Company",
-        "relevanceScore": 0.59,
-        "tickersMentioned": [
-          "SW"
-        ],
-        "excerpt": "What to Expect From Smurfit Westrock\u2019s Q4 2025 Earnings Report"
-      },
-      {
-        "id": "c16",
-        "headline": "BlackRock Caps 2025 With Record $14 Trillion in Assets",
-        "source": "The Wall Street Journal",
-        "url": "https://finance.yahoo.com/m/4fc0e6cc-4ae8-3ba2-8377-d95f4783ed63/blackrock-caps-2025-with.html",
-        "publishedAt": "2026-01-15T13:27:00",
-        "category": "Company",
-        "relevanceScore": 0.57,
-        "tickersMentioned": [
-          "BLK"
-        ],
-        "excerpt": "BlackRock Caps 2025 With Record $14 Trillion in Assets"
-      },
-      {
-        "id": "c17",
-        "headline": "Stocks to Watch Thursday: Penumbra, BlackRock, Goldman Sachs",
-        "source": "The Wall Street Journal",
-        "url": "https://finance.yahoo.com/m/954672e8-87c3-3fc8-9274-7cac813f1231/stocks-to-watch-thursday%3A.html",
-        "publishedAt": "2026-01-15T13:25:48",
-        "category": "Company",
-        "relevanceScore": 0.57,
-        "tickersMentioned": [
-          "BLK"
-        ],
-        "excerpt": "Stocks to Watch Thursday: Penumbra, BlackRock, Goldman Sachs"
-      },
-      {
-        "id": "c18",
         "headline": "Can I leave my 401(k) with my employer when I retire?",
         "source": "marketwatch",
         "url": "https://www.marketwatch.com/story/can-i-leave-my-401-k-with-my-employer-when-i-retire-08971d61?mod=mw_rss_topstories",
-        "publishedAt": "2026-01-15T20:15:00+00:00",
+        "publishedAt": "2026-01-16T14:26:00+00:00",
         "category": "Company",
         "relevanceScore": 0.57,
         "tickersMentioned": [
@@ -675,1126 +795,716 @@
         "excerpt": "Can I leave my 401(k) with my employer when I retire?"
       },
       {
-        "id": "c19",
-        "headline": "Dow Jones Futures: Market Fades Despite Taiwan Semi, Goldman Lifting Chips, Banks",
-        "source": "Investor's Business Daily",
-        "url": "https://finance.yahoo.com/m/ab113621-4f87-39b5-9977-f4517adc6e6e/dow-jones-futures%3A-market.html",
-        "publishedAt": "2026-01-15T15:02:40",
+        "id": "c7",
+        "headline": "Stock market today: Dow, S&P 500, Nasdaq rise as TSMC boosts AI hopes, bank stocks rally - Yahoo Finance",
+        "source": "Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNTWFLM09MaFJNMXNuRWMwS0lpLWZ2M0FGcGJnM3o3Z0p6eXV0dWxmRHh3LUJKYThaeTJkaG1jSjRaZkRfYU8tUjUxQ0tiOFZEcHpyWEwzNjFwamVwQ25LOVZZNTFLQkVYVkxUMXR5RTlUVWZ3aTJHQkhoS1pEMFZzelp3ejZXQVJEYy1wbUtCZjZEVDU1QncyWktuNW13MmhEOEQwUEx4cnJmSTlhWFh3Wk9iUGk0SXRhVk5XSjZlOUlTR05hV1BfSk5kTWptSkE?oc=5",
+        "publishedAt": "2026-01-15T21:02:30+00:00",
+        "category": "Sector",
+        "relevanceScore": 0.57,
+        "tickersMentioned": [],
+        "excerpt": "Stock market today: Dow, S&P 500, Nasdaq rise as TSMC boosts AI hopes, bank stocks rally - Yahoo Finance"
+      },
+      {
+        "id": "c8",
+        "headline": "Here\u2019s What Negatively Impacted AutoZone (AZO) in Q4 - Yahoo Finance UK",
+        "source": "Yahoo Finance UK",
+        "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNbjdmdTEtdmxWLWd5MFlPR3Y5NXJHWlNqTDBZZ3BvY0F5OVV0dnVkb3poa0MtQ0w5M1owQV9rODBKa3R3VVVRbC13RkEySGRkTE9MbG1SM1pSVjZmQ2lJSWVBdWVkLWdKTXgtZk92VDkyX0t1eS1SNUV1OWgtZ1QtUTZpbkdnSEdTN2htXw?oc=5",
+        "publishedAt": "2026-01-16T14:35:59+00:00",
         "category": "Company",
         "relevanceScore": 0.56,
         "tickersMentioned": [
-          "BLK"
+          "AZO"
         ],
-        "excerpt": "Dow Jones Futures: Market Fades Despite Taiwan Semi, Goldman Lifting Chips, Banks"
+        "excerpt": "Here\u2019s What Negatively Impacted AutoZone (AZO) in Q4 - Yahoo Finance UK"
+      },
+      {
+        "id": "c9",
+        "headline": "\u2018I still have a mortgage\u2019: I\u2019m no longer confident that my costs will actually fall in retirement. What can I do?",
+        "source": "marketwatch",
+        "url": "https://www.marketwatch.com/story/i-still-have-a-mortgage-im-no-longer-confident-that-my-costs-will-actually-fall-in-retirement-what-can-i-do-ff9164a5?mod=mw_rss_topstories",
+        "publishedAt": "2026-01-16T12:00:00+00:00",
+        "category": "Company",
+        "relevanceScore": 0.55,
+        "tickersMentioned": [
+          "K"
+        ],
+        "excerpt": "\u2018I still have a mortgage\u2019: I\u2019m no longer confident that my costs will actually fall in retirement. What can I do?"
+      },
+      {
+        "id": "c10",
+        "headline": "Stock market: What history tells us about investing at all-time highs - NewsNation",
+        "source": "NewsNation",
+        "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQNFZ3bHoydW9OQmZ3c0ZWdWFWcDB1c2U4MVBCeDV3YzYtb2RkRm4wRkVZZWtVbERUVU5GcGR2c2xybnV0ck5VbnhnRENidlNBdm5kaXpuTlJfVnF5cEZjaURkX3BDbG5IbV9sallUWkxDVlc5eFRJZFVvRmY0ZFA3TXMzTEnSAYoBQVVfeXFMTTlEQmljcjlnaDduMU1OeFVzZUlwNlVGOG9vYmktZng4amM1RklpNVhuUTlGcWQzc2U3MTJ4SGNEdlJ6YnlkMElveUFLR3VzTFpqX2gtallXZWlZWE4xUFRwU2JxMHl1ZjRldk1GSVZwVzFvZU9SNmtveHphZmtTVkpHV0llWFpLanFB?oc=5",
+        "publishedAt": "2026-01-16T02:57:09+00:00",
+        "category": "Sector",
+        "relevanceScore": 0.52,
+        "tickersMentioned": [],
+        "excerpt": "Stock market: What history tells us about investing at all-time highs - NewsNation"
+      },
+      {
+        "id": "c11",
+        "headline": "Stock Market Today: Dow Futures Gain; Wavers Near Record-Highs \u2014 Live Updates - The Wall Street Journal",
+        "source": "The Wall Street Journal",
+        "url": "https://news.google.com/rss/articles/CBMijANBVV95cUxQTmg2YmN3bkZyb2g2Vlc4VzZSTFhRWl9hTkVCU01SYkdFWEk0WUhyZnBFUkRwRDJPTW1zM3pjWXBiUnE5OG51VVZ1QXZFUjRiY1ViMkFtVTdDNk9YbUFiZDlHZmZSSXk1WDI5ZFpLdzcycWl3dmh2N29GVm5zWUd1Q3NwVksxcDZoWDVHY1hMY0Q4NW5WbktKbTR4V1R4STdjUjN1WU0yNXFwTnc2RnI0alpnRHJnbFdHUmsydThKaGQwc3Z4a1dUaFBhU0MxbjRPaTNydlJUSFpVTHQyNndtUUFYVHR0OUpQTWVoV281LV9nc0hKaFBQM1hha2paa3hQUDFxTmNrazVaa3NMcDVUQ19kLXp4RGNZWFNZdzRfN0hyaGs3cVQ1c0ttcDZjaE0wRHR6NUo1dnlPQTZ4bWUwbHhicmRiMm1XenY4aUpWX2U0ZkVCa2U4XzZ3dGJhcFpGVWZuSVkxcW5waTRCV09lbk1qSjgxc2E4OGtYZW1Ra3RQMzhETTlLR0ZROTg?oc=5",
+        "publishedAt": "2026-01-16T13:38:00+00:00",
+        "category": "Sector",
+        "relevanceScore": 0.52,
+        "tickersMentioned": [],
+        "excerpt": "Stock Market Today: Dow Futures Gain; Wavers Near Record-Highs \u2014 Live Updates - The Wall Street Journal"
+      },
+      {
+        "id": "c12",
+        "headline": "Stocks Rise as Fresh Burst of Tech Momentum Builds: Markets Wrap - Bloomberg.com",
+        "source": "Bloomberg.com",
+        "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxPclJWN1V3bHRPVElEVGlpVU9ZQmFUSU9rM0c3a1VkUWJkR21sS2pVbkN0WkV1UFhkRVBKTXY4MDFuS2hIX2MwTG12WmkwRTBPRnVsd0xMUDB2Sm04bDh1MlJVMlFkRG9jaXRxejlHTXdEejdoR3NSdkVHMTBRMzdqQ25lQThaLUZwQkxwNlk4QUpkeF96bHozaTJDZEpVVmpfeGdobk1vUzVfekMzX0NzbnhR?oc=5",
+        "publishedAt": "2026-01-16T11:53:08+00:00",
+        "category": "Sector",
+        "relevanceScore": 0.51,
+        "tickersMentioned": [],
+        "excerpt": "Stocks Rise as Fresh Burst of Tech Momentum Builds: Markets Wrap - Bloomberg.com"
+      },
+      {
+        "id": "c13",
+        "headline": "14 million Americans are getting access to these game-changing investment accounts \u2014 without risking their Supplemental Security Income and Medicaid benefits",
+        "source": "marketwatch",
+        "url": "https://www.marketwatch.com/story/14-million-americans-are-getting-access-to-these-game-changing-investment-accounts-without-risking-their-supplemental-security-income-and-medicaid-benefits-afeb569d?mod=mw_rss_topstories",
+        "publishedAt": "2026-01-16T14:28:00+00:00",
+        "category": "Sector",
+        "relevanceScore": 0.51,
+        "tickersMentioned": [],
+        "excerpt": "14 million Americans are getting access to these game-changing investment accounts \u2014 without risking their Supplemental Security Income and Medicaid benefits"
+      },
+      {
+        "id": "c14",
+        "headline": "Stock Market Today, Jan. 15: Semiconductors, Banks Jump After Strong Earnings - thestreet.com",
+        "source": "thestreet.com",
+        "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOck5NVjgyNHFlczNMaW9IMVlITTl2a1BOS01XY0hDOUFBN3hZYWtTWktSRnFjeFZnMk8zS2VIS09ZMVhaLVNkZWNfZDV0X3p2RXRQaDQyUlNQazZTdDFBNUlYX1lwV0RHeFVLZjhQLTNaaDRJaTZFRW9xc05PN3NPQ2dZVHBkYUNvbVJIb05EUFJXbS01Z0xEX25PSVVEZkhSQzA2S2xraEE4R3M2MDNXcXJnVjBRWUVLbURIN1ZnVWNRTlQwS2c?oc=5",
+        "publishedAt": "2026-01-15T21:30:27+00:00",
+        "category": "Sector",
+        "relevanceScore": 0.5,
+        "tickersMentioned": [],
+        "excerpt": "Stock Market Today, Jan. 15: Semiconductors, Banks Jump After Strong Earnings - thestreet.com"
+      },
+      {
+        "id": "c15",
+        "headline": "Play the AI boom without the bubble risk via these \u2018transition\u2019 stocks, says Bank of America",
+        "source": "marketwatch",
+        "url": "https://www.marketwatch.com/story/play-the-ai-boom-without-the-bubble-risk-via-these-transition-stocks-says-bank-of-america-4c8f7217?mod=mw_rss_topstories",
+        "publishedAt": "2026-01-16T12:09:00+00:00",
+        "category": "Sector",
+        "relevanceScore": 0.49,
+        "tickersMentioned": [],
+        "excerpt": "Play the AI boom without the bubble risk via these \u2018transition\u2019 stocks, says Bank of America"
+      },
+      {
+        "id": "c16",
+        "headline": "I was asked, \u2018Should we adopt AI?\u2019 in a job interview. I said yes, but my answer fell flat. Was this a trick question?",
+        "source": "marketwatch",
+        "url": "https://www.marketwatch.com/story/i-was-asked-should-we-adopt-ai-in-a-job-interview-i-said-yes-but-my-answer-fell-flat-was-this-a-trick-question-7eaa393c?mod=mw_rss_topstories",
+        "publishedAt": "2026-01-16T11:42:00+00:00",
+        "category": "Sector",
+        "relevanceScore": 0.49,
+        "tickersMentioned": [],
+        "excerpt": "I was asked, \u2018Should we adopt AI?\u2019 in a job interview. I said yes, but my answer fell flat. Was this a trick question?"
+      },
+      {
+        "id": "c17",
+        "headline": "Leerink Partners Adjusts Price Target on Revvity to $140 From $120, Maintains Outperform Rating",
+        "source": "MT Newswires",
+        "url": "https://finance.yahoo.com/news/leerink-partners-adjusts-price-target-142051092.html",
+        "publishedAt": "2026-01-16T14:20:51",
+        "category": "Company",
+        "relevanceScore": 0.48,
+        "tickersMentioned": [
+          "RVTY"
+        ],
+        "excerpt": "Leerink Partners Adjusts Price Target on Revvity to $140 From $120, Maintains Outperform Rating"
+      },
+      {
+        "id": "c18",
+        "headline": "Barclays Adjusts Price Target on Generac Holdings to $186 From $197, Maintains Equalweight Rating",
+        "source": "MT Newswires",
+        "url": "https://finance.yahoo.com/news/barclays-adjusts-price-target-generac-133522762.html",
+        "publishedAt": "2026-01-16T13:35:22",
+        "category": "Company",
+        "relevanceScore": 0.47,
+        "tickersMentioned": [
+          "GNRC"
+        ],
+        "excerpt": "Barclays Adjusts Price Target on Generac Holdings to $186 From $197, Maintains Equalweight Rating"
+      },
+      {
+        "id": "c19",
+        "headline": "Technical Assessment: Bullish in the Intermediate-Term",
+        "source": "Argus Research",
+        "url": "https://finance.yahoo.com/m/6f3831fc-b6e7-3fa7-b546-a8d9e0e7d8b5/technical-assessment%3A-bullish.html",
+        "publishedAt": "2026-01-16T12:27:13",
+        "category": "Company",
+        "relevanceScore": 0.46,
+        "tickersMentioned": [
+          "PWR"
+        ],
+        "excerpt": "Technical Assessment: Bullish in the Intermediate-Term"
       },
       {
         "id": "c20",
-        "headline": "Small-cap records, chip stock gains, silver: Market Takeaways",
-        "source": "Yahoo Finance Video",
-        "url": "https://finance.yahoo.com/video/small-cap-records-chip-stock-221522267.html",
-        "publishedAt": "2026-01-15T14:15:22",
+        "headline": "Exploring High Growth Tech Stocks In The US January 2026",
+        "source": "Simply Wall St.",
+        "url": "https://finance.yahoo.com/news/exploring-high-growth-tech-stocks-113845100.html",
+        "publishedAt": "2026-01-16T11:38:45",
         "category": "Company",
-        "relevanceScore": 0.56,
+        "relevanceScore": 0.46,
         "tickersMentioned": [
-          "INTC"
+          "ZS"
         ],
-        "excerpt": "Small-cap records, chip stock gains, silver: Market Takeaways"
+        "excerpt": "Exploring High Growth Tech Stocks In The US January 2026"
       },
       {
         "id": "c21",
-        "headline": "TSMC Spurs Tech Revival as Metals Slide From Peaks: Markets Wrap - Bloomberg.com",
-        "source": "Bloomberg.com",
-        "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxNbnRrLUI4UzcyaFI2QVR1TEVUWmhHYy1QaThsblVwX2dnNk44bWZTWGFlT3lCZUpVUk1qMVBrUDhaaXJ0V08tai1GczBwR3k5MFlHT0lYbjRiRVd0VGpPcWdqbmQ5ZjJ4V0lPeHNDUE5VRHlvSmMxZDJDbXRad0JYSmJoT0xTbExBMnRzMDd0S2FWVTVT?oc=5",
-        "publishedAt": "2026-01-15T21:36:17+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.54,
-        "tickersMentioned": [],
-        "excerpt": "TSMC Spurs Tech Revival as Metals Slide From Peaks: Markets Wrap - Bloomberg.com"
+        "headline": "Should McKesson\u2019s Expanded Rapiblyk Distribution Network Require Action From McKesson (MCK) Investors?",
+        "source": "Simply Wall St.",
+        "url": "https://finance.yahoo.com/news/mckesson-expanded-rapiblyk-distribution-network-110842794.html",
+        "publishedAt": "2026-01-16T11:08:42",
+        "category": "Company",
+        "relevanceScore": 0.45,
+        "tickersMentioned": [
+          "MCK"
+        ],
+        "excerpt": "Should McKesson\u2019s Expanded Rapiblyk Distribution Network Require Action From McKesson (MCK) Investors?"
       },
       {
         "id": "c22",
-        "headline": "Tech stocks buoy Wall Street, safe havens wane on Iran de-escalation - Reuters",
-        "source": "Reuters",
-        "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQeWFQUmFCdVduZWtqWHQ4eDdweGkzbFAxVHk1bW1fLXRUSU1hOEYzSFBIeUZJdjlpSFpWZFJpTVg2SVUwa0lSdDg5SHVJc1FtZTRiSFVxdURoY1dvMEdTNmgySG43ZHZTMThMMjl6UFpmWWpvUmszSktlN0RlYnd6WQ?oc=5",
-        "publishedAt": "2026-01-15T17:46:24+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.54,
-        "tickersMentioned": [],
-        "excerpt": "Tech stocks buoy Wall Street, safe havens wane on Iran de-escalation - Reuters"
+        "headline": "Is McKesson (MCK) Offering Value After Strong Multi Year Share Price Gains",
+        "source": "Simply Wall St.",
+        "url": "https://finance.yahoo.com/news/mckesson-mck-offering-value-strong-100625362.html",
+        "publishedAt": "2026-01-16T10:06:25",
+        "category": "Company",
+        "relevanceScore": 0.45,
+        "tickersMentioned": [
+          "MCK"
+        ],
+        "excerpt": "Is McKesson (MCK) Offering Value After Strong Multi Year Share Price Gains"
       },
       {
         "id": "c23",
-        "headline": "Early 20s portfolio and looking for feedback on diversification / risk",
-        "source": "r/investing",
-        "url": "https://reddit.com/r/investing/comments/1qdpj1f/early_20s_portfolio_and_looking_for_feedback_on/",
-        "publishedAt": "2026-01-15T09:17:53",
+        "headline": "Stock Market News, Jan. 14, 2026: Tech Selloff Weighs on Nasdaq; Precious Metals Scale New Peaks - The Wall Street Journal",
+        "source": "The Wall Street Journal",
+        "url": "https://news.google.com/rss/articles/CBMijANBVV95cUxPMlp1bVY5WXNFRHgtc1lEd3UxeW5tSExrVVBBTDI5VE15WUh1SHhfRFRLMzE1S1FEa2lWcUlfdmhuZVRrc01ZWUozQ05namZfaGxKUER0NHY5d1Q2aFpGRFpkaFlJbWtrU3JZMFVVQ3BycXFUeVYzeGljWHhnUUotQktVSnBFLTluMExRaktWcFFxT2phV1RBNXJxeWNZRktCdmI3VUN2ZFRTYlZ3aWVsSkQzY1ZldklMdU1oWWtzMFdjYnlJY2Vzc0UxN20tYU12T3RyRWtIM2ZEMHhFdzBMaERpTDFESUtLYTA5OUdmcDFMRzRvY01walNQRjA4N2dSNjVWOFo1eWt2WE1CQzk5ZXlHTmFaZmhIR0VQd3Z6OTJFVnlyMXlZT1BjM0plakRIdjJnNEhVX3NULXpoUDNKNk13NnBCbHBtdUludEc5a3lITmFFb1dCZDhtY3o4b25xUHNkaVBzbERVelV5bWNiTVd2dW10V3VOUDIxMS1rOTFUdHQxUmREWkhXSi0?oc=5",
+        "publishedAt": "2026-01-15T04:17:00+00:00",
         "category": "Sector",
-        "relevanceScore": 0.53,
+        "relevanceScore": 0.44,
         "tickersMentioned": [],
-        "excerpt": "Early 20s portfolio and looking for feedback on diversification / risk"
+        "excerpt": "Stock Market News, Jan. 14, 2026: Tech Selloff Weighs on Nasdaq; Precious Metals Scale New Peaks - The Wall Street Journal"
       },
       {
         "id": "c24",
-        "headline": "Ford's 'racer in chief' Jim Farley bets big on Red Bull F1, enthusiast Mustang and Bronco products",
+        "headline": "CrowdStrike CEO says AI agents are unpredictable as company snaps up more cybersecurity startups",
         "source": "Yahoo Finance",
-        "url": "https://finance.yahoo.com/news/fords-racer-in-chief-jim-farley-bets-big-on-red-bull-f1-enthusiast-mustang-and-bronco-products-182913922.html",
-        "publishedAt": "2026-01-15T10:29:13",
+        "url": "https://finance.yahoo.com/news/crowdstrike-ceo-says-ai-agents-are-unpredictable-as-company-snaps-up-more-cybersecurity-startups-165836482.html",
+        "publishedAt": "2026-01-14T16:58:36",
         "category": "Company",
-        "relevanceScore": 0.53,
+        "relevanceScore": 0.43,
         "tickersMentioned": [
-          "GM"
+          "CRWD"
         ],
-        "excerpt": "Ford's 'racer in chief' Jim Farley bets big on Red Bull F1, enthusiast Mustang and Bronco products"
+        "excerpt": "CrowdStrike CEO says AI agents are unpredictable as company snaps up more cybersecurity startups"
       },
       {
         "id": "c25",
-        "headline": "Trump Takes Credit For Intel's Surge But Hesitant To Raise Stake: 'I'll Invest More In Other Things'",
-        "source": "Benzinga",
-        "url": "https://finance.yahoo.com/news/trump-takes-credit-intels-surge-230112226.html",
-        "publishedAt": "2026-01-15T15:01:12",
+        "headline": "CrowdStrike CEO on M&A: Identity security is the 'new perimeter'",
+        "source": "Yahoo Finance Video",
+        "url": "https://finance.yahoo.com/video/crowdstrike-ceo-m-identity-security-155100218.html",
+        "publishedAt": "2026-01-14T15:51:00",
         "category": "Company",
-        "relevanceScore": 0.52,
+        "relevanceScore": 0.43,
         "tickersMentioned": [
-          "INTC"
+          "CRWD"
         ],
-        "excerpt": "Trump Takes Credit For Intel's Surge But Hesitant To Raise Stake: 'I'll Invest More In Other Things'"
+        "excerpt": "CrowdStrike CEO on M&A: Identity security is the 'new perimeter'"
       },
       {
         "id": "c26",
-        "headline": "Stock Market Today, Jan. 15: Nvidia Rises on Strong AI Demand and Data Center Growth Optimism",
-        "source": "Motley Fool",
-        "url": "https://finance.yahoo.com/m/f7798c2e-b2c7-3d51-bd21-9485319a18f1/stock-market-today%2C-jan.-15%3A.html",
-        "publishedAt": "2026-01-15T14:56:30",
-        "category": "Company",
-        "relevanceScore": 0.52,
-        "tickersMentioned": [
-          "INTC"
-        ],
-        "excerpt": "Stock Market Today, Jan. 15: Nvidia Rises on Strong AI Demand and Data Center Growth Optimism"
+        "headline": "7 Media & Telecom Stocks JPMorgan Favors for 2026 - Investing.com",
+        "source": "Investing.com",
+        "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPSXF0U25RRURKQW5aWGQyVmNkX2g3QlhabndLbC1RRkR1Y0J5ZmpuUUlEc1JCU2gxb0N0emlydXZ6ZzRpdlF0Q1AzSXRBaXlhMzZ0b2d6QmpPR1laYUJJRVUxa2d0cUVjVmdMdTJ4ZC1aS0MxSFlfVTdDMHF4NVp3Q1k0Nl94SEVxTi1JYWpMSzJtX1JjbW82ZWRQcjk1MVlSclhDNmdINXE4Ulh1ZTlR?oc=5",
+        "publishedAt": "2026-01-16T14:34:20+00:00",
+        "category": "Sector",
+        "relevanceScore": 0.42,
+        "tickersMentioned": [],
+        "excerpt": "7 Media & Telecom Stocks JPMorgan Favors for 2026 - Investing.com"
       },
       {
         "id": "c27",
-        "headline": "Stock Market Today, Jan. 15: Taiwan Semiconductor's Strong Outlook Dampens AI Bubble Fears",
-        "source": "Motley Fool",
-        "url": "https://finance.yahoo.com/m/3150f880-ddc3-30f5-b581-8841d393facf/stock-market-today%2C-jan.-15%3A.html",
-        "publishedAt": "2026-01-15T14:54:48",
-        "category": "Company",
-        "relevanceScore": 0.52,
+        "headline": "Datadog (DDOG) Faces Competitive Pressures in 2026, Goldman Says in Sell Call",
+        "source": "Insider Monkey",
+        "url": "https://finance.yahoo.com/news/datadog-ddog-faces-competitive-pressures-203038399.html",
+        "publishedAt": "2026-01-15T20:30:38",
+        "category": "Sector",
+        "relevanceScore": 0.42,
         "tickersMentioned": [
-          "BLK"
+          "CRWD",
+          "DDOG"
         ],
-        "excerpt": "Stock Market Today, Jan. 15: Taiwan Semiconductor's Strong Outlook Dampens AI Bubble Fears"
+        "excerpt": "Datadog (DDOG) Faces Competitive Pressures in 2026, Goldman Says in Sell Call"
       },
       {
         "id": "c28",
-        "headline": "Apple\u2019s (AAPL) AI-Powered Siri and Foldable iPhone Are Key Catalysts, Analyst Says",
-        "source": "Insider Monkey",
-        "url": "https://finance.yahoo.com/news/apple-aapl-ai-powered-siri-200804438.html",
-        "publishedAt": "2026-01-15T12:08:04",
+        "headline": "Stock market today: Dow, S&P 500, Nasdaq futures slip as bank earnings roll in, tariff ruling looms - Yahoo Finance UK",
+        "source": "Yahoo Finance UK",
+        "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxOYkRXQWh4eklNemp4Sy1FRDAxN3psVmlGdmtMSzlsT3JXM3puNEdOT3hmZzVjRWNJaHRLUFFpdi12MjBWWXZLemtKT3ZqZXQwWHR3dUczSHFKVnJuSkY2YTc0anlpMWh6Qm80UkVad19sMlF3Q0l2QXRkazNRNVBpSTFkaFNqcXRDLUpZclo5OENZbWFjd3NPRlJiejRWa1NmMHdSR29mLU1rVVlUVFV5cnp3UmEzUG94MlFxYWw4NnVRWGp6MUZqTzBQXzZBZFhOZnlwdzZ1NlFNMWVsdnc?oc=5",
+        "publishedAt": "2026-01-14T08:40:39+00:00",
         "category": "Sector",
-        "relevanceScore": 0.52,
-        "tickersMentioned": [
-          "GM",
-          "AAPL"
-        ],
-        "excerpt": "Apple\u2019s (AAPL) AI-Powered Siri and Foldable iPhone Are Key Catalysts, Analyst Says"
+        "relevanceScore": 0.42,
+        "tickersMentioned": [],
+        "excerpt": "Stock market today: Dow, S&P 500, Nasdaq futures slip as bank earnings roll in, tariff ruling looms - Yahoo Finance UK"
       },
       {
         "id": "c29",
-        "headline": "Stephen Ross Sees California Billionaire Tax as Palm Beach\u2019s Gain",
-        "source": "Bloomberg",
-        "url": "https://finance.yahoo.com/news/stephen-ross-sees-california-billionaire-123413798.html",
-        "publishedAt": "2026-01-15T04:34:13",
-        "category": "Company",
-        "relevanceScore": 0.52,
-        "tickersMentioned": [
-          "ARES"
-        ],
-        "excerpt": "Stephen Ross Sees California Billionaire Tax as Palm Beach\u2019s Gain"
+        "headline": "S&P 500 books back-to-back losses as tech sells off, Bank of America slides after earnings: Live updates - CNBC",
+        "source": "CNBC",
+        "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE00Rk52cFUxbFF1THA4d3VTb2xRVGN0OU81LXBlZUR6ci1CcnN3NHFDd2F4bTRvVFNUTlV6Q3RHYlVmb19WSkdJSVZwZE9FSlItaXlHWmJjblk0VFFvbmxuRUpoRmtKcE9vd0JuTG4tQXJQUjNRRDlF0gF8QVVfeXFMTlRocVBRN1lCVDdhV3NUVW5VV3ZnNFFsMTlEenZ6UURxSlhKTnQyQklWbW1aOUxpTTFiS01OMDhJUU1QUWhDTnBONWwzU3hQanhwYWx1TWNYQ3cwWG4zUE9fclVpUXhRYmN2MEplMkFaaktSNnY3RDRtbGJFYw?oc=5",
+        "publishedAt": "2026-01-14T21:07:06+00:00",
+        "category": "Sector",
+        "relevanceScore": 0.41,
+        "tickersMentioned": [],
+        "excerpt": "S&P 500 books back-to-back losses as tech sells off, Bank of America slides after earnings: Live updates - CNBC"
       },
       {
         "id": "c30",
-        "headline": "Verizon outage spurs calls for mandatory refunds when cell service is disrupted: You shouldn\u2019t have to \u2018beg for it\u2019",
-        "source": "marketwatch",
-        "url": "https://www.marketwatch.com/story/verizon-outage-spurs-calls-for-mandatory-refunds-when-cell-service-is-disrupted-you-shouldnt-have-to-beg-for-it-d95650b2?mod=mw_rss_topstories",
-        "publishedAt": "2026-01-15T21:24:00+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.51,
-        "tickersMentioned": [],
-        "excerpt": "Verizon outage spurs calls for mandatory refunds when cell service is disrupted: You shouldn\u2019t have to \u2018beg for it\u2019"
+        "headline": "2 S&P 500 Stocks with Promising Prospects and 1 We Turn Down",
+        "source": "StockStory",
+        "url": "https://finance.yahoo.com/news/2-p-500-stocks-promising-043730577.html",
+        "publishedAt": "2026-01-16T04:37:30",
+        "category": "Company",
+        "relevanceScore": 0.41,
+        "tickersMentioned": [
+          "ZBRA"
+        ],
+        "excerpt": "2 S&P 500 Stocks with Promising Prospects and 1 We Turn Down"
       },
       {
         "id": "c31",
-        "headline": "Why Trump\u2019s \u2018Great Healthcare Plan\u2019 strikes Wall Street as so underwhelming",
-        "source": "marketwatch",
-        "url": "https://www.marketwatch.com/story/trump-unveils-his-great-healthcare-plan-analysts-dont-expect-much-of-an-impact-8e99a02a?mod=mw_rss_topstories",
-        "publishedAt": "2026-01-15T20:10:00+00:00",
+        "headline": "Greenland talks, oil's retreat, the latest on the Netflix-WBD deal and more in Morning Squawk - CNBC",
+        "source": "CNBC",
+        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQS1VFeU8zb3RzdENqWUFWMGdsTVVUMk13TlhodlZXQllDMGM2Qk9aYkJaYXdETjJMSGRJbGtIUHkyMlFaZlhFSnhkdFc1dzl5WlVRanUxUWtHVnhFMnRheTFOQmkzZ1A5ZVhQWEJERnZwVHM1YWhOZHZUSExzQ0RQX3Q5Y1ZtX3ZteE5N0gGQAUFVX3lxTFA0MFR3aWhYUVJOd3d6Sm5FRTc4aGdoWjM0dWNOLU9qOG5nVGNBYU5GUUphRDdLdUQ1ejh1cWVCcFo3MGNOV1JFQTY0ZXFRUkthTmVSRmgwODQxMjY1ZXJuV0JQekU0dzJXZTZ3LVZSc2Etb0t3dFlyMUJ0eE5nNzNuVzRSek1xc0tWWUxpcFJhOA?oc=5",
+        "publishedAt": "2026-01-15T13:08:12+00:00",
         "category": "Sector",
-        "relevanceScore": 0.51,
+        "relevanceScore": 0.4,
         "tickersMentioned": [],
-        "excerpt": "Why Trump\u2019s \u2018Great Healthcare Plan\u2019 strikes Wall Street as so underwhelming"
+        "excerpt": "Greenland talks, oil's retreat, the latest on the Netflix-WBD deal and more in Morning Squawk - CNBC"
       },
       {
         "id": "c32",
-        "headline": "There\u2019s one thing that could make Trump\u2019s \u2018Great Healthcare Plan\u2019 perfect",
-        "source": "marketwatch",
-        "url": "https://www.marketwatch.com/story/theres-one-thing-that-could-make-trumps-great-healthcare-plan-perfect-1b9b72ac?mod=mw_rss_topstories",
-        "publishedAt": "2026-01-15T19:52:00+00:00",
+        "headline": "Stock market today: Dow, S&P 500, Nasdaq futures slip amid upbeat bank earnings, Iran fears - Yahoo Finance",
+        "source": "Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNdV9jVWxQS21YTERJZzRXbTNvdFgwY3J5RjM5eUd4Z3FJZUl2eFU1ZGpWWWFoY0pUcE5vMHpadzN4b21VZnFKeHVEUWl5NTN4ZUY5UDhxNWM0NHJsTjRsMnJQTlBWNHFsd2VCS0lZOHJRZ3JpVDhxbmp3eEpkMXF1dVF5MnVubVlaMkd1clNZMzNSWFlNU2NsYlpaV1N5azNKamVsWUozaDhPSlJDa2I4LWN6N2U1WUlKLVpSdVkxRnVWWTU1cDN4akdQTEJQb0xDWGlZ?oc=5",
+        "publishedAt": "2026-01-14T14:04:57+00:00",
         "category": "Sector",
-        "relevanceScore": 0.51,
+        "relevanceScore": 0.4,
         "tickersMentioned": [],
-        "excerpt": "There\u2019s one thing that could make Trump\u2019s \u2018Great Healthcare Plan\u2019 perfect"
+        "excerpt": "Stock market today: Dow, S&P 500, Nasdaq futures slip amid upbeat bank earnings, Iran fears - Yahoo Finance"
       },
       {
         "id": "c33",
-        "headline": "This stock-and-bond blend made double-digit gains last year \u2014 yet too many investors dismiss it",
-        "source": "marketwatch",
-        "url": "https://www.marketwatch.com/story/this-mix-of-stocks-and-bonds-delivered-double-digit-gains-last-year-yet-too-many-investors-dismiss-it-44c15413?mod=mw_rss_topstories",
-        "publishedAt": "2026-01-15T19:44:00+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.51,
-        "tickersMentioned": [],
-        "excerpt": "This stock-and-bond blend made double-digit gains last year \u2014 yet too many investors dismiss it"
+        "headline": "Diamondback Energy Braces for Q4 Earnings Hit as Oil Prices Slide",
+        "source": "Zacks",
+        "url": "https://finance.yahoo.com/news/diamondback-energy-braces-q4-earnings-153700554.html",
+        "publishedAt": "2026-01-13T15:37:00",
+        "category": "Company",
+        "relevanceScore": 0.39,
+        "tickersMentioned": [
+          "FANG"
+        ],
+        "excerpt": "Diamondback Energy Braces for Q4 Earnings Hit as Oil Prices Slide"
       },
       {
         "id": "c34",
-        "headline": "I refused to invest in Tesla for years \u2014 but now\u2019s the time to bet on Elon Musk",
-        "source": "marketwatch",
-        "url": "https://www.marketwatch.com/story/i-refused-to-invest-in-tesla-for-years-but-nows-the-time-to-bet-on-elon-musk-2cbe0af8?mod=mw_rss_topstories",
-        "publishedAt": "2026-01-15T19:19:00+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.51,
-        "tickersMentioned": [],
-        "excerpt": "I refused to invest in Tesla for years \u2014 but now\u2019s the time to bet on Elon Musk"
-      },
-      {
-        "id": "c35",
         "headline": "Stock Market Today: Gains Fade For Indexes, Small Caps Lead; These Breakouts Cool (Live Coverage) - Investor's Business Daily",
         "source": "Investor's Business Daily",
         "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNMHFzcE1IUVZOMkxtTVFVOWdFV3FTemU3aDBVX09MbF9CNGFhM2JXX1lJcVNLXy1lRlZEeVF3SlRWdi1Da3g1OW0zVWVnSThOdnc3djZNOUlPamZVV2VabTlSRmZIRUN4bkZVYkd2aDVBOXY1NU1SOGJYTjBpZFZHSFdEbHRFSVVrT2tZbWtNOWpsaFJSQ1AyMk0xa3BlaV8xMlN4UUtocHQ5aFZ6d1BiTnpaYWpQd2VPa2c?oc=5",
         "publishedAt": "2026-01-15T21:31:00+00:00",
         "category": "Sector",
-        "relevanceScore": 0.51,
+        "relevanceScore": 0.39,
         "tickersMentioned": [],
         "excerpt": "Stock Market Today: Gains Fade For Indexes, Small Caps Lead; These Breakouts Cool (Live Coverage) - Investor's Business Daily"
       },
       {
+        "id": "c35",
+        "headline": "Revvity to Hold Earnings Call on Monday, February 2, 2026; Provides Update on Financial Performance",
+        "source": "Business Wire",
+        "url": "https://finance.yahoo.com/news/revvity-hold-earnings-call-monday-211500361.html",
+        "publishedAt": "2026-01-12T21:15:00",
+        "category": "Company",
+        "relevanceScore": 0.38,
+        "tickersMentioned": [
+          "RVTY"
+        ],
+        "excerpt": "Revvity to Hold Earnings Call on Monday, February 2, 2026; Provides Update on Financial Performance"
+      },
+      {
         "id": "c36",
-        "headline": "Goldman Sachs and Morgan Stanley see double-digit profit jumps amid surging stock market - Yahoo Finance",
-        "source": "Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQNjh4UzltWk4tRXVRSEJ4M0JTR3E3QXZCUmJral91S0pGaVViWVBNRm52NTVUQXJfVGlBN29oYTRIOFRCYTRVc2NHMVlnWnpyWHB1WklNQ1owRDdSUm5DckFuTV9zVzdpYkUxYWpvMy1yTHozdVJ5YlVVcjA1Y3hpVUctS0w?oc=5",
-        "publishedAt": "2026-01-15T17:21:13+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.51,
-        "tickersMentioned": [],
-        "excerpt": "Goldman Sachs and Morgan Stanley see double-digit profit jumps amid surging stock market - Yahoo Finance"
+        "headline": "Zebra (ZBRA): Buy, Sell, or Hold Post Q3 Earnings?",
+        "source": "StockStory",
+        "url": "https://finance.yahoo.com/news/zebra-zbra-buy-sell-hold-040513655.html",
+        "publishedAt": "2026-01-15T04:05:13",
+        "category": "Company",
+        "relevanceScore": 0.38,
+        "tickersMentioned": [
+          "ZBRA"
+        ],
+        "excerpt": "Zebra (ZBRA): Buy, Sell, or Hold Post Q3 Earnings?"
       },
       {
         "id": "c37",
-        "headline": "Stock market today: Nasdaq leads Dow, S&P 500 higher as TSMC's strong outlook buoys AI hopes - Yahoo Finance",
-        "source": "Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxORDJmSlZycFBsVWtJX0NRczQ4WDZYTmx6cDZldGJCS0J3UDJVSUhIaWdlUE0xTGZLWldCa2g5OHpYbGVZZW1EQXNDaTUwYkdlRUdYajNRNGtDZnNxTTJicV9SQmxWX1l0VFpBVmc0b2V2TkVBNmdSbkxRNFRubUh2VUJiTmliX1RaNEJrRzhpdVYyaDYxRlNBaDlMSVYzV205ZlJERTYwUHZLYjJCY1NJUTFKVll5ckl0LXRMODNGVDBOb1lnbHk3YnBJRmJXLVlCaWVRVWthWTRaNGhOeUJV?oc=5",
-        "publishedAt": "2026-01-15T14:34:02+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.5,
-        "tickersMentioned": [],
-        "excerpt": "Stock market today: Nasdaq leads Dow, S&P 500 higher as TSMC's strong outlook buoys AI hopes - Yahoo Finance"
+        "headline": "Earnings Growth & Price Strength Make Quanta Services (PWR) a Stock to Watch",
+        "source": "Zacks",
+        "url": "https://finance.yahoo.com/news/earnings-growth-price-strength-quanta-143002488.html",
+        "publishedAt": "2026-01-15T14:30:02",
+        "category": "Company",
+        "relevanceScore": 0.38,
+        "tickersMentioned": [
+          "PWR"
+        ],
+        "excerpt": "Earnings Growth & Price Strength Make Quanta Services (PWR) a Stock to Watch"
       },
       {
         "id": "c38",
-        "headline": "Michael Burry Bets Against Nvidia, Says'I Do Not See How That Math Works' Amid AI Chip Boom Fears",
-        "source": "Benzinga",
-        "url": "https://finance.yahoo.com/news/michael-burry-bets-against-nvidia-190119667.html",
-        "publishedAt": "2026-01-15T11:01:19",
+        "headline": "WTW to Announce Fourth Quarter and Full Year Earnings on February 3, 2026",
+        "source": "GlobeNewswire",
+        "url": "https://finance.yahoo.com/news/wtw-announce-fourth-quarter-full-213000837.html",
+        "publishedAt": "2026-01-13T21:30:00",
         "category": "Company",
-        "relevanceScore": 0.49,
+        "relevanceScore": 0.38,
         "tickersMentioned": [
-          "INTC"
+          "WTW"
         ],
-        "excerpt": "Michael Burry Bets Against Nvidia, Says'I Do Not See How That Math Works' Amid AI Chip Boom Fears"
+        "excerpt": "WTW to Announce Fourth Quarter and Full Year Earnings on February 3, 2026"
       },
       {
         "id": "c39",
-        "headline": "Multicoin Capital's Kyle Samani asks BlackRock and Fidelity to choose Solana",
-        "source": "TheStreet",
-        "url": "https://finance.yahoo.com/m/8333c966-e817-3adc-94f0-94519783daba/multicoin-capital%27s-kyle.html",
-        "publishedAt": "2026-01-15T14:48:33",
+        "headline": "What You Need to Know Ahead of McKesson Corporation's Earnings Release",
+        "source": "Barchart",
+        "url": "https://finance.yahoo.com/m/83e1b779-50cd-35c0-b751-ca4698612378/what-you-need-to-know-ahead.html",
+        "publishedAt": "2026-01-09T09:48:33",
         "category": "Company",
-        "relevanceScore": 0.48,
+        "relevanceScore": 0.38,
         "tickersMentioned": [
-          "BLK"
+          "MCK"
         ],
-        "excerpt": "Multicoin Capital's Kyle Samani asks BlackRock and Fidelity to choose Solana"
+        "excerpt": "What You Need to Know Ahead of McKesson Corporation's Earnings Release"
       },
       {
         "id": "c40",
-        "headline": "Buffett Refused A Raise For Decades, His Successor Earns 250x More To Lead Berkshire Hathaway",
-        "source": "Benzinga",
-        "url": "https://finance.yahoo.com/news/buffett-refused-raise-decades-successor-173000237.html",
-        "publishedAt": "2026-01-15T09:30:00",
+        "headline": "Quanta Services (PWR) Rises Higher Than Market: Key Facts",
+        "source": "Zacks",
+        "url": "https://finance.yahoo.com/news/quanta-services-pwr-rises-higher-231505250.html",
+        "publishedAt": "2026-01-15T23:15:05",
         "category": "Company",
-        "relevanceScore": 0.48,
+        "relevanceScore": 0.38,
         "tickersMentioned": [
-          "GM"
+          "PWR"
         ],
-        "excerpt": "Buffett Refused A Raise For Decades, His Successor Earns 250x More To Lead Berkshire Hathaway"
+        "excerpt": "Quanta Services (PWR) Rises Higher Than Market: Key Facts"
       },
       {
         "id": "c41",
-        "headline": "Stock market today: Dow, S&P 500, Nasdaq futures rise as chipmaker TSMC's strong outlook buoys optimism for AI - Yahoo Finance",
-        "source": "Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxNYkNwUUVmOFp2a29YcTY2THFJZG85Q2J3ZjlKS3BlUWFGa0J1U3IzN19lNkJhS1VqYmdpdWJCeWt2WUl4M1NVQzVJQ2JIZXJXaUs5MmU0aVpjRmpGbHFSSTh5YlY3ZEpEZTd5VkZJbDR3U3FNN0VXa2UxZlJXeHBVdWxQNm9kMzVpRzRiWWl2ejVCSkQ3ZEtJZFpKUDhzT2ZXU0VkVlF5ZnNPUTE4cjVKVExtbGVSV2NyWDZmVlBpaEVrYS1qN25SdVhKTGd3Wk5hNDdCcnRwMXFHQTE2QmpIcDg5a0Fhc3A0WWdzeQ?oc=5",
-        "publishedAt": "2026-01-15T10:19:00+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.46,
-        "tickersMentioned": [],
-        "excerpt": "Stock market today: Dow, S&P 500, Nasdaq futures rise as chipmaker TSMC's strong outlook buoys optimism for AI - Yahoo Finance"
+        "headline": "The Bull Case For Revvity (RVTY) Could Change Following Upbeat 2025 Guidance And New Lilly AI Alliance",
+        "source": "Simply Wall St.",
+        "url": "https://finance.yahoo.com/news/bull-case-revvity-rvty-could-171608034.html",
+        "publishedAt": "2026-01-14T17:16:08",
+        "category": "Company",
+        "relevanceScore": 0.37,
+        "tickersMentioned": [
+          "RVTY"
+        ],
+        "excerpt": "The Bull Case For Revvity (RVTY) Could Change Following Upbeat 2025 Guidance And New Lilly AI Alliance"
       },
       {
         "id": "c42",
-        "headline": "Stock Market Today, Jan. 15: Nokia Rises After Morgan Stanley Upgrade on AI and Cloud Growth Potential - The Motley Fool",
+        "headline": "Stock Market Today, Jan. 15: Taiwan Semiconductor's Strong Outlook Dampens AI Bubble Fears - The Motley Fool",
         "source": "The Motley Fool",
-        "url": "https://news.google.com/rss/articles/CBMi8gFBVV95cUxPMHpOdkdjSENOaWVRT0RJMmNJRzBaeDlkR2RSeTRRNmFFenpDZF9KbEs2dU1qRDhpQ0MtTzlLZ3FTNHAxbzlHTW1HUmZVbmxBYl9jY2tmcFhyU3BxTEs0a3NGbkUtT0JIRDVEbmV3YlA3OHVXdkVqeFBzdFNEd3YzQi1hZThmWExaT3Z6M3ktcnYxU2hmQmR2ZUh1X1dkS01jZGVHbFJJa1NlNTJfTEJNSldNR3dNQ3VyUXRWY2ZoRWhtV1RTanpDVlFGNGFwYWlEN2xSNlI0ZVZ0WmF6VHNZZFJvaUhTWTlBc1ZENE5EVHl5dw?oc=5",
-        "publishedAt": "2026-01-15T22:37:00+00:00",
+        "url": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxOTVUxQ19XaF9sTEQxLVpTZTZaYTVINTdqLXdPQ1JkNEVhV3dwZ0JkeXNnc0Fzc2FKemNVVDFwV1VWelZlZjgydG1nSDFaeDdiSHVZeHl2V1BuM0pLaXFPWUU4d3UxR1Y4cndqWkg3NGZPZm5DcG1xVWZQc2J4aFhvY0JOWXJEWkc3MFp6S01qVTZQUjZYblhxS1dRcUc2WUp4X1FRSGRyQWtLWVJGU0NzWldyUzMzWDY1UngxZkliQ3lIMl85bXZMWnItWTB6Mks0eE1sWU5fOUczSUxjOEJ3cVh3?oc=5",
+        "publishedAt": "2026-01-15T22:34:00+00:00",
         "category": "Sector",
-        "relevanceScore": 0.46,
+        "relevanceScore": 0.35,
         "tickersMentioned": [],
-        "excerpt": "Stock Market Today, Jan. 15: Nokia Rises After Morgan Stanley Upgrade on AI and Cloud Growth Potential - The Motley Fool"
+        "excerpt": "Stock Market Today, Jan. 15: Taiwan Semiconductor's Strong Outlook Dampens AI Bubble Fears - The Motley Fool"
       },
       {
         "id": "c43",
-        "headline": "Stock Market Today, Jan. 15: Grab Slides After AI Logistics Investment Fails to Offset Share Price Weakness - The Motley Fool",
-        "source": "The Motley Fool",
-        "url": "https://news.google.com/rss/articles/CBMi-AFBVV95cUxNVkRzeXIwcGotWndmdExPZnpuZmFGWUJvS0lVQU9TUEMycmhYbmdJVU0xeXBxYzhZX0Z0QVhOdF94dVktcVRkXzQwYnR6bkNLZHFuRm9JNkMwZGw3TXhVekF6STVySW9ESV9jdEg4OE9abGtEa3VIQzZmcUx4QU1ObmMzRVZVVkphbU54R1o0d2ZGdWMyOF9vTHlCRU90SktkU0ZmVWpIdEQzZDBReWpwcExRREt5Vm81S0taTmRJX3pGR0lwRUpvcXI2djdIOUdubkQwMFpTYXBtdEp2emdQZEVCYlBZN3FOSGxneS1jenoyZ1VUN20wTQ?oc=5",
-        "publishedAt": "2026-01-15T22:15:00+00:00",
-        "category": "Sector",
-        "relevanceScore": 0.46,
-        "tickersMentioned": [],
-        "excerpt": "Stock Market Today, Jan. 15: Grab Slides After AI Logistics Investment Fails to Offset Share Price Weakness - The Motley Fool"
+        "headline": "WTW Outperforms Industry, Trades at a Discount: How to Play the Stock",
+        "source": "Zacks",
+        "url": "https://finance.yahoo.com/news/wtw-outperforms-industry-trades-discount-160100554.html",
+        "publishedAt": "2026-01-15T16:01:00",
+        "category": "Company",
+        "relevanceScore": 0.34,
+        "tickersMentioned": [
+          "WTW"
+        ],
+        "excerpt": "WTW Outperforms Industry, Trades at a Discount: How to Play the Stock"
       },
       {
         "id": "c44",
-        "headline": "SAAS companies are dropping due to AI, is this an overreaction?",
-        "source": "r/investing",
-        "url": "https://reddit.com/r/investing/comments/1qduor8/saas_companies_are_dropping_due_to_ai_is_this_an/",
-        "publishedAt": "2026-01-15T12:23:41",
+        "headline": "BRO Stock Trading at a Discount to Industry at 16.83X: Time to Hold?",
+        "source": "Zacks",
+        "url": "https://finance.yahoo.com/news/bro-stock-trading-discount-industry-153700525.html",
+        "publishedAt": "2026-01-15T15:37:00",
         "category": "Company",
-        "relevanceScore": 0.46,
+        "relevanceScore": 0.34,
         "tickersMentioned": [
-          "TEAM"
+          "WTW"
         ],
-        "excerpt": "SAAS companies are dropping due to AI, is this an overreaction?"
+        "excerpt": "BRO Stock Trading at a Discount to Industry at 16.83X: Time to Hold?"
       },
       {
         "id": "c45",
-        "headline": "Kroger Health Reaches New Milestone in Prescription Drug Safety Program",
-        "source": "PR Newswire",
-        "url": "https://finance.yahoo.com/news/kroger-health-reaches-milestone-prescription-200500556.html",
-        "publishedAt": "2026-01-15T12:05:00",
+        "headline": "CRWD to Acquire Seraphic: Is Browser Security the Next Growth Engine?",
+        "source": "Zacks",
+        "url": "https://finance.yahoo.com/news/crwd-acquire-seraphic-browser-security-151400300.html",
+        "publishedAt": "2026-01-15T15:14:00",
         "category": "Company",
-        "relevanceScore": 0.46,
+        "relevanceScore": 0.34,
         "tickersMentioned": [
-          "KR"
+          "CRWD"
         ],
-        "excerpt": "Kroger Health Reaches New Milestone in Prescription Drug Safety Program"
+        "excerpt": "CRWD to Acquire Seraphic: Is Browser Security the Next Growth Engine?"
       },
       {
         "id": "c46",
-        "headline": "Intel Stock Just Got a New Street-High Price Target. Should You Buy INTC Here?",
-        "source": "Barchart",
-        "url": "https://finance.yahoo.com/m/9018f309-d7d5-37b6-bcb4-9f57f193df42/intel-stock-just-got-a-new.html",
-        "publishedAt": "2026-01-15T10:51:20",
+        "headline": "Zebra Technologies to Release Fourth Quarter and Full Year Results on Feb. 12",
+        "source": "Business Wire",
+        "url": "https://finance.yahoo.com/news/zebra-technologies-release-fourth-quarter-150000578.html",
+        "publishedAt": "2026-01-15T15:00:00",
         "category": "Company",
-        "relevanceScore": 0.45,
+        "relevanceScore": 0.34,
         "tickersMentioned": [
-          "INTC"
+          "ZBRA"
         ],
-        "excerpt": "Intel Stock Just Got a New Street-High Price Target. Should You Buy INTC Here?"
-      },
-      {
-        "id": "c47",
-        "headline": "MrBeast says he's cash poor despite $2.6 billion net worth",
-        "source": "Quartz",
-        "url": "https://finance.yahoo.com/m/3fe1a993-e92e-3f2d-8ca5-5fcfe1ff604d/mrbeast-says-he%27s-cash-poor.html",
-        "publishedAt": "2026-01-15T08:58:58",
-        "category": "Company",
-        "relevanceScore": 0.43,
-        "tickersMentioned": [
-          "MCD"
-        ],
-        "excerpt": "MrBeast says he's cash poor despite $2.6 billion net worth"
-      },
-      {
-        "id": "c48",
-        "headline": "Intel Gains From Cost Cuts, Though Near-Term Upside Limited, RBC Says",
-        "source": "MT Newswires",
-        "url": "https://finance.yahoo.com/news/intel-gains-cost-cuts-though-162425333.html",
-        "publishedAt": "2026-01-15T08:24:25",
-        "category": "Company",
-        "relevanceScore": 0.43,
-        "tickersMentioned": [
-          "INTC"
-        ],
-        "excerpt": "Intel Gains From Cost Cuts, Though Near-Term Upside Limited, RBC Says"
-      },
-      {
-        "id": "c49",
-        "headline": "10 of the most loved dividend stocks for 2026 \u2014 sporting yields of 4% or more",
-        "source": "MarketWatch",
-        "url": "https://finance.yahoo.com/m/3cfd0896-ee5e-399e-b286-5baf344f076f/10-of-the-most-loved-dividend.html",
-        "publishedAt": "2025-12-17T10:07:00",
-        "category": "Company",
-        "relevanceScore": 0.43,
-        "tickersMentioned": [
-          "SW"
-        ],
-        "excerpt": "10 of the most loved dividend stocks for 2026 \u2014 sporting yields of 4% or more"
+        "excerpt": "Zebra Technologies to Release Fourth Quarter and Full Year Results on Feb. 12"
       }
     ]
   },
   "briefing": {
-    "date": "2026-01-15",
-    "generatedAt": "2026-01-15T15:23:11.277586",
+    "date": "2026-01-16",
+    "generatedAt": "2026-01-16T14:54:15.714859",
     "eventsToday": [],
     "eventsUpcoming": [],
     "nextMajorEvent": null,
     "premarketGainers": [
       {
-        "ticker": "KLAC",
-        "companyName": "KLAC",
-        "price": 1551.17,
-        "change": 116.56,
-        "changePercent": 8.12,
-        "volume": 1149069,
-        "previousClose": 1434.61,
+        "ticker": "MU",
+        "companyName": "MU",
+        "price": 363.69,
+        "change": 24.18,
+        "changePercent": 7.12,
+        "volume": 9256551,
+        "previousClose": 339.51,
         "isGainer": true
       },
       {
-        "ticker": "SNDK",
-        "companyName": "SNDK",
-        "price": 413.5,
-        "change": 26.2,
-        "changePercent": 6.76,
-        "volume": 13419692,
-        "previousClose": 387.3,
+        "ticker": "SMCI",
+        "companyName": "SMCI",
+        "price": 31.55,
+        "change": 1.93,
+        "changePercent": 6.53,
+        "volume": 5503189,
+        "previousClose": 29.62,
         "isGainer": true
       },
       {
-        "ticker": "XYL",
-        "companyName": "Xylem Inc.",
-        "price": 147.96,
-        "change": 9.27,
-        "changePercent": 6.69,
-        "volume": 2115045,
-        "previousClose": 138.68,
+        "ticker": "PWR",
+        "companyName": "Quanta Services, Inc.",
+        "price": 474.23,
+        "change": 23.13,
+        "changePercent": 5.13,
+        "volume": 370183,
+        "previousClose": 451.1,
         "isGainer": true
       },
       {
-        "ticker": "NRG",
-        "companyName": "NRG",
-        "price": 158.0,
-        "change": 9.7,
-        "changePercent": 6.54,
-        "volume": 2264446,
-        "previousClose": 148.3,
+        "ticker": "GEV",
+        "companyName": "GEV",
+        "price": 682.5,
+        "change": 33.26,
+        "changePercent": 5.12,
+        "volume": 1142419,
+        "previousClose": 649.24,
         "isGainer": true
       },
       {
-        "ticker": "BLK",
-        "companyName": "BlackRock, Inc.",
-        "price": 1156.02,
-        "change": 68.04,
-        "changePercent": 6.25,
-        "volume": 1375719,
-        "previousClose": 1087.98,
+        "ticker": "MRNA",
+        "companyName": "MRNA",
+        "price": 41.09,
+        "change": 1.65,
+        "changePercent": 4.18,
+        "volume": 1387131,
+        "previousClose": 39.44,
         "isGainer": true
       },
       {
-        "ticker": "MS",
-        "companyName": "MS",
-        "price": 191.5,
-        "change": 11.0,
-        "changePercent": 6.09,
-        "volume": 22730283,
-        "previousClose": 180.5,
+        "ticker": "HSIC",
+        "companyName": "HSIC",
+        "price": 79.13,
+        "change": 2.94,
+        "changePercent": 3.86,
+        "volume": 108688,
+        "previousClose": 76.19,
         "isGainer": true
       },
       {
-        "ticker": "AMAT",
-        "companyName": "AMAT",
-        "price": 320.62,
-        "change": 17.87,
-        "changePercent": 5.9,
-        "volume": 10185580,
-        "previousClose": 302.75,
+        "ticker": "CRL",
+        "companyName": "CRL",
+        "price": 224.59,
+        "change": 8.11,
+        "changePercent": 3.75,
+        "volume": 33925,
+        "previousClose": 216.48,
         "isGainer": true
       },
       {
-        "ticker": "ASML",
-        "companyName": "ASML",
-        "price": 1334.99,
-        "change": 73.01,
-        "changePercent": 5.79,
-        "volume": 1848036,
-        "previousClose": 1261.98,
+        "ticker": "DOV",
+        "companyName": "DOV",
+        "price": 206.54,
+        "change": 7.3,
+        "changePercent": 3.66,
+        "volume": 98087,
+        "previousClose": 199.24,
         "isGainer": true
       },
       {
-        "ticker": "APH",
-        "companyName": "APH",
-        "price": 154.99,
-        "change": 8.13,
-        "changePercent": 5.53,
-        "volume": 9285336,
-        "previousClose": 146.86,
+        "ticker": "SYF",
+        "companyName": "SYF",
+        "price": 80.49,
+        "change": 2.74,
+        "changePercent": 3.52,
+        "volume": 898159,
+        "previousClose": 77.75,
         "isGainer": true
       },
       {
-        "ticker": "JBL",
-        "companyName": "JBL",
-        "price": 253.7,
-        "change": 12.69,
-        "changePercent": 5.27,
-        "volume": 1557321,
-        "previousClose": 241.01,
+        "ticker": "JBHT",
+        "companyName": "JBHT",
+        "price": 204.11,
+        "change": 6.75,
+        "changePercent": 3.42,
+        "volume": 346929,
+        "previousClose": 197.36,
         "isGainer": true
       }
     ],
     "premarketLosers": [
       {
+        "ticker": "ALB",
+        "companyName": "ALB",
+        "price": 163.52,
+        "change": -10.01,
+        "changePercent": -5.77,
+        "volume": 760100,
+        "previousClose": 173.53,
+        "isGainer": false
+      },
+      {
+        "ticker": "CEG",
+        "companyName": "CEG",
+        "price": 317.62,
+        "change": -19.37,
+        "changePercent": -5.75,
+        "volume": 1026356,
+        "previousClose": 336.99,
+        "isGainer": false
+      },
+      {
+        "ticker": "TEAM",
+        "companyName": "TEAM",
+        "price": 122.88,
+        "change": -6.03,
+        "changePercent": -4.67,
+        "volume": 699256,
+        "previousClose": 128.9,
+        "isGainer": false
+      },
+      {
+        "ticker": "VST",
+        "companyName": "VST",
+        "price": 170.1,
+        "change": -8.25,
+        "changePercent": -4.62,
+        "volume": 3947207,
+        "previousClose": 178.34,
+        "isGainer": false
+      },
+      {
+        "ticker": "AMCR",
+        "companyName": "AMCR",
+        "price": 42.27,
+        "change": -2.02,
+        "changePercent": -4.56,
+        "volume": 844028,
+        "previousClose": 44.29,
+        "isGainer": false
+      },
+      {
+        "ticker": "MOS",
+        "companyName": "MOS",
+        "price": 26.44,
+        "change": -1.07,
+        "changePercent": -3.89,
+        "volume": 3538610,
+        "previousClose": 27.51,
+        "isGainer": false
+      },
+      {
+        "ticker": "RF",
+        "companyName": "Regions Financial Corporation",
+        "price": 27.64,
+        "change": -1.05,
+        "changePercent": -3.66,
+        "volume": 4404383,
+        "previousClose": 28.69,
+        "isGainer": false
+      },
+      {
+        "ticker": "STT",
+        "companyName": "STT",
+        "price": 131.34,
+        "change": -4.66,
+        "changePercent": -3.43,
+        "volume": 530554,
+        "previousClose": 136.0,
+        "isGainer": false
+      },
+      {
         "ticker": "HOOD",
         "companyName": "HOOD",
-        "price": 111.65,
-        "change": -6.84,
-        "changePercent": -5.77,
-        "volume": 34753730,
-        "previousClose": 118.49,
-        "isGainer": false
-      },
-      {
-        "ticker": "DOV",
-        "companyName": "DOV",
-        "price": 194.0,
-        "change": -10.34,
-        "changePercent": -5.06,
-        "volume": 1104380,
-        "previousClose": 204.34,
-        "isGainer": false
-      },
-      {
-        "ticker": "JBHT",
-        "companyName": "JBHT",
-        "price": 197.0,
-        "change": -9.0,
-        "changePercent": -4.37,
-        "volume": 792550,
-        "previousClose": 206.0,
-        "isGainer": false
-      },
-      {
-        "ticker": "DVN",
-        "companyName": "DVN",
-        "price": 36.35,
-        "change": -1.63,
-        "changePercent": -4.29,
-        "volume": 22148464,
-        "previousClose": 37.98,
-        "isGainer": false
-      },
-      {
-        "ticker": "CHTR",
-        "companyName": "CHTR",
-        "price": 194.4,
-        "change": -8.6,
-        "changePercent": -4.24,
-        "volume": 1919485,
-        "previousClose": 203.0,
-        "isGainer": false
-      },
-      {
-        "ticker": "COIN",
-        "companyName": "COIN",
-        "price": 240.8,
-        "change": -10.09,
-        "changePercent": -4.02,
-        "volume": 11624313,
-        "previousClose": 250.89,
-        "isGainer": false
-      },
-      {
-        "ticker": "BSX",
-        "companyName": "BSX",
-        "price": 89.95,
-        "change": -3.48,
-        "changePercent": -3.72,
-        "volume": 27553436,
-        "previousClose": 93.43,
-        "isGainer": false
-      },
-      {
-        "ticker": "LLY",
-        "companyName": "LLY",
-        "price": 1032.5,
-        "change": -37.5,
-        "changePercent": -3.5,
-        "volume": 4068420,
-        "previousClose": 1070.0,
-        "isGainer": false
-      },
-      {
-        "ticker": "MSTR",
-        "companyName": "MSTR",
-        "price": 171.95,
-        "change": -6.05,
+        "price": 108.17,
+        "change": -3.81,
         "changePercent": -3.4,
-        "volume": 26085697,
-        "previousClose": 178.0,
+        "volume": 3997998,
+        "previousClose": 111.98,
         "isGainer": false
       },
       {
-        "ticker": "IBM",
-        "companyName": "IBM",
-        "price": 298.99,
-        "change": -10.24,
-        "changePercent": -3.31,
-        "volume": 4595786,
-        "previousClose": 309.23,
+        "ticker": "ABNB",
+        "companyName": "ABNB",
+        "price": 129.96,
+        "change": -4.04,
+        "changePercent": -3.01,
+        "volume": 356189,
+        "previousClose": 134.0,
         "isGainer": false
       }
     ],
-    "earningsToday": [
-      {
-        "symbol": "SIFY",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2026,
-        "quarter": 3,
-        "epsEstimate": 0,
-        "epsActual": null,
-        "revenueEstimate": 174522000,
-        "revenueActual": 130132000,
-        "isReported": false
-      },
-      {
-        "symbol": "BSVN",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 1.0669,
-        "epsActual": 1.12,
-        "revenueEstimate": 24496320,
-        "revenueActual": 24100000,
-        "isReported": true
-      },
-      {
-        "symbol": "GS",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 11.9976,
-        "epsActual": 14.01,
-        "revenueEstimate": 14205175845,
-        "revenueActual": 13454000000,
-        "isReported": true
-      },
-      {
-        "symbol": "BLK",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 12.4121,
-        "epsActual": 13.16,
-        "revenueEstimate": 6811667472,
-        "revenueActual": 7008000000,
-        "isReported": true
-      },
-      {
-        "symbol": "MS",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 2.5099,
-        "epsActual": 2.68,
-        "revenueEstimate": 18306239759,
-        "revenueActual": 17890000000,
-        "isReported": true
-      },
-      {
-        "symbol": "FHN",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 0.4651,
-        "epsActual": 0.52,
-        "revenueEstimate": 867936096,
-        "revenueActual": 888000000,
-        "isReported": true
-      },
-      {
-        "symbol": "IIIN",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2026,
-        "quarter": 1,
-        "epsEstimate": 0.3825,
-        "epsActual": 0.39,
-        "revenueEstimate": 165208890,
-        "revenueActual": 159920000,
-        "isReported": true
-      },
-      {
-        "symbol": "PUCK",
-        "date": "2026-01-15",
-        "hour": "",
-        "timingDisplay": "TBD",
-        "year": 2025,
-        "quarter": 3,
-        "epsEstimate": null,
-        "epsActual": null,
-        "revenueEstimate": null,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "KISB",
-        "date": "2026-01-15",
-        "hour": "",
-        "timingDisplay": "TBD",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": null,
-        "epsActual": null,
-        "revenueEstimate": null,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "WABC",
-        "date": "2026-01-15",
-        "hour": "",
-        "timingDisplay": "TBD",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 1.0863,
-        "epsActual": 1.12,
-        "revenueEstimate": 63138000,
-        "revenueActual": 63310000,
-        "isReported": true
-      },
-      {
-        "symbol": "FPH",
-        "date": "2026-01-15",
-        "hour": "",
-        "timingDisplay": "TBD",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": null,
-        "epsActual": null,
-        "revenueEstimate": null,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "HIFS",
-        "date": "2026-01-15",
-        "hour": "",
-        "timingDisplay": "TBD",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": null,
-        "epsActual": null,
-        "revenueEstimate": null,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "NXEN",
-        "date": "2026-01-15",
-        "hour": "",
-        "timingDisplay": "TBD",
-        "year": 2026,
-        "quarter": 1,
-        "epsEstimate": null,
-        "epsActual": null,
-        "revenueEstimate": null,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "ICCT",
-        "date": "2026-01-15",
-        "hour": "",
-        "timingDisplay": "TBD",
-        "year": 2025,
-        "quarter": 3,
-        "epsEstimate": null,
-        "epsActual": null,
-        "revenueEstimate": null,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "OFED",
-        "date": "2026-01-15",
-        "hour": "",
-        "timingDisplay": "TBD",
-        "year": 2026,
-        "quarter": 2,
-        "epsEstimate": null,
-        "epsActual": null,
-        "revenueEstimate": null,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "WRIV",
-        "date": "2026-01-15",
-        "hour": "",
-        "timingDisplay": "TBD",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": null,
-        "epsActual": null,
-        "revenueEstimate": null,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "CNBB",
-        "date": "2026-01-15",
-        "hour": "",
-        "timingDisplay": "TBD",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": null,
-        "epsActual": null,
-        "revenueEstimate": null,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "SRCE",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 1.6415,
-        "epsActual": null,
-        "revenueEstimate": 113138736,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "CTKB",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": -0.0408,
-        "epsActual": null,
-        "revenueEstimate": 58065540,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "CBSH",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 1.0106,
-        "epsActual": null,
-        "revenueEstimate": 451254456,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "CZNC",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 0.4386,
-        "epsActual": null,
-        "revenueEstimate": 29172000,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "BANF",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 1.8221,
-        "epsActual": null,
-        "revenueEstimate": 177232140,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "MYGN",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": -0.0167,
-        "epsActual": null,
-        "revenueEstimate": 210962132,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "MCB",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 2.0907,
-        "epsActual": null,
-        "revenueEstimate": 83983015,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "JBHT",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 1.8443,
-        "epsActual": 1.9,
-        "revenueEstimate": 3163133791,
-        "revenueActual": 3096630000,
-        "isReported": true
-      }
-    ],
-    "earningsBeforeOpen": [
-      {
-        "symbol": "SIFY",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2026,
-        "quarter": 3,
-        "epsEstimate": 0,
-        "epsActual": null,
-        "revenueEstimate": 174522000,
-        "revenueActual": 130132000,
-        "isReported": false
-      },
-      {
-        "symbol": "BSVN",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 1.0669,
-        "epsActual": 1.12,
-        "revenueEstimate": 24496320,
-        "revenueActual": 24100000,
-        "isReported": true
-      },
-      {
-        "symbol": "GS",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 11.9976,
-        "epsActual": 14.01,
-        "revenueEstimate": 14205175845,
-        "revenueActual": 13454000000,
-        "isReported": true
-      },
-      {
-        "symbol": "BLK",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 12.4121,
-        "epsActual": 13.16,
-        "revenueEstimate": 6811667472,
-        "revenueActual": 7008000000,
-        "isReported": true
-      },
-      {
-        "symbol": "MS",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 2.5099,
-        "epsActual": 2.68,
-        "revenueEstimate": 18306239759,
-        "revenueActual": 17890000000,
-        "isReported": true
-      },
-      {
-        "symbol": "FHN",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 0.4651,
-        "epsActual": 0.52,
-        "revenueEstimate": 867936096,
-        "revenueActual": 888000000,
-        "isReported": true
-      },
-      {
-        "symbol": "IIIN",
-        "date": "2026-01-15",
-        "hour": "bmo",
-        "timingDisplay": "Before Open",
-        "year": 2026,
-        "quarter": 1,
-        "epsEstimate": 0.3825,
-        "epsActual": 0.39,
-        "revenueEstimate": 165208890,
-        "revenueActual": 159920000,
-        "isReported": true
-      }
-    ],
-    "earningsAfterClose": [
-      {
-        "symbol": "SRCE",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 1.6415,
-        "epsActual": null,
-        "revenueEstimate": 113138736,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "CTKB",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": -0.0408,
-        "epsActual": null,
-        "revenueEstimate": 58065540,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "CBSH",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 1.0106,
-        "epsActual": null,
-        "revenueEstimate": 451254456,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "CZNC",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 0.4386,
-        "epsActual": null,
-        "revenueEstimate": 29172000,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "BANF",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 1.8221,
-        "epsActual": null,
-        "revenueEstimate": 177232140,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "MYGN",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": -0.0167,
-        "epsActual": null,
-        "revenueEstimate": 210962132,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "MCB",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 2.0907,
-        "epsActual": null,
-        "revenueEstimate": 83983015,
-        "revenueActual": null,
-        "isReported": false
-      },
-      {
-        "symbol": "JBHT",
-        "date": "2026-01-15",
-        "hour": "amc",
-        "timingDisplay": "After Close",
-        "year": 2025,
-        "quarter": 4,
-        "epsEstimate": 1.8443,
-        "epsActual": 1.9,
-        "revenueEstimate": 3163133791,
-        "revenueActual": 3096630000,
-        "isReported": true
-      }
-    ],
-    "hasEarningsToday": true,
+    "earningsToday": [],
+    "earningsBeforeOpen": [],
+    "earningsAfterClose": [],
+    "hasEarningsToday": false,
     "marketNews": [
       {
-        "headline": "Thailand's Economic Revival: Finance Ministry and Central Bank Unite to Tackle Growth Crisis - Nation Thailand",
-        "source": "Nation Thailand",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBRS2JJV3JTSDJUWm1oMUJvZnYxd2hhVUluVkowSzVMVl9VelF3ejIyRGtKUk5qQ2czYmZjdzNEOGdzZVJ3aXNiZ1FCTTVDOFBBRktHOGxNREF1UUxrMkxGYXJGU1MyNkU?oc=5",
-        "timestamp": "2026-01-15T23:00:00+00:00",
+        "headline": "Analyst Report: Blackrock Inc.",
+        "source": "Argus Research",
+        "url": "https://finance.yahoo.com/research/reports/ARGUS_3635_AnalystReport_1768565696000?yptr=yahoo&ncid=yahooproperties_plusresear_nm5q6ze1cei",
+        "timestamp": "2026-01-16T14:53:33.781586",
         "priority": "low",
         "relevanceScore": 0.15,
         "category": "market",
@@ -1802,10 +1512,23 @@
         "tickers": []
       },
       {
-        "headline": "Stock Market Today, Jan. 15: Nokia Rises After Morgan Stanley Upgrade on AI and Cloud Growth Potential - Nasdaq",
-        "source": "Nasdaq",
-        "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPNEU1N0dwcU1OVFpsSGNVZDdtSjdOZy1oUWlRUTJVYzFib081UUFheE52VGtQcXYzMl9qdUNyOENsZGN1SnZjU1h5b1NjUElJajBJTTlJVEhOU2l3SlpQT1h6WXZiUXFQdTh0TjFKMUVxYXVGcER5aE4tQVBKTUpZZWM0T19aWlNScDhGV1lSazlUNnpBQkE0emZIaXZHTHlnNjdiLW5rVjI4TkZuZGQyOC1RSXZGQ1VIQXc?oc=5",
-        "timestamp": "2026-01-15T22:57:00+00:00",
+        "headline": "RenaissanceRe (RNR) Target Lifted by TD Cowen and Barclays as Market Pricing Softens",
+        "source": "Insider Monkey",
+        "url": "https://finance.yahoo.com/news/renaissancere-rnr-target-lifted-td-073724479.html",
+        "timestamp": "2026-01-16T14:53:33.781580",
+        "priority": "low",
+        "relevanceScore": 0.35,
+        "category": "market",
+        "keywords": [],
+        "tickers": [
+          "RNR"
+        ]
+      },
+      {
+        "headline": "Barclays Updates 2026 View on Life Insurers, Lowers RGA Price Target",
+        "source": "Insider Monkey",
+        "url": "https://finance.yahoo.com/news/barclays-updates-2026-view-life-074149491.html",
+        "timestamp": "2026-01-16T14:53:33.781575",
         "priority": "low",
         "relevanceScore": 0.15,
         "category": "market",
@@ -1813,99 +1536,68 @@
         "tickers": []
       },
       {
-        "headline": "Stock Market Today, Jan. 15: Nvidia Rises on Strong AI Demand and Data Center Growth Optimism - Yahoo Finance",
-        "source": "Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1kWDN2SndKbGVYU2J3cjU5eW5YZnZkV0RPbDdhdVNQMnNObURhUXhna1o0cTlDZkViSHFfcnpwaTJKN0Nia3Y0b1EyU2tQOHVLZVRuV3ZFSkI0UXk2aVVlZ1FENVNLYkRidkNOTjNmSmhabGpENHpUNXhnVQ?oc=5",
-        "timestamp": "2026-01-15T22:56:30+00:00",
+        "headline": "Seaport Initiates Polaris (PII), Cites Strong Outdoor Demand and Better Dealer Backdrop",
+        "source": "Insider Monkey",
+        "url": "https://finance.yahoo.com/news/seaport-initiates-polaris-pii-cites-073426157.html",
+        "timestamp": "2026-01-16T14:53:33.781564",
         "priority": "low",
-        "relevanceScore": 0.246,
+        "relevanceScore": 0.35,
+        "category": "market",
+        "keywords": [],
+        "tickers": [
+          "PII"
+        ]
+      },
+      {
+        "headline": "UBS Sees 9%\u201311% REIT Returns in 2026, Trims Equity LifeStyle (ELS) Price Target",
+        "source": "Insider Monkey",
+        "url": "https://finance.yahoo.com/news/ubs-sees-9-11-reit-073215284.html",
+        "timestamp": "2026-01-16T14:53:33.781559",
+        "priority": "low",
+        "relevanceScore": 0.35,
+        "category": "market",
+        "keywords": [],
+        "tickers": [
+          "ELS"
+        ]
+      },
+      {
+        "headline": "Analyst Report: Corteva Inc",
+        "source": "Argus Research",
+        "url": "https://finance.yahoo.com/research/reports/ARGUS_5147_AnalystReport_1768565696000?yptr=yahoo&ncid=yahooproperties_plusresear_nm5q6ze1cei",
+        "timestamp": "2026-01-16T14:53:33.781554",
+        "priority": "low",
+        "relevanceScore": 0.15,
         "category": "market",
         "keywords": [],
         "tickers": []
       },
       {
-        "headline": "AI startup Replit launches feature to vibe code mobile apps",
-        "source": "cnbc",
-        "url": "https://www.cnbc.com/2026/01/15/ai-startup-replit-launches-feature-to-vibe-code-mobile-apps.html",
-        "timestamp": "2026-01-15T22:49:22+00:00",
+        "headline": "Baird Boosts Toro (TTC) Target on Improved Free Cash Flow Outlook",
+        "source": "Insider Monkey",
+        "url": "https://finance.yahoo.com/news/baird-boosts-toro-ttc-target-072947348.html",
+        "timestamp": "2026-01-16T14:53:33.781548",
         "priority": "low",
-        "relevanceScore": 0.264,
+        "relevanceScore": 0.35,
         "category": "market",
         "keywords": [],
-        "tickers": []
+        "tickers": [
+          "TTC"
+        ]
       },
       {
-        "headline": "College sports has a new money problem \u2014 and St. John\u2019s may be the latest example: \u2018It\u2019s the Wild West\u2019",
-        "source": "marketwatch",
-        "url": "https://www.marketwatch.com/story/college-sports-has-a-new-money-problem-and-st-johns-may-be-the-latest-example-its-the-wild-west-e35648ba?mod=mw_rss_topstories",
-        "timestamp": "2026-01-15T22:37:00+00:00",
+        "headline": "Mitchells & Butlers Q1 sales rise, driven by Christmas trading",
+        "source": "Verdict Food Service",
+        "url": "https://finance.yahoo.com/news/mitchells-butlers-q1-sales-rise-142459850.html",
+        "timestamp": "2026-01-16T14:53:33.781537",
         "priority": "low",
-        "relevanceScore": 0.255,
-        "category": "market",
-        "keywords": [],
-        "tickers": []
-      },
-      {
-        "headline": "Wikipedia parent partners with Amazon, Meta, Perplexity on AI access",
-        "source": "cnbc",
-        "url": "https://www.cnbc.com/2026/01/15/wikipedia-amazon-meta-perplexity-ai.html",
-        "timestamp": "2026-01-15T22:36:55+00:00",
-        "priority": "low",
-        "relevanceScore": 0.264,
-        "category": "market",
-        "keywords": [],
-        "tickers": []
-      },
-      {
-        "headline": "Stock Market Today, Jan. 15: Nvidia Rises on Strong AI Demand and Data Center Growth Optimism - The Motley Fool",
-        "source": "The Motley Fool",
-        "url": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxQenNwYU1rcm1BMExNaHZoWmlJMUJ1S0RCeWhybTlod0xiVWdXV1dTU1BIQmh3Mmp5QlV4dGJMb3REQU03UlRuUkJHbjFXOGxrMzQ4YnBOdjhPU19UVGJELUpEUzQ2UjlYMFZhdmF4VWJja3hTd3FJeVBwZUIzcTVHV1lOMmhEdmFRLU9jcHFMckZ0UGNBTlFFd1FfQXdQNU5XOEZIMnhLRkdiS1psTHh6Z1FfSXNPUmNJcGE4S0dpeHN5bTIwMjdEYVJ0c2pOcnA0OHFIWENQejBhNDROQnR6VkdQakF5Zw?oc=5",
-        "timestamp": "2026-01-15T22:36:00+00:00",
-        "priority": "low",
-        "relevanceScore": 0.195,
-        "category": "market",
-        "keywords": [],
-        "tickers": []
-      },
-      {
-        "headline": "Stock Market Today, Jan. 15: Grab Slides After AI Logistics Investment Fails to Offset Share Price Weakness - Yahoo Finance",
-        "source": "Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTFB3U1lLRzJxcGZ6SHV4NFlMWkoxdWlweWU5cjlCZ0tRZVpKX3E1SU1OUERyVTN0SkRuTHZIY21UM3AyTmdBTS1KSHllckNSYUVaanJQcFl2OHdjVEZDMmJKSFkyeW5yVWt3TTgtZ0lwcTd5YUc2N1JjcEhZUQ?oc=5",
-        "timestamp": "2026-01-15T22:35:26+00:00",
-        "priority": "low",
-        "relevanceScore": 0.246,
-        "category": "market",
-        "keywords": [],
-        "tickers": []
-      },
-      {
-        "headline": "Stock Market Today, Jan. 15: Taiwan Semiconductor's Strong Outlook Dampens AI Bubble Fears - The Motley Fool",
-        "source": "The Motley Fool",
-        "url": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxOTVUxQ19XaF9sTEQxLVpTZTZaYTVINTdqLXdPQ1JkNEVhV3dwZ0JkeXNnc0Fzc2FKemNVVDFwV1VWelZlZjgydG1nSDFaeDdiSHVZeHl2V1BuM0pLaXFPWUU4d3UxR1Y4cndqWkg3NGZPZm5DcG1xVWZQc2J4aFhvY0JOWXJEWkc3MFp6S01qVTZQUjZYblhxS1dRcUc2WUp4X1FRSGRyQWtLWVJGU0NzWldyUzMzWDY1UngxZkliQ3lIMl85bXZMWnItWTB6Mks0eE1sWU5fOUczSUxjOEJ3cVh3?oc=5",
-        "timestamp": "2026-01-15T22:34:00+00:00",
-        "priority": "low",
-        "relevanceScore": 0.195,
+        "relevanceScore": 0.15,
         "category": "market",
         "keywords": [],
         "tickers": []
       }
     ],
-    "fedNews": [
-      {
-        "headline": "Jamie Dimon says there\u2019s \u2018no chance\u2019 he\u2019d ever run the Federal Reserve - Fox Business",
-        "source": "Fox Business",
-        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNV055dVJXaDdpNWNJLUxFX3VLaWY0ZVhJNlRjRVRIenhyWldzbktBSlBmRlpDV3ZOcW5FUWRIY1JBUElTZDBYQzdpbHNYcjNNUGZrWlNyT0FLWGM1V0hyUVhVWGQwb3VQWWJTRExGZmZiU1JDNk1ueFVMRENSNlNodHhpY1ZjSDE4eGZQenhRY2pDcTI2RzA5US1WbUFBTnlU0gGmAUFVX3lxTE5tUVV6UVZzWk1EZk50dm92bW5iT2xQdnFzMmwtUER5M1Jkbzkyb25RalpiVkdQUXJsMUo5MVFnMlZFVkZiYWF6bGYxUTdFTlVIZG1FeGN5cU4xN3RFM1dKUlkwbVN4Rmdtbng2dG52SU0zQWNLUmdsWV9DNW0yRkN6amVOZ2dFajhmcnh2QVpJYjY0clhLeUVSNXhhdHJFR1BYRkdzM3c?oc=5",
-        "timestamp": "2026-01-15T22:43:00+00:00",
-        "priority": "critical",
-        "relevanceScore": 0.63,
-        "category": "fed",
-        "keywords": [
-          "federal reserve",
-          "fed"
-        ],
-        "tickers": []
-      }
-    ],
+    "fedNews": [],
     "hasHighImpactToday": false,
     "historicalContext": {}
   },
@@ -1914,156 +1606,108 @@
       "startDate": "2024-08-01",
       "endDate": "2025-12-31",
       "timeframe": "short",
-      "totalTrades": 68,
+      "totalTrades": 50,
       "tickersAnalyzed": 30,
       "performance": {
-        "totalReturn": 15.36,
-        "benchmarkReturn": 27.19,
-        "alpha": -11.83,
-        "hitRate": 55.9,
-        "winRate": 54.4,
-        "avgTradeReturn": 1.02,
-        "avgAlphaPerTrade": -0.5,
-        "sharpeRatio": 0.47,
-        "maxDrawdown": 16.66,
-        "winLossRatio": 1.04
+        "totalReturn": 0.33,
+        "benchmarkReturn": 14.8,
+        "alpha": -14.47,
+        "hitRate": 38.0,
+        "winRate": 44.0,
+        "avgTradeReturn": 0.21,
+        "avgAlphaPerTrade": -1.23,
+        "sharpeRatio": -0.07,
+        "maxDrawdown": 12.05,
+        "winLossRatio": 1.35
       },
       "bestTrade": {
-        "ticker": "ANET",
-        "returnPct": 18.87
+        "ticker": "GPN",
+        "returnPct": 13.81
       },
       "worstTrade": {
-        "ticker": "AES",
-        "returnPct": -26.55
+        "ticker": "GPN",
+        "returnPct": -22.21
       },
       "monthlyReturns": [
         {
-          "month": "2024-08-01",
-          "portfolioReturn": -0.62,
-          "benchmarkReturn": 3.81,
-          "numPicks": 3,
-          "topPerformer": "ANET",
-          "worstPerformer": "AES"
-        },
-        {
-          "month": "2024-09-02",
-          "portfolioReturn": 11.22,
-          "benchmarkReturn": 1.19,
-          "numPicks": 3,
-          "topPerformer": "AES",
-          "worstPerformer": "ARES"
-        },
-        {
-          "month": "2024-10-01",
-          "portfolioReturn": -6.59,
-          "benchmarkReturn": 0.43,
-          "numPicks": 3,
-          "topPerformer": "ARES",
-          "worstPerformer": "AES"
-        },
-        {
-          "month": "2024-11-01",
-          "portfolioReturn": -0.01,
-          "benchmarkReturn": 5.71,
-          "numPicks": 3,
-          "topPerformer": "ARES",
-          "worstPerformer": "AES"
-        },
-        {
-          "month": "2024-12-02",
-          "portfolioReturn": 3.01,
-          "benchmarkReturn": -2.58,
-          "numPicks": 3,
-          "topPerformer": "ANET",
-          "worstPerformer": "AES"
-        },
-        {
-          "month": "2025-01-01",
-          "portfolioReturn": -1.2,
-          "benchmarkReturn": 1.99,
-          "numPicks": 3,
-          "topPerformer": "ARES",
-          "worstPerformer": "AES"
-        },
-        {
           "month": "2025-02-03",
-          "portfolioReturn": -3.74,
+          "portfolioReturn": -3.55,
           "benchmarkReturn": -2.34,
           "numPicks": 5,
-          "topPerformer": "WTW",
-          "worstPerformer": "CF"
+          "topPerformer": "BRK-B",
+          "worstPerformer": "FANG"
         },
         {
           "month": "2025-03-03",
-          "portfolioReturn": -2.07,
+          "portfolioReturn": 0.62,
           "benchmarkReturn": -3.62,
           "numPicks": 5,
-          "topPerformer": "CF",
-          "worstPerformer": "MTB"
+          "topPerformer": "FANG",
+          "worstPerformer": "PNC"
         },
         {
           "month": "2025-04-01",
-          "portfolioReturn": -7.0,
+          "portfolioReturn": -9.38,
           "benchmarkReturn": -0.45,
           "numPicks": 5,
-          "topPerformer": "CF",
-          "worstPerformer": "AES"
+          "topPerformer": "BRK-B",
+          "worstPerformer": "GPN"
         },
         {
           "month": "2025-05-01",
-          "portfolioReturn": 7.42,
+          "portfolioReturn": 4.64,
           "benchmarkReturn": 6.13,
           "numPicks": 5,
-          "topPerformer": "CF",
-          "worstPerformer": "AES"
+          "topPerformer": "PLTR",
+          "worstPerformer": "BRK-B"
         },
         {
           "month": "2025-06-02",
-          "portfolioReturn": 4.32,
+          "portfolioReturn": 6.54,
           "benchmarkReturn": 4.52,
           "numPicks": 5,
-          "topPerformer": "MTB",
-          "worstPerformer": "WTW"
+          "topPerformer": "PHM",
+          "worstPerformer": "BRK-B"
         },
         {
           "month": "2025-07-01",
-          "portfolioReturn": 2.96,
+          "portfolioReturn": -3.16,
           "benchmarkReturn": 0.66,
           "numPicks": 5,
-          "topPerformer": "ANET",
-          "worstPerformer": "MTB"
+          "topPerformer": "FANG",
+          "worstPerformer": "CRWD"
         },
         {
           "month": "2025-08-01",
-          "portfolioReturn": 7.14,
+          "portfolioReturn": 9.48,
           "benchmarkReturn": 3.75,
           "numPicks": 5,
-          "topPerformer": "ANET",
-          "worstPerformer": "CF"
+          "topPerformer": "GPN",
+          "worstPerformer": "FANG"
         },
         {
           "month": "2025-09-01",
-          "portfolioReturn": 3.44,
+          "portfolioReturn": -2.14,
           "benchmarkReturn": 3.92,
           "numPicks": 5,
-          "topPerformer": "ANET",
-          "worstPerformer": "MTB"
+          "topPerformer": "PHM",
+          "worstPerformer": "PNC"
         },
         {
           "month": "2025-10-01",
-          "portfolioReturn": -0.15,
+          "portfolioReturn": -6.85,
           "benchmarkReturn": 2.23,
           "numPicks": 5,
-          "topPerformer": "GM",
-          "worstPerformer": "WTW"
+          "topPerformer": "FANG",
+          "worstPerformer": "PHM"
         },
         {
           "month": "2025-11-03",
-          "portfolioReturn": -1.92,
+          "portfolioReturn": 5.9,
           "benchmarkReturn": -0.45,
           "numPicks": 5,
-          "topPerformer": "GM",
-          "worstPerformer": "ANET"
+          "topPerformer": "FANG",
+          "worstPerformer": "GPN"
         }
       ],
       "limitations": [
@@ -2071,162 +1715,114 @@
         "No transaction costs modeled",
         "Survivorship bias if universe changed"
       ],
-      "executedAt": "2026-01-15T15:23:11.280923"
+      "executedAt": "2026-01-16T14:54:15.720550"
     },
     "medium": {
       "startDate": "2024-08-01",
       "endDate": "2025-12-31",
       "timeframe": "medium",
-      "totalTrades": 68,
+      "totalTrades": 50,
       "tickersAnalyzed": 30,
       "performance": {
-        "totalReturn": 15.36,
-        "benchmarkReturn": 27.19,
-        "alpha": -11.83,
-        "hitRate": 55.9,
-        "winRate": 54.4,
-        "avgTradeReturn": 1.02,
-        "avgAlphaPerTrade": -0.5,
-        "sharpeRatio": 0.47,
-        "maxDrawdown": 16.66,
-        "winLossRatio": 1.04
+        "totalReturn": 0.33,
+        "benchmarkReturn": 14.8,
+        "alpha": -14.47,
+        "hitRate": 38.0,
+        "winRate": 44.0,
+        "avgTradeReturn": 0.21,
+        "avgAlphaPerTrade": -1.23,
+        "sharpeRatio": -0.07,
+        "maxDrawdown": 12.05,
+        "winLossRatio": 1.35
       },
       "bestTrade": {
-        "ticker": "ANET",
-        "returnPct": 18.87
+        "ticker": "GPN",
+        "returnPct": 13.81
       },
       "worstTrade": {
-        "ticker": "AES",
-        "returnPct": -26.55
+        "ticker": "GPN",
+        "returnPct": -22.21
       },
       "monthlyReturns": [
         {
-          "month": "2024-08-01",
-          "portfolioReturn": -0.62,
-          "benchmarkReturn": 3.81,
-          "numPicks": 3,
-          "topPerformer": "ANET",
-          "worstPerformer": "AES"
-        },
-        {
-          "month": "2024-09-02",
-          "portfolioReturn": 11.22,
-          "benchmarkReturn": 1.19,
-          "numPicks": 3,
-          "topPerformer": "AES",
-          "worstPerformer": "ARES"
-        },
-        {
-          "month": "2024-10-01",
-          "portfolioReturn": -6.59,
-          "benchmarkReturn": 0.43,
-          "numPicks": 3,
-          "topPerformer": "ARES",
-          "worstPerformer": "AES"
-        },
-        {
-          "month": "2024-11-01",
-          "portfolioReturn": -0.01,
-          "benchmarkReturn": 5.71,
-          "numPicks": 3,
-          "topPerformer": "ARES",
-          "worstPerformer": "AES"
-        },
-        {
-          "month": "2024-12-02",
-          "portfolioReturn": 3.01,
-          "benchmarkReturn": -2.58,
-          "numPicks": 3,
-          "topPerformer": "ANET",
-          "worstPerformer": "AES"
-        },
-        {
-          "month": "2025-01-01",
-          "portfolioReturn": -1.2,
-          "benchmarkReturn": 1.99,
-          "numPicks": 3,
-          "topPerformer": "ARES",
-          "worstPerformer": "AES"
-        },
-        {
           "month": "2025-02-03",
-          "portfolioReturn": -3.74,
+          "portfolioReturn": -3.55,
           "benchmarkReturn": -2.34,
           "numPicks": 5,
-          "topPerformer": "WTW",
-          "worstPerformer": "CF"
+          "topPerformer": "BRK-B",
+          "worstPerformer": "FANG"
         },
         {
           "month": "2025-03-03",
-          "portfolioReturn": -2.07,
+          "portfolioReturn": 0.62,
           "benchmarkReturn": -3.62,
           "numPicks": 5,
-          "topPerformer": "CF",
-          "worstPerformer": "MTB"
+          "topPerformer": "FANG",
+          "worstPerformer": "PNC"
         },
         {
           "month": "2025-04-01",
-          "portfolioReturn": -7.0,
+          "portfolioReturn": -9.38,
           "benchmarkReturn": -0.45,
           "numPicks": 5,
-          "topPerformer": "CF",
-          "worstPerformer": "AES"
+          "topPerformer": "BRK-B",
+          "worstPerformer": "GPN"
         },
         {
           "month": "2025-05-01",
-          "portfolioReturn": 7.42,
+          "portfolioReturn": 4.64,
           "benchmarkReturn": 6.13,
           "numPicks": 5,
-          "topPerformer": "CF",
-          "worstPerformer": "AES"
+          "topPerformer": "PLTR",
+          "worstPerformer": "BRK-B"
         },
         {
           "month": "2025-06-02",
-          "portfolioReturn": 4.32,
+          "portfolioReturn": 6.54,
           "benchmarkReturn": 4.52,
           "numPicks": 5,
-          "topPerformer": "MTB",
-          "worstPerformer": "WTW"
+          "topPerformer": "PHM",
+          "worstPerformer": "BRK-B"
         },
         {
           "month": "2025-07-01",
-          "portfolioReturn": 2.96,
+          "portfolioReturn": -3.16,
           "benchmarkReturn": 0.66,
           "numPicks": 5,
-          "topPerformer": "ANET",
-          "worstPerformer": "MTB"
+          "topPerformer": "FANG",
+          "worstPerformer": "CRWD"
         },
         {
           "month": "2025-08-01",
-          "portfolioReturn": 7.14,
+          "portfolioReturn": 9.48,
           "benchmarkReturn": 3.75,
           "numPicks": 5,
-          "topPerformer": "ANET",
-          "worstPerformer": "CF"
+          "topPerformer": "GPN",
+          "worstPerformer": "FANG"
         },
         {
           "month": "2025-09-01",
-          "portfolioReturn": 3.44,
+          "portfolioReturn": -2.14,
           "benchmarkReturn": 3.92,
           "numPicks": 5,
-          "topPerformer": "ANET",
-          "worstPerformer": "MTB"
+          "topPerformer": "PHM",
+          "worstPerformer": "PNC"
         },
         {
           "month": "2025-10-01",
-          "portfolioReturn": -0.15,
+          "portfolioReturn": -6.85,
           "benchmarkReturn": 2.23,
           "numPicks": 5,
-          "topPerformer": "GM",
-          "worstPerformer": "WTW"
+          "topPerformer": "FANG",
+          "worstPerformer": "PHM"
         },
         {
           "month": "2025-11-03",
-          "portfolioReturn": -1.92,
+          "portfolioReturn": 5.9,
           "benchmarkReturn": -0.45,
           "numPicks": 5,
-          "topPerformer": "GM",
-          "worstPerformer": "ANET"
+          "topPerformer": "FANG",
+          "worstPerformer": "GPN"
         }
       ],
       "limitations": [
@@ -2234,162 +1830,114 @@
         "No transaction costs modeled",
         "Survivorship bias if universe changed"
       ],
-      "executedAt": "2026-01-15T15:23:11.281018"
+      "executedAt": "2026-01-16T14:54:15.720725"
     },
     "long": {
       "startDate": "2024-08-01",
       "endDate": "2025-12-31",
       "timeframe": "long",
-      "totalTrades": 68,
+      "totalTrades": 50,
       "tickersAnalyzed": 30,
       "performance": {
-        "totalReturn": 15.36,
-        "benchmarkReturn": 27.19,
-        "alpha": -11.83,
-        "hitRate": 55.9,
-        "winRate": 54.4,
-        "avgTradeReturn": 1.02,
-        "avgAlphaPerTrade": -0.5,
-        "sharpeRatio": 0.47,
-        "maxDrawdown": 16.66,
-        "winLossRatio": 1.04
+        "totalReturn": 0.33,
+        "benchmarkReturn": 14.8,
+        "alpha": -14.47,
+        "hitRate": 38.0,
+        "winRate": 44.0,
+        "avgTradeReturn": 0.21,
+        "avgAlphaPerTrade": -1.23,
+        "sharpeRatio": -0.07,
+        "maxDrawdown": 12.05,
+        "winLossRatio": 1.35
       },
       "bestTrade": {
-        "ticker": "ANET",
-        "returnPct": 18.87
+        "ticker": "GPN",
+        "returnPct": 13.81
       },
       "worstTrade": {
-        "ticker": "AES",
-        "returnPct": -26.55
+        "ticker": "GPN",
+        "returnPct": -22.21
       },
       "monthlyReturns": [
         {
-          "month": "2024-08-01",
-          "portfolioReturn": -0.62,
-          "benchmarkReturn": 3.81,
-          "numPicks": 3,
-          "topPerformer": "ANET",
-          "worstPerformer": "AES"
-        },
-        {
-          "month": "2024-09-02",
-          "portfolioReturn": 11.22,
-          "benchmarkReturn": 1.19,
-          "numPicks": 3,
-          "topPerformer": "AES",
-          "worstPerformer": "ARES"
-        },
-        {
-          "month": "2024-10-01",
-          "portfolioReturn": -6.59,
-          "benchmarkReturn": 0.43,
-          "numPicks": 3,
-          "topPerformer": "ARES",
-          "worstPerformer": "AES"
-        },
-        {
-          "month": "2024-11-01",
-          "portfolioReturn": -0.01,
-          "benchmarkReturn": 5.71,
-          "numPicks": 3,
-          "topPerformer": "ARES",
-          "worstPerformer": "AES"
-        },
-        {
-          "month": "2024-12-02",
-          "portfolioReturn": 3.01,
-          "benchmarkReturn": -2.58,
-          "numPicks": 3,
-          "topPerformer": "ANET",
-          "worstPerformer": "AES"
-        },
-        {
-          "month": "2025-01-01",
-          "portfolioReturn": -1.2,
-          "benchmarkReturn": 1.99,
-          "numPicks": 3,
-          "topPerformer": "ARES",
-          "worstPerformer": "AES"
-        },
-        {
           "month": "2025-02-03",
-          "portfolioReturn": -3.74,
+          "portfolioReturn": -3.55,
           "benchmarkReturn": -2.34,
           "numPicks": 5,
-          "topPerformer": "WTW",
-          "worstPerformer": "CF"
+          "topPerformer": "BRK-B",
+          "worstPerformer": "FANG"
         },
         {
           "month": "2025-03-03",
-          "portfolioReturn": -2.07,
+          "portfolioReturn": 0.62,
           "benchmarkReturn": -3.62,
           "numPicks": 5,
-          "topPerformer": "CF",
-          "worstPerformer": "MTB"
+          "topPerformer": "FANG",
+          "worstPerformer": "PNC"
         },
         {
           "month": "2025-04-01",
-          "portfolioReturn": -7.0,
+          "portfolioReturn": -9.38,
           "benchmarkReturn": -0.45,
           "numPicks": 5,
-          "topPerformer": "CF",
-          "worstPerformer": "AES"
+          "topPerformer": "BRK-B",
+          "worstPerformer": "GPN"
         },
         {
           "month": "2025-05-01",
-          "portfolioReturn": 7.42,
+          "portfolioReturn": 4.64,
           "benchmarkReturn": 6.13,
           "numPicks": 5,
-          "topPerformer": "CF",
-          "worstPerformer": "AES"
+          "topPerformer": "PLTR",
+          "worstPerformer": "BRK-B"
         },
         {
           "month": "2025-06-02",
-          "portfolioReturn": 4.32,
+          "portfolioReturn": 6.54,
           "benchmarkReturn": 4.52,
           "numPicks": 5,
-          "topPerformer": "MTB",
-          "worstPerformer": "WTW"
+          "topPerformer": "PHM",
+          "worstPerformer": "BRK-B"
         },
         {
           "month": "2025-07-01",
-          "portfolioReturn": 2.96,
+          "portfolioReturn": -3.16,
           "benchmarkReturn": 0.66,
           "numPicks": 5,
-          "topPerformer": "ANET",
-          "worstPerformer": "MTB"
+          "topPerformer": "FANG",
+          "worstPerformer": "CRWD"
         },
         {
           "month": "2025-08-01",
-          "portfolioReturn": 7.14,
+          "portfolioReturn": 9.48,
           "benchmarkReturn": 3.75,
           "numPicks": 5,
-          "topPerformer": "ANET",
-          "worstPerformer": "CF"
+          "topPerformer": "GPN",
+          "worstPerformer": "FANG"
         },
         {
           "month": "2025-09-01",
-          "portfolioReturn": 3.44,
+          "portfolioReturn": -2.14,
           "benchmarkReturn": 3.92,
           "numPicks": 5,
-          "topPerformer": "ANET",
-          "worstPerformer": "MTB"
+          "topPerformer": "PHM",
+          "worstPerformer": "PNC"
         },
         {
           "month": "2025-10-01",
-          "portfolioReturn": -0.15,
+          "portfolioReturn": -6.85,
           "benchmarkReturn": 2.23,
           "numPicks": 5,
-          "topPerformer": "GM",
-          "worstPerformer": "WTW"
+          "topPerformer": "FANG",
+          "worstPerformer": "PHM"
         },
         {
           "month": "2025-11-03",
-          "portfolioReturn": -1.92,
+          "portfolioReturn": 5.9,
           "benchmarkReturn": -0.45,
           "numPicks": 5,
-          "topPerformer": "GM",
-          "worstPerformer": "ANET"
+          "topPerformer": "FANG",
+          "worstPerformer": "GPN"
         }
       ],
       "limitations": [
@@ -2397,21 +1945,21 @@
         "No transaction costs modeled",
         "Survivorship bias if universe changed"
       ],
-      "executedAt": "2026-01-15T15:23:11.281151"
+      "executedAt": "2026-01-16T14:54:15.721038"
     },
-    "lastUpdated": "2026-01-15T15:23:11.280781"
+    "lastUpdated": "2026-01-16T14:54:15.720374"
   },
   "summary": {
     "totalPicks": 18,
     "totalStocks": 516,
-    "avgConviction": 0.722,
+    "avgConviction": 0.728,
     "topSector": "finance",
     "highRiskCount": 0,
-    "newsCount": 52,
-    "marketTrend": "flat",
+    "newsCount": 50,
+    "marketTrend": "up",
     "smartMoneySignals": 150,
     "congressTrades": 0,
-    "unusualOptions": 13,
+    "unusualOptions": 29,
     "hedgeFundSignals": 100
   }
 }
