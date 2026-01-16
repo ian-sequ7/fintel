@@ -3,7 +3,7 @@
 ## Current Work
 
 ### Goal
-Website optimization complete (January 15, 2026) - All major optimization groups (A, B, C) finished. Dev server tested and working.
+Website optimization complete (January 15, 2026) - All optimization groups (A, B, C, D) finished. Custom server with cache headers deployed.
 
 ### Context
 Fintel is a financial intelligence dashboard with Python backend (data pipeline) and Astro/React frontend. Optimization journey:
@@ -51,11 +51,25 @@ Lazy-load via `frontend/src/data/lazy.ts`:
 - PortfolioView/WatchlistView: `useMemo` + `useCallback`
 - Sparkline: `client:visible` (was `client:load`, saved 164KB)
 
+**Group D - HTTP Cache Headers:**
+Custom server (`frontend/server.mjs`) with cache control:
+
+| Path | Cache-Control | Purpose |
+|------|---------------|---------|
+| `/data/*.json` | `max-age=3600, stale-while-revalidate=86400` | Data refreshed daily |
+| `/_astro/*` | `max-age=31536000, immutable` | Hashed assets (forever) |
+| Other static | `max-age=3600` | Default 1 hour |
+
+Implementation:
+- Switched Node adapter to `middleware` mode (was `standalone`)
+- Added `frontend/server.mjs` - custom HTTP server wrapping Astro handler
+- Run with: `npm run start` (added to package.json)
+
 ### Current State
-- All Groups A, B, C complete
-- Build verified, dev server tested
+- All Groups A, B, C, D complete
+- Build verified, server tested
 - All pages loading correctly
-- Lazy-loaded JSON files serving from `/data/`
+- Cache headers verified with curl
 
 ### Subtasks Status
 
@@ -67,14 +81,8 @@ Lazy-load via `frontend/src/data/lazy.ts`:
 | Split report.json | complete |
 | Lazy-load helpers | complete |
 | Component updates | complete |
-| Dev server test | complete |
-
-### Next Steps (Optional)
-
-**Group D - HTTP cache headers:**
-- Add Cache-Control headers to static JSON in `/data/`
-- Browser caching for repeat visits
-- Not critical - current performance is excellent
+| HTTP cache headers | complete |
+| Server test | complete |
 
 ### Key Files
 
@@ -93,6 +101,10 @@ Lazy-load via `frontend/src/data/lazy.ts`:
 - `frontend/src/components/islands/PortfolioView.tsx` - Lazy load
 - `frontend/src/components/islands/WatchlistView.tsx` - Lazy load
 - `frontend/src/components/islands/CompareView.tsx` - Lazy load
+
+**HTTP caching:**
+- `frontend/server.mjs` - Custom server with cache headers
+- `frontend/astro.config.mjs` - Node adapter in middleware mode
 
 ---
 
