@@ -63,7 +63,7 @@ function getMimeType(filepath) {
 }
 
 function serveStatic(req, res, pathname) {
-  const filepath = join(CLIENT_DIR, pathname);
+  let filepath = join(CLIENT_DIR, pathname);
 
   // Security: prevent directory traversal
   if (!filepath.startsWith(CLIENT_DIR)) {
@@ -72,13 +72,18 @@ function serveStatic(req, res, pathname) {
     return true;
   }
 
+  // If path is a directory, try serving index.html
+  if (existsSync(filepath) && statSync(filepath).isDirectory()) {
+    filepath = join(filepath, 'index.html');
+  }
+
   if (!existsSync(filepath)) {
     return false; // Let Astro handle it
   }
 
   const stat = statSync(filepath);
   if (stat.isDirectory()) {
-    return false; // Let Astro handle directories
+    return false; // Still a directory, let Astro handle
   }
 
   // Set headers
