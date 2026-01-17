@@ -1077,9 +1077,11 @@ def main():
     public_data_dir.mkdir(parents=True, exist_ok=True)
 
     # Extract heavy sections for lazy loading
+    # Note: stockDetails is removed from core (too large ~430KB)
+    # allStocks and smartMoney are kept in core for SSG pages (heatmap, smart money)
     stock_details = report.pop("stockDetails", {})
-    all_stocks = report.pop("allStocks", [])
-    smart_money = report.pop("smartMoney", {})
+    all_stocks = report.get("allStocks", [])  # Keep in core for heatmap SSG
+    smart_money = report.get("smartMoney", {})  # Keep in core for smart money SSG
 
     # Write split files (minified for smaller size)
     with open(public_data_dir / "stockDetails.json", "w") as f:
