@@ -393,3 +393,122 @@ class InsiderTransaction:
         price_str = f" @ ${self.transaction_price:.2f}" if self.transaction_price else ""
         title_str = f" ({self.officer_title})" if self.officer_title else ""
         return f"{self.insider_name}{title_str} {action} {self.shares:,} shares{price_str}"
+
+
+@dataclass
+class MarketRegimeRecord:
+    """
+    Market regime snapshot for enhanced scoring (v3).
+
+    Tracks regime classification over time for:
+    - Historical performance analysis by regime
+    - Regime transition detection
+    - Factor weight calibration
+    """
+    id: str
+    regime: str  # bull/bear/sideways/high_vol
+    spy_price: Optional[float] = None
+    spy_sma_200: Optional[float] = None
+    vix: Optional[float] = None
+    spy_above_sma: Optional[bool] = None
+    confidence: float = 0.0
+    description: str = ""
+    is_risk_on: bool = False
+    recorded_at: datetime = field(default_factory=datetime.now)
+
+    @property
+    def is_bull(self) -> bool:
+        return self.regime == "bull"
+
+    @property
+    def is_bear(self) -> bool:
+        return self.regime == "bear"
+
+    @property
+    def is_high_vol(self) -> bool:
+        return self.regime == "high_vol"
+
+
+@dataclass
+class EnhancedPick:
+    """
+    Enhanced stock pick from v3 scoring system.
+
+    Contains full factor breakdown and regime context for:
+    - Performance attribution
+    - Factor contribution analysis
+    - Position sizing decisions
+    """
+    id: str
+    ticker: str
+    timeframe: str  # short/medium/long
+    sector: str
+    score: float  # 0-100 composite
+    conviction: int  # 1-10
+    position_size: Optional[float] = None  # 0.01-0.08
+    regime: str = "sideways"
+
+    # Factor breakdown (0-100)
+    quality_score: Optional[float] = None
+    value_score: Optional[float] = None
+    momentum_score: Optional[float] = None
+    low_vol_score: Optional[float] = None
+    smart_money_score: Optional[float] = None
+    catalyst_score: Optional[float] = None
+
+    # Weights used
+    quality_weight: Optional[float] = None
+    value_weight: Optional[float] = None
+    momentum_weight: Optional[float] = None
+    low_vol_weight: Optional[float] = None
+    smart_money_weight: Optional[float] = None
+    catalyst_weight: Optional[float] = None
+
+    # Risk status
+    passes_filters: bool = True
+    filter_reason: Optional[str] = None
+    data_completeness: Optional[float] = None
+
+    # Standard pick fields
+    thesis: Optional[str] = None
+    entry_price: Optional[float] = None
+    target_price: Optional[float] = None
+    stop_loss: Optional[float] = None
+    risk_factors: str = ""  # JSON list
+
+    # Tracking
+    regime_id: Optional[str] = None
+    created_at: datetime = field(default_factory=datetime.now)
+
+    @property
+    def risk_factors_list(self) -> list[str]:
+        """Parse risk factors from JSON."""
+        if not self.risk_factors:
+            return []
+        try:
+            return json.loads(self.risk_factors)
+        except (json.JSONDecodeError, TypeError, ValueError):
+            return []
+
+    @property
+    def conviction_normalized(self) -> float:
+        """Conviction on 0-1 scale for backward compatibility."""
+        return self.score / 100.0
+
+    @property
+    def factor_summary(self) -> str:
+        """One-line summary of factor scores."""
+        factors = []
+        if self.quality_score is not None:
+            factors.append(f"Q:{self.quality_score:.0f}")
+        if self.value_score is not None:
+            factors.append(f"V:{self.value_score:.0f}")
+        if self.momentum_score is not None:
+            factors.append(f"M:{self.momentum_score:.0f}")
+        if self.low_vol_score is not None:
+            factors.append(f"LV:{self.low_vol_score:.0f}")
+        if self.smart_money_score is not None:
+            factors.append(f"SM:{self.smart_money_score:.0f}")
+        if self.catalyst_score is not None:
+            factors.append(f"C:{self.catalyst_score:.0f}")
+        return " ".join(factors)

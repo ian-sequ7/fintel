@@ -54,6 +54,17 @@ from domain import (
     # Insider transactions
     InsiderTransaction,
     observations_to_insider_transactions,
+    # V3 Enhanced Scoring
+    MarketRegime,
+    RegimeContext,
+    EnhancedScore,
+    RiskFilters,
+    PortfolioConstraints,
+    score_stocks_enhanced,
+    select_enhanced_picks,
+    enhanced_score_to_legacy_format,
+    get_regime_summary,
+    get_scoring_stats,
 )
 from domain.models import Timeframe
 from domain.analysis_types import RiskCategory
@@ -204,7 +215,25 @@ class PipelineConfig:
     include_social: bool = True
     include_smart_money: bool = True  # Include Congress trades & unusual options
     verbose: bool = False
-    use_v2_scoring: bool = True  # Use new systematic scoring
+    use_v2_scoring: bool = False  # Use v2 systematic scoring (deprecated)
+    use_v3_scoring: bool = True  # Use v3 enhanced scoring with regime awareness
+
+    # V3 Enhanced Scoring Configuration
+    v3_risk_filters: RiskFilters = field(default_factory=lambda: RiskFilters(
+        min_market_cap=2e9,  # $2B minimum
+        min_avg_volume=500_000,
+        max_days_to_cover=5.0,
+        max_debt_equity=2.0,
+        min_current_ratio=1.0,
+        min_price=5.0,
+    ))
+    v3_portfolio_constraints: PortfolioConstraints = field(default_factory=lambda: PortfolioConstraints(
+        max_position_weight=0.08,  # 8% max
+        min_position_weight=0.01,  # 1% min
+        max_sector_weight=0.25,    # 25% max per sector
+        max_positions=20,
+        kelly_fraction=0.25,       # Quarter Kelly
+    ))
 
     def get_tickers(self) -> list[str]:
         """
@@ -537,13 +566,22 @@ class DataFetcher:
         if self.config.include_smart_money:
             self._log("Fetching smart money signals...")
 
-            # Congress trades
+            # Congress trades - try primary source, fallback to Finnhub
             result = self._fetch_source(
                 "congress",
                 lambda: self.congress.get_recent(days=60, limit=50),
             )
-            if result.status == SourceStatus.OK:
+            if result.status == SourceStatus.OK and len(result.observations) > 0:
                 results["smart_money"].extend(result.observations)
+            else:
+                # Fallback to Finnhub congressional trading API
+                self._log("  congress: Primary source failed, trying Finnhub fallback...")
+                fallback_result = self._fetch_source(
+                    "congress_finnhub",
+                    lambda: self.finnhub.get_recent_congressional_trades(days=60, limit=50),
+                )
+                if fallback_result.status == SourceStatus.OK:
+                    results["smart_money"].extend(fallback_result.observations)
 
             # 13F hedge fund holdings
             result = self._fetch_source(
@@ -1121,6 +1159,116 @@ class Analyzer:
 
         return picks, scores, scored_picks
 
+    def analyze_stocks_v3(
+        self,
+        metrics: dict[str, StockMetrics],
+        sectors: dict[str, str],
+        macro_context: MacroContext,
+        insider_transactions: list[InsiderTransaction] | None = None,
+        congress_by_ticker: dict[str, list[dict]] | None = None,
+        spy_prices: list[float] | None = None,
+    ) -> tuple[list[StockPick], dict[str, ConvictionScore], list[EnhancedScore], RegimeContext]:
+        """
+        Analyze stocks using the v3 enhanced scoring algorithm.
+
+        Features:
+        - 6-factor scoring (quality, value, momentum, low_vol, smart_money, catalyst)
+        - Market regime awareness (bull/bear/sideways/high_vol)
+        - Fractional Kelly position sizing
+        - Risk filters with portfolio constraints
+
+        Args:
+            metrics: Stock metrics by ticker
+            sectors: Sector mapping by ticker
+            macro_context: Macro economic context
+            insider_transactions: Form 4 insider transactions
+            congress_by_ticker: Congress trades grouped by ticker
+            spy_prices: SPY prices for regime detection (252 days)
+
+        Returns:
+            (picks, scores, enhanced_scores, regime_context)
+        """
+        self._log("Using v3 enhanced scoring algorithm...")
+
+        # Convert insider transactions to dict format for scoring bridge
+        insider_by_ticker: dict[str, list[dict]] = {}
+        if insider_transactions:
+            for txn in insider_transactions:
+                if txn.ticker not in insider_by_ticker:
+                    insider_by_ticker[txn.ticker] = []
+                insider_by_ticker[txn.ticker].append({
+                    "insider_name": txn.insider_name,
+                    "transaction_type": txn.transaction_type,
+                    "shares": txn.shares,
+                    "transaction_date": txn.transaction_date,
+                    "transaction_price": txn.transaction_price,
+                    "officer_title": txn.officer_title,
+                    "is_c_suite": txn.is_c_suite,
+                })
+
+        # Run enhanced scoring
+        enhanced_scores, regime_context = score_stocks_enhanced(
+            metrics_by_ticker=metrics,
+            sectors=sectors,
+            macro_context=macro_context,
+            spy_prices=spy_prices,
+            insider_by_ticker=insider_by_ticker,
+            congress_by_ticker=congress_by_ticker,
+            risk_filters=self.config.v3_risk_filters,
+            portfolio_constraints=self.config.v3_portfolio_constraints,
+        )
+
+        # Log regime info
+        self._log(f"  Regime: {regime_context.regime.value} (confidence: {regime_context.confidence:.2f})")
+        self._log(f"  {regime_context.description}")
+
+        # Log scoring stats
+        stats = get_scoring_stats(enhanced_scores)
+        self._log(f"  Scored {stats['total']} stocks, {stats['passing_filters']} passing filters")
+        self._log(f"  Score range: {stats.get('score_range', (0, 0))}")
+
+        # Convert to legacy formats for report compatibility
+        picks: list[StockPick] = []
+        scores: dict[str, ConvictionScore] = {}
+
+        for es in enhanced_scores:
+            m = metrics.get(es.ticker)
+            if not m:
+                continue
+
+            # Get legacy format dict
+            legacy = enhanced_score_to_legacy_format(es, m)
+
+            # Create StockPick
+            pick = StockPick(
+                ticker=es.ticker,
+                timeframe=es.timeframe,
+                conviction_score=legacy["conviction_normalized"],
+                thesis=legacy["thesis"],
+                risk_factors=legacy["risks"][:3],
+                entry_price=legacy["entry_price"],
+                target_price=legacy["target_price"],
+                stop_loss=legacy["stop_loss"],
+            )
+            picks.append(pick)
+
+            # Create ConvictionScore for enrichment
+            scores[es.ticker] = ConvictionScore(
+                overall=legacy["conviction_normalized"],
+                valuation=es.factor_scores.get("value", 50) / 100,
+                growth=es.factor_scores.get("quality", 50) / 100,
+                momentum=es.factor_scores.get("momentum", 50) / 100,
+                quality=es.factor_scores.get("quality", 50) / 100,
+                risk=1.0 - es.factor_scores.get("low_vol", 50) / 100,
+            )
+
+            self._log(
+                f"    {es.ticker}: score={es.score:.1f}, conviction={es.conviction}/10, "
+                f"timeframe={es.timeframe.value}, position_size={es.position_size:.2%}"
+            )
+
+        return picks, scores, enhanced_scores, regime_context
+
     def analyze_macro(
         self,
         indicators: list[MacroIndicator],
@@ -1207,7 +1355,70 @@ class Pipeline:
         # Phase 3: Analyze
         self._log("Phase 3: Running analysis...")
 
-        if self.config.use_v2_scoring:
+        # Store enhanced scores and regime context for report enrichment
+        enhanced_scores: list[EnhancedScore] | None = None
+        regime_context: RegimeContext | None = None
+
+        if self.config.use_v3_scoring:
+            # Use v3 enhanced scoring with regime awareness
+            # Extract congress trades by ticker for smart money scoring
+            congress_by_ticker: dict[str, list[dict]] = {}
+            for obs in raw_data.get("smart_money", []):
+                if isinstance(obs.data, dict) and obs.data.get("signal_type") == "congress":
+                    ticker = obs.data.get("ticker")
+                    if ticker:
+                        if ticker not in congress_by_ticker:
+                            congress_by_ticker[ticker] = []
+                        congress_by_ticker[ticker].append(obs.data.get("details", {}))
+
+            picks, scores, enhanced_scores, regime_context = self.analyzer.analyze_stocks_v3(
+                metrics, sectors, macro_context, insider_transactions, congress_by_ticker
+            )
+
+            # Select final picks with sector diversification
+            self._log("Selecting picks with sector diversification...")
+            filtered_by_tf = select_enhanced_picks(
+                enhanced_scores,
+                picks_per_timeframe=(3, 7),
+                max_sector_per_timeframe=2,
+            )
+
+            # Convert to StockPicks for report
+            short_picks = []
+            medium_picks = []
+            long_picks = []
+
+            for tf, tf_scores in filtered_by_tf.items():
+                for es in tf_scores:
+                    m = metrics.get(es.ticker)
+                    if not m:
+                        continue
+
+                    legacy = enhanced_score_to_legacy_format(es, m)
+                    pick = StockPick(
+                        ticker=es.ticker,
+                        timeframe=es.timeframe,
+                        conviction_score=legacy["conviction_normalized"],
+                        thesis=legacy["thesis"],
+                        risk_factors=legacy["risks"][:3],
+                        entry_price=legacy["entry_price"],
+                        target_price=legacy["target_price"],
+                        stop_loss=legacy["stop_loss"],
+                    )
+
+                    if tf == Timeframe.SHORT:
+                        short_picks.append(pick)
+                    elif tf == Timeframe.MEDIUM:
+                        medium_picks.append(pick)
+                    else:
+                        long_picks.append(pick)
+
+            self._log(
+                f"  V3 scoring: regime={regime_context.regime.value}, "
+                f"SHORT={len(short_picks)}, MEDIUM={len(medium_picks)}, LONG={len(long_picks)} picks"
+            )
+
+        elif self.config.use_v2_scoring:
             # Use v2 systematic scoring
             self._log("Using v2 systematic scoring algorithm...")
             picks, scores, scored_picks = self.analyzer.analyze_stocks_v2(
@@ -1299,14 +1510,35 @@ class Pipeline:
         max_risks = self.config.max_risks_displayed
 
         # Transform smart money observations to signals
-        smart_money_signals = []
+        all_signals = []
         for obs in raw_data.get("smart_money", []):
             # Observations already contain structured data from adapters
             signal_data = obs.data
             if isinstance(signal_data, dict) and "signal_type" in signal_data:
-                smart_money_signals.append(signal_data)
+                all_signals.append(signal_data)
 
-        # Sort by strength (strongest signals first)
+        # Group signals by type to ensure balanced representation
+        # (otherwise high-strength 13F signals crowd out lower-strength congress/options)
+        signals_by_type: dict[str, list] = {}
+        for s in all_signals:
+            t = s.get("signal_type", "unknown")
+            if t not in signals_by_type:
+                signals_by_type[t] = []
+            signals_by_type[t].append(s)
+
+        # Sort each type by strength
+        for t in signals_by_type:
+            signals_by_type[t].sort(key=lambda s: s.get("strength", 0), reverse=True)
+
+        # Take top signals from each type to ensure representation
+        # Limits per type: congress=20, options=15, 13f=30, other=10
+        type_limits = {"congress": 20, "options": 15, "13f": 30}
+        smart_money_signals = []
+        for signal_type, signals in signals_by_type.items():
+            limit = type_limits.get(signal_type, 10)
+            smart_money_signals.extend(signals[:limit])
+
+        # Final sort by strength
         smart_money_signals.sort(key=lambda s: s.get("strength", 0), reverse=True)
 
         # Build report data

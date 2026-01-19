@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 # Top hedge funds to track (CIK, name, manager, style)
 # CIKs without leading zeros - will be padded when needed
 TOP_HEDGE_FUNDS = [
+    # Original 15 funds
     ("1067983", "Berkshire Hathaway", "Warren Buffett", "value"),
     ("1336528", "Bridgewater Associates", "Ray Dalio", "macro"),
     ("1649339", "Pershing Square Capital", "Bill Ackman", "activist"),
@@ -46,6 +47,32 @@ TOP_HEDGE_FUNDS = [
     ("902664", "DE Shaw & Co", "David Shaw", "quant"),
     ("1484150", "Coatue Management", "Philippe Laffont", "tech"),
     ("1159159", "Lone Pine Capital", "Stephen Mandel", "growth"),
+    # Additional major funds (25 more)
+    ("1179392", "Two Sigma Investments", "John Overdeck", "quant"),
+    ("1061315", "AQR Capital Management", "Cliff Asness", "quant"),
+    ("1603466", "Point72 Asset Management", "Steve Cohen", "multi-strategy"),
+    ("1273087", "Millennium Management", "Israel Englander", "multi-strategy"),
+    ("1355096", "Marshall Wace", "Paul Marshall", "long-short"),
+    ("1030792", "Farallon Capital", "Tom Steyer", "event-driven"),
+    ("1079114", "Greenlight Capital", "David Einhorn", "value"),
+    ("1035674", "Paulson & Co", "John Paulson", "event-driven"),
+    ("805978", "Tudor Investment Corp", "Paul Tudor Jones", "macro"),
+    ("921669", "Icahn Enterprises", "Carl Icahn", "activist"),
+    ("1802994", "D1 Capital Partners", "Dan Sundheim", "growth"),
+    ("934639", "Maverick Capital", "Lee Ainslie", "long-short"),
+    ("1536411", "Duquesne Family Office", "Stanley Druckenmiller", "macro"),
+    ("1040685", "ValueAct Capital", "Jeff Ubben", "activist"),
+    ("1181559", "Jana Partners", "Barry Rosenstein", "activist"),
+    ("1551138", "Senator Investment Group", "Doug Silverman", "event-driven"),
+    ("1049494", "Matrix Capital Management", "David Goel", "tech"),
+    ("1315198", "Lansdowne Partners", "Peter Davies", "long-short"),
+    ("1072113", "Canyon Capital Advisors", "Josh Friedman", "distressed"),
+    ("1175110", "York Capital Management", "Jamie Dinan", "event-driven"),
+    ("882804", "Moore Capital Management", "Louis Bacon", "macro"),
+    ("1426945", "Tiger Cub - Whale Rock", "Alex Sacerdote", "tech"),
+    ("1510387", "Durable Capital Partners", "Henry Ellenbogen", "growth"),
+    ("1599901", "Alkeon Capital Management", "Panayotis Sparaggis", "growth"),
+    ("1697748", "Light Street Capital", "Glen Kacher", "tech"),
 ]
 
 # CUSIP to ticker mapping cache (populated during parsing)

@@ -25,6 +25,8 @@ from .models import (
     HedgeFund,
     HedgeFundHolding,
     InsiderTransaction,
+    MarketRegimeRecord,
+    EnhancedPick,
 )
 
 logger = logging.getLogger(__name__)
@@ -295,6 +297,76 @@ class Database:
     CREATE INDEX IF NOT EXISTS idx_insider_type ON insider_transactions(transaction_type);
     CREATE INDEX IF NOT EXISTS idx_insider_csuite ON insider_transactions(is_c_suite);
     CREATE UNIQUE INDEX IF NOT EXISTS idx_insider_unique ON insider_transactions(ticker, insider_name, transaction_date, shares);
+
+    -- Market regime tracking (v3 enhanced scoring)
+    CREATE TABLE IF NOT EXISTS market_regime (
+        id TEXT PRIMARY KEY,
+        regime TEXT NOT NULL,  -- bull/bear/sideways/high_vol
+        spy_price REAL,
+        spy_sma_200 REAL,
+        vix REAL,
+        spy_above_sma INTEGER,  -- 0/1 boolean
+        confidence REAL NOT NULL,
+        description TEXT,
+        is_risk_on INTEGER NOT NULL,  -- 0/1 boolean
+        recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_regime_recorded ON market_regime(recorded_at);
+    CREATE INDEX IF NOT EXISTS idx_regime_type ON market_regime(regime);
+
+    -- Enhanced stock picks (v3 scoring)
+    CREATE TABLE IF NOT EXISTS enhanced_picks (
+        id TEXT PRIMARY KEY,
+        ticker TEXT NOT NULL,
+        timeframe TEXT NOT NULL,  -- short/medium/long
+        sector TEXT NOT NULL,
+        score REAL NOT NULL,  -- 0-100 composite score
+        conviction INTEGER NOT NULL,  -- 1-10 scale
+        position_size REAL,  -- 0.01-0.08
+        regime TEXT NOT NULL,  -- market regime at time of scoring
+
+        -- Factor breakdown (0-100 each)
+        quality_score REAL,
+        value_score REAL,
+        momentum_score REAL,
+        low_vol_score REAL,
+        smart_money_score REAL,
+        catalyst_score REAL,
+
+        -- Weights used
+        quality_weight REAL,
+        value_weight REAL,
+        momentum_weight REAL,
+        low_vol_weight REAL,
+        smart_money_weight REAL,
+        catalyst_weight REAL,
+
+        -- Risk status
+        passes_filters INTEGER NOT NULL,  -- 0/1
+        filter_reason TEXT,
+        data_completeness REAL,
+
+        -- Standard pick fields
+        thesis TEXT,
+        entry_price REAL,
+        target_price REAL,
+        stop_loss REAL,
+        risk_factors TEXT,  -- JSON list
+
+        -- Tracking
+        regime_id TEXT,  -- FK to market_regime
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        FOREIGN KEY (regime_id) REFERENCES market_regime(id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_enhanced_ticker ON enhanced_picks(ticker);
+    CREATE INDEX IF NOT EXISTS idx_enhanced_timeframe ON enhanced_picks(timeframe);
+    CREATE INDEX IF NOT EXISTS idx_enhanced_sector ON enhanced_picks(sector);
+    CREATE INDEX IF NOT EXISTS idx_enhanced_conviction ON enhanced_picks(conviction);
+    CREATE INDEX IF NOT EXISTS idx_enhanced_created ON enhanced_picks(created_at);
+    CREATE INDEX IF NOT EXISTS idx_enhanced_regime ON enhanced_picks(regime_id);
     """
 
     def __init__(self, db_path: Optional[Path] = None):
@@ -1604,6 +1676,225 @@ class Database:
         )
 
     # =========================================================================
+    # Market Regime (v3 Enhanced Scoring)
+    # =========================================================================
+
+    def insert_market_regime(self, regime: MarketRegimeRecord) -> str:
+        """Insert a market regime snapshot."""
+        with self._connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO market_regime
+                (id, regime, spy_price, spy_sma_200, vix, spy_above_sma,
+                 confidence, description, is_risk_on, recorded_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    regime.id,
+                    regime.regime,
+                    regime.spy_price,
+                    regime.spy_sma_200,
+                    regime.vix,
+                    1 if regime.spy_above_sma else 0 if regime.spy_above_sma is not None else None,
+                    regime.confidence,
+                    regime.description,
+                    1 if regime.is_risk_on else 0,
+                    regime.recorded_at,
+                )
+            )
+            return regime.id
+
+    def get_latest_regime(self) -> Optional[MarketRegimeRecord]:
+        """Get the most recent market regime."""
+        with self._connection() as conn:
+            row = conn.execute(
+                "SELECT * FROM market_regime ORDER BY recorded_at DESC LIMIT 1"
+            ).fetchone()
+            return self._row_to_market_regime(row) if row else None
+
+    def get_regime_history(self, days: int = 30) -> list[MarketRegimeRecord]:
+        """Get market regime history."""
+        with self._connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT * FROM market_regime
+                WHERE recorded_at >= datetime('now', ?)
+                ORDER BY recorded_at DESC
+                """,
+                (f"-{days} days",)
+            ).fetchall()
+            return [self._row_to_market_regime(row) for row in rows]
+
+    def _row_to_market_regime(self, row: sqlite3.Row) -> MarketRegimeRecord:
+        spy_above = row["spy_above_sma"]
+        return MarketRegimeRecord(
+            id=row["id"],
+            regime=row["regime"],
+            spy_price=row["spy_price"],
+            spy_sma_200=row["spy_sma_200"],
+            vix=row["vix"],
+            spy_above_sma=bool(spy_above) if spy_above is not None else None,
+            confidence=row["confidence"],
+            description=row["description"] or "",
+            is_risk_on=bool(row["is_risk_on"]),
+            recorded_at=row["recorded_at"] or datetime.now(),
+        )
+
+    # =========================================================================
+    # Enhanced Picks (v3 Scoring)
+    # =========================================================================
+
+    def insert_enhanced_pick(self, pick: EnhancedPick) -> str:
+        """Insert an enhanced stock pick."""
+        import json as _json
+
+        with self._connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO enhanced_picks
+                (id, ticker, timeframe, sector, score, conviction, position_size, regime,
+                 quality_score, value_score, momentum_score, low_vol_score,
+                 smart_money_score, catalyst_score,
+                 quality_weight, value_weight, momentum_weight, low_vol_weight,
+                 smart_money_weight, catalyst_weight,
+                 passes_filters, filter_reason, data_completeness,
+                 thesis, entry_price, target_price, stop_loss, risk_factors,
+                 regime_id, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    pick.id,
+                    pick.ticker,
+                    pick.timeframe,
+                    pick.sector,
+                    pick.score,
+                    pick.conviction,
+                    pick.position_size,
+                    pick.regime,
+                    pick.quality_score,
+                    pick.value_score,
+                    pick.momentum_score,
+                    pick.low_vol_score,
+                    pick.smart_money_score,
+                    pick.catalyst_score,
+                    pick.quality_weight,
+                    pick.value_weight,
+                    pick.momentum_weight,
+                    pick.low_vol_weight,
+                    pick.smart_money_weight,
+                    pick.catalyst_weight,
+                    1 if pick.passes_filters else 0,
+                    pick.filter_reason,
+                    pick.data_completeness,
+                    pick.thesis,
+                    pick.entry_price,
+                    pick.target_price,
+                    pick.stop_loss,
+                    pick.risk_factors,
+                    pick.regime_id,
+                    pick.created_at,
+                )
+            )
+            return pick.id
+
+    def get_enhanced_picks(
+        self,
+        timeframe: Optional[str] = None,
+        regime: Optional[str] = None,
+        sector: Optional[str] = None,
+        min_conviction: int = 1,
+        passes_filters_only: bool = True,
+        days: int = 7,
+        limit: int = 50,
+    ) -> list[EnhancedPick]:
+        """
+        Get enhanced picks with filtering.
+
+        Args:
+            timeframe: Filter by short/medium/long
+            regime: Filter by regime at time of scoring
+            sector: Filter by sector
+            min_conviction: Minimum conviction score (1-10)
+            passes_filters_only: Only return picks that passed risk filters
+            days: Number of days of history
+            limit: Maximum results
+
+        Returns:
+            List of EnhancedPick objects
+        """
+        query = """
+            SELECT * FROM enhanced_picks
+            WHERE created_at >= datetime('now', ?)
+              AND conviction >= ?
+        """
+        params: list = [f"-{days} days", min_conviction]
+
+        if timeframe:
+            query += " AND timeframe = ?"
+            params.append(timeframe)
+
+        if regime:
+            query += " AND regime = ?"
+            params.append(regime)
+
+        if sector:
+            query += " AND LOWER(sector) = LOWER(?)"
+            params.append(sector)
+
+        if passes_filters_only:
+            query += " AND passes_filters = 1"
+
+        query += " ORDER BY score DESC, conviction DESC LIMIT ?"
+        params.append(limit)
+
+        with self._connection() as conn:
+            rows = conn.execute(query, params).fetchall()
+            return [self._row_to_enhanced_pick(row) for row in rows]
+
+    def get_enhanced_picks_by_regime_id(self, regime_id: str) -> list[EnhancedPick]:
+        """Get all picks associated with a specific regime snapshot."""
+        with self._connection() as conn:
+            rows = conn.execute(
+                "SELECT * FROM enhanced_picks WHERE regime_id = ? ORDER BY score DESC",
+                (regime_id,)
+            ).fetchall()
+            return [self._row_to_enhanced_pick(row) for row in rows]
+
+    def _row_to_enhanced_pick(self, row: sqlite3.Row) -> EnhancedPick:
+        return EnhancedPick(
+            id=row["id"],
+            ticker=row["ticker"],
+            timeframe=row["timeframe"],
+            sector=row["sector"],
+            score=row["score"],
+            conviction=row["conviction"],
+            position_size=row["position_size"],
+            regime=row["regime"],
+            quality_score=row["quality_score"],
+            value_score=row["value_score"],
+            momentum_score=row["momentum_score"],
+            low_vol_score=row["low_vol_score"],
+            smart_money_score=row["smart_money_score"],
+            catalyst_score=row["catalyst_score"],
+            quality_weight=row["quality_weight"],
+            value_weight=row["value_weight"],
+            momentum_weight=row["momentum_weight"],
+            low_vol_weight=row["low_vol_weight"],
+            smart_money_weight=row["smart_money_weight"],
+            catalyst_weight=row["catalyst_weight"],
+            passes_filters=bool(row["passes_filters"]),
+            filter_reason=row["filter_reason"],
+            data_completeness=row["data_completeness"],
+            thesis=row["thesis"],
+            entry_price=row["entry_price"],
+            target_price=row["target_price"],
+            stop_loss=row["stop_loss"],
+            risk_factors=row["risk_factors"] or "",
+            regime_id=row["regime_id"],
+            created_at=row["created_at"] or datetime.now(),
+        )
+
+    # =========================================================================
     # Stats
     # =========================================================================
 
@@ -1625,6 +1916,8 @@ class Database:
                 "hedge_funds": count("hedge_funds"),
                 "hedge_fund_holdings": count("hedge_fund_holdings"),
                 "insider_transactions": count("insider_transactions"),
+                "market_regime": count("market_regime"),
+                "enhanced_picks": count("enhanced_picks"),
                 "scrape_runs": conn.execute(
                     "SELECT COUNT(*) FROM scrape_runs WHERE completed_at IS NOT NULL"
                 ).fetchone()[0],

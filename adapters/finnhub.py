@@ -430,8 +430,8 @@ class FinnhubAdapter(BaseAdapter):
         key = self._settings.config.api_keys.finnhub
         if key:
             return key
-        # Fall back to environment variable
-        return os.environ.get("FINNHUB_API_KEY")
+        # Fall back to environment variables (check both naming conventions)
+        return os.environ.get("FINNHUB_API_KEY") or os.environ.get("FINNHUB_KEY")
 
     def is_configured(self) -> bool:
         """Check if Finnhub adapter has API key configured."""
@@ -470,4 +470,173 @@ class FinnhubAdapter(BaseAdapter):
             from_date=from_date,
             to_date=to_date,
             store_in_db=store_in_db,
+        )
+
+    # ========================================================================
+    # Congressional Trading Endpoint
+    # ========================================================================
+
+    def get_congressional_trading(
+        self,
+        symbol: str | None = None,
+        from_date: str | None = None,
+        to_date: str | None = None,
+        limit: int = 100,
+    ) -> list[Observation]:
+        """
+        Fetch congressional stock trading data from Finnhub.
+
+        Endpoint: /stock/congressional-trading
+        Returns trades by US Congress members disclosed via STOCK Act filings.
+
+        Args:
+            symbol: Optional stock symbol to filter (e.g., "AAPL")
+            from_date: Optional start date (YYYY-MM-DD)
+            to_date: Optional end date (YYYY-MM-DD)
+            limit: Maximum number of trades to return (default 100)
+
+        Returns:
+            List of Observations with congressional trade data.
+        """
+        api_key = self._get_api_key()
+        if not api_key:
+            raise DataError.empty(
+                source=self.source_name,
+                description="Finnhub API key required for congressional trading",
+            )
+
+        url = f"{self.BASE_URL}/stock/congressional-trading?token={api_key}"
+        if symbol:
+            url += f"&symbol={symbol.upper()}"
+        if from_date:
+            url += f"&from={from_date}"
+        if to_date:
+            url += f"&to={to_date}"
+
+        data = self._http_get_json(url)
+
+        if not data or "data" not in data:
+            logger.debug(f"No congressional trading data returned")
+            return []
+
+        trades = data.get("data", [])
+        if not trades:
+            logger.debug(f"No congressional trades found")
+            return []
+
+        observations = []
+        for trade in trades[:limit]:
+            try:
+                # Parse transaction type
+                tx_type = trade.get("transactionType", "").lower()
+                if "purchase" in tx_type or "buy" in tx_type:
+                    direction = "buy"
+                elif "sale" in tx_type or "sell" in tx_type:
+                    direction = "sell"
+                else:
+                    direction = "exchange"
+
+                # Parse amount range
+                amount_from = trade.get("amountFrom", 0) or 0
+                amount_to = trade.get("amountTo", 0) or amount_from
+
+                # Calculate signal strength based on amount
+                mid_amount = (amount_from + amount_to) / 2
+                if mid_amount <= 15000:
+                    strength = 0.3
+                elif mid_amount <= 50000:
+                    strength = 0.4
+                elif mid_amount <= 100000:
+                    strength = 0.5
+                elif mid_amount <= 250000:
+                    strength = 0.6
+                elif mid_amount <= 500000:
+                    strength = 0.7
+                elif mid_amount <= 1000000:
+                    strength = 0.8
+                else:
+                    strength = 0.9
+
+                # Parse representative name and position
+                rep_name = trade.get("name", "Unknown")
+                position = trade.get("position", "")
+
+                # Determine chamber from position
+                chamber = "Senate" if "senator" in position.lower() else "House"
+
+                # Get party from position if available
+                party = "I"  # Default to Independent
+                if "democrat" in position.lower() or "(d)" in position.lower():
+                    party = "D"
+                elif "republican" in position.lower() or "(r)" in position.lower():
+                    party = "R"
+
+                ticker = trade.get("symbol", "")
+                asset_name = trade.get("assetName", "")
+
+                # Generate summary
+                action = "bought" if direction == "buy" else "sold"
+                amount_str = f"${amount_from:,.0f} - ${amount_to:,.0f}"
+                summary = f"{rep_name} ({party}-{chamber}) {action} {ticker or asset_name} ({amount_str})"
+
+                # Generate unique ID
+                filing_date = trade.get("filingDate", "")
+                id_str = f"{rep_name}:{ticker}:{filing_date}"
+                trade_id = hashlib.md5(id_str.encode()).hexdigest()[:12]
+
+                # Parse filing date for timestamp
+                try:
+                    timestamp = datetime.strptime(filing_date, "%Y-%m-%d")
+                except ValueError:
+                    timestamp = datetime.now()
+
+                obs_data = {
+                    "id": trade_id,
+                    "signal_type": "congress",
+                    "ticker": ticker,
+                    "direction": direction,
+                    "strength": strength,
+                    "summary": summary,
+                    "details": {
+                        "politician": rep_name,
+                        "party": party,
+                        "chamber": chamber,
+                        "position": position,
+                        "amount_low": amount_from,
+                        "amount_high": amount_to,
+                        "asset_description": asset_name,
+                        "transaction_date": trade.get("transactionDate"),
+                        "disclosure_date": filing_date,
+                        "owner_type": trade.get("ownerType", ""),
+                    },
+                }
+
+                observations.append(Observation(
+                    source="congress_finnhub",
+                    timestamp=timestamp,
+                    category=Category.SENTIMENT,
+                    data=obs_data,
+                    ticker=ticker if ticker else None,
+                    reliability=0.9,  # Official STOCK Act disclosures
+                ))
+
+            except (ValueError, KeyError) as e:
+                logger.debug(f"Skipping malformed congressional trade: {e}")
+                continue
+
+        logger.info(f"Fetched {len(observations)} congressional trades from Finnhub")
+        return observations
+
+    def get_recent_congressional_trades(
+        self,
+        days: int = 60,
+        limit: int = 100,
+    ) -> list[Observation]:
+        """Get recent congressional trades from the past N days."""
+        from_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+        to_date = datetime.now().strftime("%Y-%m-%d")
+        return self.get_congressional_trading(
+            from_date=from_date,
+            to_date=to_date,
+            limit=limit,
         )

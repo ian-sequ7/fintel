@@ -108,6 +108,52 @@ from .smart_money import (
     signal_to_dict,
     context_to_dict,
 )
+# Enhanced scoring system (v3)
+from .regime import (
+    MarketRegime,
+    RegimeContext,
+    FactorWeights,
+    detect_market_regime,
+    get_regime_weights,
+)
+from .risk import (
+    RiskFilters,
+    PortfolioConstraints,
+    PositionSizeResult,
+    FilterReason,
+    compute_kelly_fraction,
+    compute_position_size,
+    apply_risk_filters,
+)
+from .score_aggregator import (
+    StockData,
+    EnhancedScore,
+    FactorScores,
+    score_stock as score_stock_v3,
+    score_stocks as score_stocks_v3,
+    select_picks as select_picks_v3,
+)
+from .scoring_bridge import (
+    metrics_to_stock_data,
+    macro_to_regime,
+    score_stocks_enhanced,
+    select_enhanced_picks,
+    enhanced_score_to_legacy_format,
+    get_regime_summary,
+    get_scoring_stats,
+)
+from .backtest_enhanced import (
+    EnhancedBacktestConfig,
+    EnhancedBacktestTrade,
+    EnhancedBacktestResult,
+    PeriodReturn,
+    FactorAttribution,
+    RegimePerformance,
+    run_enhanced_backtest,
+    track_pick_performance,
+    analyze_picks_by_regime,
+    analyze_factor_effectiveness,
+)
 
 __all__ = [
     # Primitives (observation layer)
@@ -217,4 +263,41 @@ __all__ = [
     "MonthlyReturn",
     "TradeOutcome",
     "run_backtest",
+    # Enhanced Scoring (v3)
+    "MarketRegime",
+    "RegimeContext",
+    "FactorWeights",
+    "detect_market_regime",
+    "get_regime_weights",
+    "RiskFilters",
+    "PortfolioConstraints",
+    "PositionSizeResult",
+    "FilterReason",
+    "compute_kelly_fraction",
+    "compute_position_size",
+    "apply_risk_filters",
+    "StockData",
+    "EnhancedScore",
+    "FactorScores",
+    "score_stock_v3",
+    "score_stocks_v3",
+    "select_picks_v3",
+    "metrics_to_stock_data",
+    "macro_to_regime",
+    "score_stocks_enhanced",
+    "select_enhanced_picks",
+    "enhanced_score_to_legacy_format",
+    "get_regime_summary",
+    "get_scoring_stats",
+    # Enhanced Backtesting (v3)
+    "EnhancedBacktestConfig",
+    "EnhancedBacktestTrade",
+    "EnhancedBacktestResult",
+    "PeriodReturn",
+    "FactorAttribution",
+    "RegimePerformance",
+    "run_enhanced_backtest",
+    "track_pick_performance",
+    "analyze_picks_by_regime",
+    "analyze_factor_effectiveness",
 ]
