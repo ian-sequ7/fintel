@@ -228,11 +228,10 @@ class PipelineConfig:
         min_price=5.0,
     ))
     v3_portfolio_constraints: PortfolioConstraints = field(default_factory=lambda: PortfolioConstraints(
-        max_position_weight=0.08,  # 8% max
-        min_position_weight=0.01,  # 1% min
-        max_sector_weight=0.25,    # 25% max per sector
+        max_single_position=0.08,  # 8% max per stock
+        min_single_position=0.01,  # 1% min per stock
+        max_sector_exposure=0.25,  # 25% max per sector
         max_positions=20,
-        kelly_fraction=0.25,       # Quarter Kelly
     ))
 
     def get_tickers(self) -> list[str]:
@@ -1197,11 +1196,11 @@ class Analyzer:
                 if txn.ticker not in insider_by_ticker:
                     insider_by_ticker[txn.ticker] = []
                 insider_by_ticker[txn.ticker].append({
-                    "insider_name": txn.insider_name,
+                    "insider_name": txn.officer_title,  # Use title as identifier
                     "transaction_type": txn.transaction_type,
                     "shares": txn.shares,
                     "transaction_date": txn.transaction_date,
-                    "transaction_price": txn.transaction_price,
+                    "transaction_price": None,  # Not available in InsiderTransaction
                     "officer_title": txn.officer_title,
                     "is_c_suite": txn.is_c_suite,
                 })
@@ -1255,11 +1254,14 @@ class Analyzer:
             # Create ConvictionScore for enrichment
             scores[es.ticker] = ConvictionScore(
                 overall=legacy["conviction_normalized"],
-                valuation=es.factor_scores.get("value", 50) / 100,
-                growth=es.factor_scores.get("quality", 50) / 100,
-                momentum=es.factor_scores.get("momentum", 50) / 100,
-                quality=es.factor_scores.get("quality", 50) / 100,
-                risk=1.0 - es.factor_scores.get("low_vol", 50) / 100,
+                valuation_score=es.factor_scores.get("value", 50) / 100,
+                growth_score=es.factor_scores.get("quality", 50) / 100,  # Use quality as proxy for growth
+                momentum_score=es.factor_scores.get("momentum", 50) / 100,
+                quality_score=es.factor_scores.get("quality", 50) / 100,
+                macro_adjustment=0.0,  # Regime adjustments already applied in scoring
+                confidence=es.data_completeness,
+                factors_used=list(es.factor_scores.keys()),
+                factors_missing=[],
             )
 
             self._log(

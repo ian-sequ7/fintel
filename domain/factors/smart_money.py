@@ -314,6 +314,9 @@ def compute_insider_cluster_score(
                 trade_date = date.fromisoformat(trade_date)
             except (ValueError, TypeError):
                 continue
+        # Handle datetime objects by converting to date
+        if hasattr(trade_date, "date"):
+            trade_date = trade_date.date()
 
         if trade_date is None or trade_date < cutoff_date:
             continue

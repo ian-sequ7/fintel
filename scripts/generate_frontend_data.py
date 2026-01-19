@@ -526,10 +526,14 @@ def hedge_fund_holding_to_frontend(holding: HedgeFundHolding, fund_name: str, ma
 
 def fetch_sp500_batch_prices() -> dict[str, dict]:
     """
-    Fetch prices for combined universe (S&P 500 + Dow + NASDAQ-100).
+    Fetch prices and price history for combined universe (S&P 500 + Dow + NASDAQ-100).
 
-    This is extremely fast (~10 seconds for ~516 tickers) and uses only ~2 API calls.
-    Returns minimal price data suitable for heatmap and overview displays.
+    Fetches:
+    - Current prices (~10 seconds for ~516 tickers)
+    - Market caps (~10 seconds)
+    - 90-day price history for charts (~15-20 seconds)
+
+    Returns stock data with price history suitable for charts, heatmap, and overview displays.
     Includes index membership badges for each stock.
     """
     from adapters.yahoo import YahooAdapter
@@ -557,7 +561,14 @@ def fetch_sp500_batch_prices() -> dict[str, dict]:
     market_caps = yahoo.get_market_caps_batch(tickers)
     cap_time = time.time() - cap_start
 
-    # Merge with sector info and index membership from universe
+    # Batch fetch 90-day price history for charts (efficient batch operation)
+    print(f"  Fetched {len(market_caps)} market caps in {cap_time:.1f}s, fetching price history...")
+    history_start = time.time()
+    price_histories = yahoo.get_price_history_batch(tickers, days=90)
+    history_time = time.time() - history_start
+    print(f"  Fetched price history for {len(price_histories)}/{len(tickers)} stocks in {history_time:.1f}s")
+
+    # Merge with sector info, index membership, and price history from universe
     result = {}
     for ticker, price_data in prices.items():
         info = universe_info.get(ticker)
@@ -572,13 +583,16 @@ def fetch_sp500_batch_prices() -> dict[str, dict]:
             "marketCap": market_caps.get(ticker),
             # Index membership badges (e.g., ["S&P 500", "Dow 30", "NASDAQ-100"])
             "indices": info.index_badges if info else [],
+            # 90-day price history for charts
+            "priceHistory": price_histories.get(ticker, []),
             # Flag that this is lite data (no fundamentals)
             "isLite": True,
         }
 
     elapsed = time.time() - start
     caps_found = sum(1 for v in market_caps.values() if v is not None)
-    print(f"  Fetched {len(result)} stocks ({caps_found} with market cap) in {elapsed:.1f}s")
+    history_found = sum(1 for v in price_histories.values() if v)
+    print(f"  Fetched {len(result)} stocks ({caps_found} with market cap, {history_found} with price history) in {elapsed:.1f}s")
 
     return result
 

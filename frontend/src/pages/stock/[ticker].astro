@@ -18,13 +18,22 @@ export function getStaticPaths() {
   const allPicks = getPicks("all");
   const allStocks = getAllStocks();
 
+  // Create a map of ticker -> priceHistory from allStocks
+  const priceHistoryByTicker = new Map(
+    allStocks.map((s) => [s.ticker, s.priceHistory ?? []])
+  );
+
   // Create a set of pick tickers for quick lookup
   const pickTickers = new Set(allPicks.map((p) => p.ticker));
 
-  // Map picks to paths (full data)
+  // Map picks to paths (full data) - include priceHistory from allStocks
   const pickPaths = allPicks.map((pick) => ({
     params: { ticker: pick.ticker },
-    props: { stock: pick, isPick: true },
+    props: {
+      stock: pick,
+      isPick: true,
+      priceHistory: priceHistoryByTicker.get(pick.ticker) ?? [],
+    },
   }));
 
   // Map lite stocks (non-picks) to paths
@@ -32,7 +41,11 @@ export function getStaticPaths() {
     .filter((stock) => !pickTickers.has(stock.ticker))
     .map((stock) => ({
       params: { ticker: stock.ticker },
-      props: { stock, isPick: false },
+      props: {
+        stock,
+        isPick: false,
+        priceHistory: stock.priceHistory ?? [],
+      },
     }));
 
   return [...pickPaths, ...litePaths];
@@ -41,9 +54,10 @@ export function getStaticPaths() {
 interface Props {
   stock: StockPick | LiteStock;
   isPick: boolean;
+  priceHistory: import("../../data/types").PricePoint[];
 }
 
-const { stock, isPick } = Astro.props;
+const { stock, isPick, priceHistory } = Astro.props;
 // Cast to StockPick for pick-specific fields (only accessed when isPick is true)
 const pick = stock as StockPick;
 
@@ -280,13 +294,13 @@ const tradeProgress = isPick ? _calculateTradeProgress() : null;
       <!-- 3. Price chart -->
       <Card title="Price Chart">
         <div class="h-[350px]">
-          {stockDetail?.priceHistory ? (
-            <PriceChart ticker={stock.ticker} data={stockDetail.priceHistory} height={350} client:visible />
+          {priceHistory.length > 0 ? (
+            <PriceChart ticker={stock.ticker} data={priceHistory} height={350} client:visible />
           ) : (
             <div class="h-full flex items-center justify-center text-text-secondary">
               <div class="text-center">
                 <p class="text-lg mb-2">Historical price data not available</p>
-                <p class="text-sm">Detailed charts available for AI-analyzed picks</p>
+                <p class="text-sm">Chart data is being fetched. Try refreshing the page.</p>
               </div>
             </div>
           )}
