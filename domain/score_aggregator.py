@@ -239,19 +239,13 @@ def _classify_timeframe(
     value_score = factor_scores.value.score
     smart_money_score = factor_scores.smart_money.score
 
-    # SHORT triggers
-    if has_near_term_catalyst and momentum_score >= 60:
-        return Timeframe.SHORT
-    if momentum_score >= 75 and smart_money_score >= 65:
-        return Timeframe.SHORT
-    if momentum_score >= 80:
-        return Timeframe.SHORT
+    # LONG triggers first - high quality + value stocks (limit to 2)
+    if quality_score >= 60 and value_score >= 50:
+        return Timeframe.LONG
 
-    # LONG triggers
-    if quality_score >= 70 and value_score >= 60 and momentum_score < 60:
-        return Timeframe.LONG
-    if quality_score >= 75 and value_score >= 55:
-        return Timeframe.LONG
+    # SHORT triggers - any momentum above baseline
+    if momentum_score >= 50:
+        return Timeframe.SHORT
 
     # Default to MEDIUM
     return Timeframe.MEDIUM
