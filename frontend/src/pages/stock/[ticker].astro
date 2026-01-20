@@ -297,7 +297,7 @@ const tradeProgress = isPick ? _calculateTradeProgress() : null;
     <div class="lg:col-span-2 space-y-6">
       <!-- 3. Price chart -->
       <Card title="Price Chart">
-        <div class="h-[420px]">
+        <div class="h-[480px] overflow-hidden">
           {priceHistory.length > 0 ? (
             <PriceChart ticker={stock.ticker} data={priceHistory} height={400} client:visible />
           ) : (
