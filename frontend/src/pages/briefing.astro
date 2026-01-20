@@ -416,9 +416,18 @@ function getImpactDot(impact: string): string {
             </Card>
           ) : (
             <div class="space-y-3">
-              {briefing.marketNews.slice(0, 5).map((news) => {
-                const NewsContent = () => (
-                  <>
+              {briefing.marketNews.slice(0, 5).map((news) => (
+                news.url ? (
+                  <a
+                    href={news.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={`block p-3 rounded-lg border transition-colors ${
+                      news.priority === "critical" ? "border-danger/50 bg-danger/5 hover:bg-danger/10" :
+                      news.priority === "high" ? "border-warning/50 hover:bg-warning/5" :
+                      "border-border hover:border-accent/50 hover:bg-bg-elevated"
+                    }`}
+                  >
                     <div class="flex items-start gap-2 mb-1">
                       {news.priority === "critical" && (
                         <span class="shrink-0 text-xs font-bold text-danger px-1.5 py-0.5 bg-danger/15 rounded">ALERT</span>
@@ -445,23 +454,44 @@ function getImpactDot(impact: string): string {
                         </>
                       )}
                     </div>
-                  </>
-                );
-                const baseClass = `block p-3 rounded-lg border transition-colors ${
-                  news.priority === "critical" ? "border-danger/50 bg-danger/5 hover:bg-danger/10" :
-                  news.priority === "high" ? "border-warning/50 hover:bg-warning/5" :
-                  "border-border hover:border-accent/50 hover:bg-bg-elevated"
-                }`;
-                return news.url ? (
-                  <a href={news.url} target="_blank" rel="noopener noreferrer" class={baseClass}>
-                    <NewsContent />
                   </a>
                 ) : (
-                  <div class={baseClass}>
-                    <NewsContent />
+                  <div
+                    class={`block p-3 rounded-lg border transition-colors ${
+                      news.priority === "critical" ? "border-danger/50 bg-danger/5" :
+                      news.priority === "high" ? "border-warning/50" :
+                      "border-border"
+                    }`}
+                  >
+                    <div class="flex items-start gap-2 mb-1">
+                      {news.priority === "critical" && (
+                        <span class="shrink-0 text-xs font-bold text-danger px-1.5 py-0.5 bg-danger/15 rounded">ALERT</span>
+                      )}
+                      {news.priority === "high" && (
+                        <span class="shrink-0 text-xs font-semibold text-warning px-1.5 py-0.5 bg-warning/15 rounded">HIGH</span>
+                      )}
+                      <span class="font-medium text-text-primary text-sm leading-snug">
+                        {news.headline}
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-text-secondary">
+                      <span>{news.source}</span>
+                      {news.tickers && news.tickers.length > 0 && (
+                        <>
+                          <span class="text-border">•</span>
+                          <span class="text-accent font-mono">{news.tickers.slice(0, 2).join(", ")}</span>
+                        </>
+                      )}
+                      {news.keywords && news.keywords.length > 0 && (
+                        <>
+                          <span class="text-border">•</span>
+                          <span class="text-text-secondary/70">{news.keywords[0]}</span>
+                        </>
+                      )}
+                    </div>
                   </div>
-                );
-              })}
+                )
+              ))}
             </div>
           )}
         </section>
@@ -477,9 +507,18 @@ function getImpactDot(impact: string): string {
             </Card>
           ) : (
             <div class="space-y-3">
-              {briefing.fedNews.slice(0, 5).map((news) => {
-                const FedNewsContent = () => (
-                  <>
+              {briefing.fedNews.slice(0, 5).map((news) => (
+                news.url ? (
+                  <a
+                    href={news.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={`block p-3 rounded-lg border transition-colors ${
+                      news.priority === "critical" ? "border-danger/50 bg-danger/5 hover:bg-danger/10" :
+                      news.priority === "high" ? "border-warning/50 hover:bg-warning/5" :
+                      "border-border hover:border-accent/50 hover:bg-bg-elevated"
+                    }`}
+                  >
                     <div class="flex items-start gap-2 mb-1">
                       {news.priority === "critical" && (
                         <span class="shrink-0 text-xs font-bold text-danger px-1.5 py-0.5 bg-danger/15 rounded">ALERT</span>
@@ -500,23 +539,38 @@ function getImpactDot(impact: string): string {
                         </>
                       )}
                     </div>
-                  </>
-                );
-                const baseClass = `block p-3 rounded-lg border transition-colors ${
-                  news.priority === "critical" ? "border-danger/50 bg-danger/5 hover:bg-danger/10" :
-                  news.priority === "high" ? "border-warning/50 hover:bg-warning/5" :
-                  "border-border hover:border-accent/50 hover:bg-bg-elevated"
-                }`;
-                return news.url ? (
-                  <a href={news.url} target="_blank" rel="noopener noreferrer" class={baseClass}>
-                    <FedNewsContent />
                   </a>
                 ) : (
-                  <div class={baseClass}>
-                    <FedNewsContent />
+                  <div
+                    class={`block p-3 rounded-lg border ${
+                      news.priority === "critical" ? "border-danger/50 bg-danger/5" :
+                      news.priority === "high" ? "border-warning/50" :
+                      "border-border"
+                    }`}
+                  >
+                    <div class="flex items-start gap-2 mb-1">
+                      {news.priority === "critical" && (
+                        <span class="shrink-0 text-xs font-bold text-danger px-1.5 py-0.5 bg-danger/15 rounded">ALERT</span>
+                      )}
+                      {news.priority === "high" && (
+                        <span class="shrink-0 text-xs font-semibold text-warning px-1.5 py-0.5 bg-warning/15 rounded">HIGH</span>
+                      )}
+                      <span class="font-medium text-text-primary text-sm leading-snug">
+                        {news.headline}
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-text-secondary">
+                      <span>{news.source}</span>
+                      {news.keywords && news.keywords.length > 0 && (
+                        <>
+                          <span class="text-border">•</span>
+                          <span class="text-text-secondary/70">{news.keywords[0]}</span>
+                        </>
+                      )}
+                    </div>
                   </div>
-                );
-              })}
+                )
+              ))}
             </div>
           )}
         </section>

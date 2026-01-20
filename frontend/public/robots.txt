@@ -1,0 +1,11 @@
+# Fintel - Financial Intelligence Dashboard
+# https://fintel.app
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://fintel.app/sitemap.xml
+
+# Crawl-delay (optional, be nice to search engines)
+Crawl-delay: 1
