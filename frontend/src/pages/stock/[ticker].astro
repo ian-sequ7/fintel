@@ -8,13 +8,17 @@ import PriceChart from "../../components/islands/PriceChart";
 import { WatchlistButton } from "../../components/islands/WatchlistManager";
 import { CompareButton } from "../../components/islands/CompareManager";
 import PaperTradeButton from "../../components/islands/PaperTradeButton";
-import { getPicks, getAllStocks, getStockDetail, getNewsForStock, formatChange, formatPrice, formatLargeNumber } from "../../data/report";
+import { getPicks, getAllStocks, getNewsForStock, formatChange, formatPrice, formatLargeNumber } from "../../data/report";
 import type { StockPick, StockDetail, LiteStock } from "../../data/types";
+// Import stockDetails directly for SSG (it's split from report.json)
+import stockDetailsData from "../../../public/data/stockDetails.json";
 
 // Prerender this page statically at build time
 export const prerender = true;
 
 export function getStaticPaths() {
+  // Type the imported data
+  const stockDetails = stockDetailsData as Record<string, StockDetail>;
   const allPicks = getPicks("all");
   const allStocks = getAllStocks();
 
@@ -33,6 +37,7 @@ export function getStaticPaths() {
       stock: pick,
       isPick: true,
       priceHistory: priceHistoryByTicker.get(pick.ticker) ?? [],
+      stockDetail: stockDetails[pick.ticker] ?? null,
     },
   }));
 
@@ -45,6 +50,7 @@ export function getStaticPaths() {
         stock,
         isPick: false,
         priceHistory: stock.priceHistory ?? [],
+        stockDetail: null,
       },
     }));
 
@@ -55,14 +61,12 @@ interface Props {
   stock: StockPick | LiteStock;
   isPick: boolean;
   priceHistory: import("../../data/types").PricePoint[];
+  stockDetail: StockDetail | null;
 }
 
-const { stock, isPick, priceHistory } = Astro.props;
+const { stock, isPick, priceHistory, stockDetail } = Astro.props;
 // Cast to StockPick for pick-specific fields (only accessed when isPick is true)
 const pick = stock as StockPick;
-
-// Get detailed stock data (only available for picks)
-const stockDetail = isPick ? getStockDetail(stock.ticker) : null;
 
 // Get company news for this ticker
 const companyNews = getNewsForStock(stock.ticker);
@@ -411,7 +415,7 @@ const tradeProgress = isPick ? _calculateTradeProgress() : null;
               <div class="flex justify-between py-3 border-b border-border">
                 <span class="text-text-secondary">Dividend Yield</span>
                 <span class="font-medium text-text-primary">
-                  {(stockDetail.fundamentals.dividendYield * 100).toFixed(2)}%
+                  {stockDetail.fundamentals.dividendYield.toFixed(2)}%
                 </span>
               </div>
             )}
