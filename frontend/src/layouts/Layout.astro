@@ -9,9 +9,12 @@ import ErrorBoundary from "../components/ErrorBoundary";
 interface Props {
   title: string;
   description?: string;
+  ogImage?: string;
 }
 
-const { title, description = "Financial intelligence dashboard" } = Astro.props;
+const { title, description = "AI-powered financial intelligence dashboard with stock picks, market analysis, and smart money tracking.", ogImage = "/og-image.png" } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://fintel.app");
+const fullTitle = `${title} | Fintel`;
 ---
 
 <!doctype html>
@@ -21,14 +24,36 @@ const { title, description = "Financial intelligence dashboard" } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site || "https://fintel.app")} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, Astro.site || "https://fintel.app")} />
+
+    <!-- Favicon & Theme -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#0a0a0a" />
+
+    <!-- Fonts (preconnect + display swap) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <title>{title} | Fintel</title>
+    <title>{fullTitle}</title>
     <!-- Theme initialization script (runs before body) -->
     <script is:inline>
       (function () {

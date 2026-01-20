@@ -204,7 +204,7 @@ export function getAllTickers(): string[] {
   }
 
   // From stock details
-  for (const ticker of Object.keys(report.stockDetails)) {
+  for (const ticker of Object.keys(report.stockDetails ?? {})) {
     tickerSet.add(ticker);
   }
 
@@ -577,7 +577,7 @@ export function getGeneratedAt(): Date {
  */
 export function getPricesUpdatedAt(): Date {
   const report = getReportSync();
-  const pricesTs = (report as any).pricesUpdatedAt || (report as any).meta?.pricesUpdatedAt;
+  const pricesTs = report.pricesUpdatedAt || report.meta?.pricesUpdatedAt;
   return new Date(pricesTs || report.generatedAt);
 }
 
@@ -586,7 +586,7 @@ export function getPricesUpdatedAt(): Date {
  */
 export function wasPriceUpdateIncremental(): boolean {
   const report = getReportSync();
-  return (report as any).meta?.priceUpdateMethod === "incremental";
+  return report.meta?.priceUpdateMethod === "incremental";
 }
 
 /**

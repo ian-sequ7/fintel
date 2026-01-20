@@ -6,6 +6,9 @@ import PickCard from "../../components/composed/PickCard.astro";
 import { getPicks, getStockDetail } from "../../data/report";
 import type { Timeframe, SortOption } from "../../data/types";
 
+// Prerender this page statically at build time
+export const prerender = true;
+
 // Static paths for SSG
 export function getStaticPaths() {
   return [

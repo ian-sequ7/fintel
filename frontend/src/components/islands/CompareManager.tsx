@@ -89,7 +89,7 @@ export function CompareButton({ ticker, companyName, size = "md" }: CompareButto
       removeFromCompare(ticker);
     } else {
       if (compareCount >= MAX_COMPARE) {
-        alert(`You can only compare up to ${MAX_COMPARE} stocks at a time.`);
+        // Max compare limit reached - button state should prevent this
         return;
       }
       addToCompare({ ticker, companyName });

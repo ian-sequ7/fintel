@@ -400,10 +400,19 @@ export interface BacktestContext {
 // Report Types (Root)
 // =============================================================================
 
+export interface ReportMeta {
+  pricesUpdatedAt?: string;
+  priceUpdateMethod?: "incremental" | "full";
+}
+
 export interface FinancialReport {
   generatedAt: string; // ISO date string
   version: string;
   watchlist: string[];
+
+  // Optional metadata for incremental updates
+  pricesUpdatedAt?: string;
+  meta?: ReportMeta;
 
   // Stock picks by timeframe
   picks: {

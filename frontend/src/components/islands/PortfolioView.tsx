@@ -226,13 +226,16 @@ export default function PortfolioView({ stockDetails: initialStockDetails }: Por
     };
   }, []);
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const handleCloseTrade = (id: string) => {
     const trade = trades.find((t) => t.id === id);
     if (!trade) return;
 
     const currentPrice = getCurrentPrice(trade.ticker);
     if (currentPrice === null) {
-      alert(`Cannot get current price for ${trade.ticker}`);
+      setErrorMessage(`Cannot get current price for ${trade.ticker}. Please refresh and try again.`);
+      setTimeout(() => setErrorMessage(null), 5000);
       return;
     }
 
@@ -264,6 +267,18 @@ export default function PortfolioView({ stockDetails: initialStockDetails }: Por
 
   return (
     <div className="space-y-6">
+      {/* Error Message Banner */}
+      {errorMessage && (
+        <div className="bg-danger/10 border border-danger/30 text-danger px-4 py-3 rounded-lg flex items-center justify-between">
+          <span>{errorMessage}</span>
+          <button
+            onClick={() => setErrorMessage(null)}
+            className="text-danger hover:text-danger/80 font-bold"
+          >
+            &times;
+          </button>
+        </div>
+      )}
       {/* Summary Cards */}
       {summary && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

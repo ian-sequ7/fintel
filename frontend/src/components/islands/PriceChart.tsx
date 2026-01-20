@@ -53,47 +53,6 @@ const DARK_THEME = {
   volumeDown: "rgba(239, 68, 68, 0.5)",
 };
 
-// Generate mock price data for demonstration
-function _generateMockData(ticker: string): PricePoint[] {
-  const data: PricePoint[] = [];
-  const basePrices: Record<string, number> = {
-    AAPL: 225, NVDA: 875, MSFT: 415, GOOGL: 175, META: 490,
-    AMZN: 185, TSLA: 245, JPM: 195, V: 280, JNJ: 155,
-  };
-  const basePrice = basePrices[ticker] ?? 150;
-  let price = basePrice * 0.85;
-
-  const today = new Date();
-  for (let i = 365; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-
-    // Skip weekends
-    if (date.getDay() === 0 || date.getDay() === 6) continue;
-
-    const volatility = 0.025;
-    const drift = 0.0008;
-    const change = (Math.random() - 0.48 + drift) * volatility * price;
-    const open = price;
-    const close = price + change;
-    const high = Math.max(open, close) * (1 + Math.random() * 0.015);
-    const low = Math.min(open, close) * (1 - Math.random() * 0.015);
-
-    data.push({
-      time: date.toISOString().split("T")[0],
-      open: Number(open.toFixed(2)),
-      high: Number(high.toFixed(2)),
-      low: Number(low.toFixed(2)),
-      close: Number(close.toFixed(2)),
-      volume: Math.floor(Math.random() * 80000000) + 20000000,
-    });
-
-    price = close;
-  }
-
-  return data;
-}
-
 // Detect current theme from document
 function _getTheme(): typeof LIGHT_THEME {
   if (typeof document === "undefined") return LIGHT_THEME;
@@ -152,7 +111,7 @@ function _formatVolume(volume: number): string {
   return volume.toString();
 }
 
-export default function PriceChart({ ticker, data, height = 400, companyName }: Props) {
+export default function PriceChart({ ticker, data = [], height = 400, companyName }: Props) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -170,7 +129,7 @@ export default function PriceChart({ ticker, data, height = 400, companyName }: 
     changePercent: number;
   } | null>(null);
 
-  const fullData = data ?? _generateMockData(ticker);
+  const fullData = data;
 
   useEffect(() => {
     setMounted(true);
@@ -485,6 +444,8 @@ export default function PriceChart({ ticker, data, height = 400, companyName }: 
         ref={chartContainerRef}
         className="w-full rounded-lg overflow-hidden"
         style={{ height }}
+        role="img"
+        aria-label={`Interactive candlestick price chart for ${ticker}${companyName ? ` (${companyName})` : ""} showing ${fullData.length} trading days of OHLC data`}
       />
     </div>
   );
