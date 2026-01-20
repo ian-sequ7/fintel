@@ -293,9 +293,9 @@ const tradeProgress = isPick ? _calculateTradeProgress() : null;
     <div class="lg:col-span-2 space-y-6">
       <!-- 3. Price chart -->
       <Card title="Price Chart">
-        <div class="h-[350px]">
+        <div class="h-[420px]">
           {priceHistory.length > 0 ? (
-            <PriceChart ticker={stock.ticker} data={priceHistory} height={350} client:visible />
+            <PriceChart ticker={stock.ticker} data={priceHistory} height={400} client:visible />
           ) : (
             <div class="h-full flex items-center justify-center text-text-secondary">
               <div class="text-center">
@@ -392,10 +392,42 @@ const tradeProgress = isPick ? _calculateTradeProgress() : null;
               </div>
             )}
             {stockDetail.fundamentals.profitMargin !== undefined && (
-              <div class="flex justify-between py-3">
+              <div class="flex justify-between py-3 border-b border-border">
                 <span class="text-text-secondary">Profit Margin</span>
                 <span class="font-medium text-text-primary">
                   {(stockDetail.fundamentals.profitMargin * 100).toFixed(1)}%
+                </span>
+              </div>
+            )}
+            {stockDetail.fundamentals.priceToBook !== undefined && stockDetail.fundamentals.priceToBook !== null && (
+              <div class="flex justify-between py-3 border-b border-border">
+                <span class="text-text-secondary">P/B Ratio</span>
+                <span class="font-medium text-text-primary">
+                  {stockDetail.fundamentals.priceToBook.toFixed(2)}
+                </span>
+              </div>
+            )}
+            {stockDetail.fundamentals.dividendYield !== undefined && stockDetail.fundamentals.dividendYield !== null && (
+              <div class="flex justify-between py-3 border-b border-border">
+                <span class="text-text-secondary">Dividend Yield</span>
+                <span class="font-medium text-text-primary">
+                  {(stockDetail.fundamentals.dividendYield * 100).toFixed(2)}%
+                </span>
+              </div>
+            )}
+            {stockDetail.fundamentals.beta !== undefined && stockDetail.fundamentals.beta !== null && (
+              <div class="flex justify-between py-3 border-b border-border">
+                <span class="text-text-secondary">Beta</span>
+                <span class="font-medium text-text-primary">
+                  {stockDetail.fundamentals.beta.toFixed(2)}
+                </span>
+              </div>
+            )}
+            {stockDetail.fundamentals.avgVolume !== undefined && (
+              <div class="flex justify-between py-3">
+                <span class="text-text-secondary">Avg Volume</span>
+                <span class="font-medium text-text-primary">
+                  {_formatLargeNumber(stockDetail.fundamentals.avgVolume)}
                 </span>
               </div>
             )}
