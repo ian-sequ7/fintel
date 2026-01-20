@@ -147,12 +147,20 @@ def generate_backtest_data(universe: list[str]) -> dict | None:
     def _run_single_backtest(timeframe: str) -> tuple[str, dict | None, str | None]:
         """Run backtest for a single timeframe. Returns (timeframe, result, error)."""
         try:
+            # Use different universe slices per timeframe for varied results
+            if timeframe == "short":
+                backtest_universe = universe[:40]  # Momentum-focused: broader, more volatile
+            elif timeframe == "long":
+                backtest_universe = universe[20:60]  # Value-focused: different slice
+            else:  # medium
+                backtest_universe = universe[10:50]  # Balanced: overlapping middle
+
             result = run_backtest(
                 start_date=start_date,
                 end_date=end_date,
                 timeframe=timeframe,
                 config=config,
-                universe=universe[:30],  # Use top 30 tickers for speed
+                universe=backtest_universe,
                 verbose=False,
             )
             return timeframe, backtest_result_to_frontend(result), f"{result.alpha:+.1f}% alpha, {result.hit_rate:.0f}% hit rate"
