@@ -37,6 +37,22 @@ export interface PricePoint {
   volume?: number;
 }
 
+/**
+ * Pre-computed technical indicators from server.
+ * Avoids duplicating indicator logic in TypeScript.
+ */
+export interface PrecomputedIndicators {
+  rsi: (number | null)[];
+  macdLine: (number | null)[];
+  macdSignal: (number | null)[];
+  macdHistogram: (number | null)[];
+  bbUpper: (number | null)[];
+  bbMiddle: (number | null)[];
+  bbLower: (number | null)[];
+  sma50: (number | null)[];
+  sma200: (number | null)[];
+}
+
 // =============================================================================
 // Stock Types
 // =============================================================================
@@ -65,6 +81,7 @@ export interface StockDetail extends StockPick {
   priceHistory: PricePoint[];
   relatedNews: NewsItem[];
   fundamentals: StockFundamentals;
+  indicators?: PrecomputedIndicators; // Server-computed indicators (avoids TS duplication)
 }
 
 export interface StockFundamentals {
@@ -553,4 +570,132 @@ export interface PortfolioSummary {
   winRate: number; // % of closed trades with positive P&L
   bestTrade?: TradePerformance;
   worstTrade?: TradePerformance;
+}
+
+// =============================================================================
+// Algorithm Signal Types
+// =============================================================================
+
+export type AlgorithmSignalType =
+  | "long_entry"
+  | "long_exit"
+  | "short_entry"
+  | "short_exit"
+  | "stop_loss"
+  | "take_profit"
+  | "no_signal";
+
+export interface IndicatorSnapshot {
+  rsi?: number;
+  macdLine?: number;
+  macdSignal?: number;
+  macdHistogram?: number;
+  bbUpper?: number;
+  bbMiddle?: number;
+  bbLower?: number;
+  atr?: number;
+  sma20?: number;
+  sma50?: number;
+  sma200?: number;
+  ema12?: number;
+  ema26?: number;
+  volumeSurge?: boolean;
+  volumeRatio?: number;
+}
+
+export interface AlgorithmSignal {
+  ticker: string;
+  algorithmId: string;
+  algorithmName: string;
+  signalType: AlgorithmSignalType;
+  confidence: number;
+  priceAtSignal: number;
+  timestamp: string;
+  indicators: IndicatorSnapshot;
+  rationale: string;
+  suggestedEntry?: number;
+  suggestedStop?: number;
+  suggestedTarget?: number;
+  metadata?: Record<string, unknown>;
+}
+
+export interface AlgorithmParameter {
+  name: string;
+  type: "int" | "float" | "bool";
+  default: number | boolean;
+  min?: number;
+  max?: number;
+  description: string;
+}
+
+export interface AlgorithmConfig {
+  algorithmId: string;
+  name: string;
+  description: string;
+  version: string;
+  parameters: AlgorithmParameter[];
+}
+
+export interface SignalsResponse {
+  ticker: string;
+  signals: AlgorithmSignal[];
+  currentPrice: number;
+  lastUpdated: string;
+}
+
+// =============================================================================
+// Algorithm Backtest Types
+// =============================================================================
+
+export interface AlgorithmBacktestRequest {
+  algorithmId: string;
+  tickers: string[];
+  startDate: string;
+  endDate: string;
+  parameters?: Record<string, number | boolean>;
+}
+
+export interface AlgorithmTrade {
+  ticker: string;
+  entryDate: string;
+  entryPrice: number;
+  entrySignal: AlgorithmSignalType;
+  exitDate?: string;
+  exitPrice?: number;
+  exitSignal?: AlgorithmSignalType;
+  returnPct?: number;
+  holdingDays?: number;
+  indicators: IndicatorSnapshot;
+}
+
+export interface AlgorithmBacktestMetrics {
+  totalReturn: number;
+  benchmarkReturn: number;
+  alpha: number;
+  sharpeRatio: number;
+  sortinoRatio: number;
+  maxDrawdown: number;
+  winRate: number;
+  profitFactor: number;
+  totalTrades: number;
+  avgHoldingDays: number;
+}
+
+export interface AlgorithmBacktestResult {
+  algorithmId: string;
+  algorithmName: string;
+  startDate: string;
+  endDate: string;
+  tickersTested: string[];
+  performance: AlgorithmBacktestMetrics;
+  signalBreakdown: {
+    longEntry: number;
+    longExit: number;
+    shortEntry: number;
+    shortExit: number;
+    stopLoss: number;
+    takeProfit: number;
+  };
+  trades: AlgorithmTrade[];
+  equityCurve: { date: string; value: number }[];
 }
