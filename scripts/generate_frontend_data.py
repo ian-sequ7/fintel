@@ -39,6 +39,39 @@ from db import (
     HedgeFundHolding,
 )
 from domain.backtest import run_backtest, BacktestConfig, BacktestResult
+from domain.indicators import rsi, macd, bollinger_bands, sma
+
+
+def compute_indicators_for_history(price_history: list[dict]) -> dict | None:
+    """
+    Compute all technical indicators for a stock's price history.
+
+    Returns dict with pre-computed indicator arrays, or None if insufficient data.
+    """
+    if not price_history or len(price_history) < 50:
+        return None
+
+    # Extract close prices
+    closes = [float(p["close"]) for p in price_history]
+
+    # Compute indicators using domain layer
+    rsi_values = rsi(closes, 14)
+    macd_line, macd_signal_line, macd_histogram = macd(closes, 12, 26, 9)
+    bb_upper, bb_middle, bb_lower = bollinger_bands(closes, 20, 2.0)
+    sma50_values = sma(closes, 50)
+    sma200_values = sma(closes, 200)
+
+    return {
+        "rsi": rsi_values,
+        "macdLine": macd_line,
+        "macdSignal": macd_signal_line,
+        "macdHistogram": macd_histogram,
+        "bbUpper": bb_upper,
+        "bbMiddle": bb_middle,
+        "bbLower": bb_lower,
+        "sma50": sma50_values,
+        "sma200": sma200_values,
+    }
 
 
 def map_sector(sector: str | None) -> str:
@@ -939,9 +972,12 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict, sp
             # Find related news
             related = [n for n in company_news if ticker in n.get("tickersMentioned", [])]
 
+            price_history = d.get("price_history", [])
+            indicators = compute_indicators_for_history(price_history)
+
             stock_details_export[ticker] = {
                 **pick,
-                "priceHistory": d.get("price_history", []),
+                "priceHistory": price_history,
                 "relatedNews": related[:5],
                 "fundamentals": {
                     "peTrailing": d.get("pe_trailing"),
@@ -956,6 +992,7 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict, sp
                     "fiftyTwoWeekLow": d.get("fifty_two_week_low"),
                     "avgVolume": d.get("avg_volume"),
                 },
+                "indicators": indicators,
             }
 
     # Calculate summary
