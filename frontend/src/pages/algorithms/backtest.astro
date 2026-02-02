@@ -1,0 +1,238 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BacktestResults from "../../components/islands/BacktestResults";
+
+const title = "Algorithm Backtest";
+const description = "Validate strategy performance against historical data";
+
+// Available algorithms for dropdown
+const algorithms = [
+  { id: "rsi_ma_v1", name: "RSI + MA Strategy" },
+  { id: "tricore_alpha_v1", name: "TriCore Alpha" },
+];
+
+// Sample backtest result for demonstration
+// In production, this would be fetched from API based on query params
+const sampleResult = {
+  algorithmId: "rsi_ma_v1",
+  algorithmName: "RSI + MA Strategy",
+  startDate: "2024-01-01",
+  endDate: "2025-01-01",
+  tickersTested: ["AAPL", "MSFT", "NVDA"],
+  performance: {
+    totalReturn: 15.3,
+    benchmarkReturn: 12.1,
+    alpha: 3.2,
+    sharpeRatio: 1.45,
+    sortinoRatio: 1.78,
+    maxDrawdown: -8.5,
+    winRate: 62.5,
+    profitFactor: 1.85,
+    totalTrades: 24,
+    avgHoldingDays: 15,
+  },
+  signalBreakdown: {
+    longEntry: 18,
+    longExit: 18,
+    shortEntry: 6,
+    shortExit: 6,
+    stopLoss: 4,
+    takeProfit: 8,
+  },
+  trades: [
+    {
+      ticker: "AAPL",
+      entryDate: "2024-01-15",
+      entryPrice: 185.5,
+      entrySignal: "long_entry",
+      exitDate: "2024-02-01",
+      exitPrice: 195.2,
+      exitSignal: "take_profit",
+      returnPct: 5.23,
+      holdingDays: 17,
+      indicators: {},
+    },
+    {
+      ticker: "MSFT",
+      entryDate: "2024-01-22",
+      entryPrice: 380.0,
+      entrySignal: "long_entry",
+      exitDate: "2024-02-10",
+      exitPrice: 375.5,
+      exitSignal: "stop_loss",
+      returnPct: -1.18,
+      holdingDays: 19,
+      indicators: {},
+    },
+    {
+      ticker: "NVDA",
+      entryDate: "2024-02-05",
+      entryPrice: 625.0,
+      entrySignal: "long_entry",
+      exitDate: "2024-03-01",
+      exitPrice: 695.8,
+      exitSignal: "long_exit",
+      returnPct: 11.33,
+      holdingDays: 25,
+      indicators: {},
+    },
+  ],
+  equityCurve: [
+    { date: "2024-01-01", value: 10000 },
+    { date: "2024-02-01", value: 10523 },
+    { date: "2024-03-01", value: 11133 },
+    { date: "2024-04-01", value: 10987 },
+    { date: "2024-05-01", value: 11245 },
+    { date: "2024-06-01", value: 11456 },
+    { date: "2024-07-01", value: 11123 },
+    { date: "2024-08-01", value: 11598 },
+    { date: "2024-09-01", value: 11234 },
+    { date: "2024-10-01", value: 11687 },
+    { date: "2024-11-01", value: 11876 },
+    { date: "2024-12-01", value: 12045 },
+    { date: "2025-01-01", value: 11530 },
+  ],
+};
+
+// Check if we should show results
+const url = new URL(Astro.request.url);
+const algorithmId = url.searchParams.get("id");
+const showResults = false; // Set to true to show sample results for testing
+---
+
+<Layout title={title} description={description}>
+  <!-- Page header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-text-primary mb-2">{title}</h1>
+    <p class="text-text-secondary">{description}</p>
+  </div>
+
+  <!-- Backtest Configuration Form -->
+  <section class="bg-bg-surface rounded-lg border border-border-subtle p-6 mb-8">
+    <h2 class="text-lg font-semibold text-text-primary mb-4">Configuration</h2>
+
+    <form class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm text-text-secondary mb-1" for="algorithm">
+          Algorithm
+        </label>
+        <select
+          id="algorithm"
+          name="algorithm"
+          class="w-full bg-bg-base border border-border-subtle rounded px-3 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent"
+        >
+          {algorithms.map((algo) => (
+            <option value={algo.id} selected={algo.id === algorithmId}>
+              {algo.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm text-text-secondary mb-1" for="tickers">
+          Tickers
+        </label>
+        <input
+          type="text"
+          id="tickers"
+          name="tickers"
+          placeholder="AAPL, MSFT, NVDA"
+          class="w-full bg-bg-base border border-border-subtle rounded px-3 py-2 text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-accent"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm text-text-secondary mb-1" for="period">
+          Period
+        </label>
+        <select
+          id="period"
+          name="period"
+          class="w-full bg-bg-base border border-border-subtle rounded px-3 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent"
+        >
+          <option value="1y">1 Year (Recommended)</option>
+          <option value="6m">6 Months</option>
+          <option value="3m">3 Months</option>
+        </select>
+      </div>
+
+      <div class="md:col-span-3">
+        <button
+          type="submit"
+          class="bg-accent text-white px-6 py-2 rounded font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Run Backtest
+        </button>
+        <p class="text-xs text-text-muted mt-2">
+          Note: Backtest may take 30-60 seconds to complete depending on the number of tickers and period selected.
+        </p>
+      </div>
+    </form>
+  </section>
+
+  <!-- Results Section -->
+  <section>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-text-primary">Results</h2>
+      {showResults && (
+        <div class="text-sm text-text-secondary">
+          <span class="text-text-muted">Tested: </span>
+          {sampleResult.tickersTested.join(", ")}
+          <span class="text-text-muted ml-4">
+            {new Date(sampleResult.startDate).toLocaleDateString()} -{" "}
+            {new Date(sampleResult.endDate).toLocaleDateString()}
+          </span>
+        </div>
+      )}
+    </div>
+
+    {showResults ? (
+      <BacktestResults result={sampleResult} client:load />
+    ) : (
+      <div class="bg-bg-surface rounded-lg border border-border-subtle p-12 text-center">
+        <div class="max-w-md mx-auto">
+          <svg
+            class="w-16 h-16 mx-auto mb-4 text-text-muted"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            ></path>
+          </svg>
+          <h3 class="text-lg font-semibold text-text-primary mb-2">No Results Yet</h3>
+          <p class="text-text-secondary text-sm mb-4">
+            Configure and run a backtest to see performance metrics, equity curve, and trade history.
+          </p>
+          <p class="text-text-muted text-xs">
+            Tip: Start with 1-3 tickers and a 1-year period for optimal performance.
+          </p>
+        </div>
+      </div>
+    )}
+  </section>
+
+  <!-- Info Section -->
+  <section class="mt-8 bg-blue-500/10 border border-blue-500/20 rounded-lg p-6">
+    <h3 class="text-sm font-semibold text-text-primary mb-2 flex items-center gap-2">
+      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      About Backtesting
+    </h3>
+    <p class="text-text-secondary text-sm">
+      Backtests simulate how a strategy would have performed using historical data. While useful for validation,
+      past performance does not guarantee future results. Use backtests as one of many tools in your decision-making
+      process.
+    </p>
+  </section>
+</Layout>

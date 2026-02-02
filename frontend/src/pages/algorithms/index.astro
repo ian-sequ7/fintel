@@ -1,0 +1,116 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const title = "Trading Algorithms";
+const description = "AI-powered trading signals from RSI+MA and TriCore Alpha strategies";
+
+// Available algorithms
+const algorithms = [
+  {
+    algorithmId: "rsi_ma_v1",
+    name: "RSI + MA Strategy",
+    description: "Simple trend-following strategy using RSI and Moving Average crossovers",
+    version: "1.0.0",
+  },
+  {
+    algorithmId: "tricore_alpha_v1",
+    name: "TriCore Alpha",
+    description: "Multi-strategy algorithm combining momentum, mean reversion, and breakout",
+    version: "1.0.0",
+  },
+];
+---
+
+<Layout title={title} description={description}>
+  <!-- Page header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-text-primary mb-2">{title}</h1>
+    <p class="text-text-secondary">{description}</p>
+  </div>
+
+  <!-- Algorithm Cards -->
+  <section class="mb-12">
+    <h2 class="text-xl font-semibold text-text-primary mb-4">Available Strategies</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {algorithms.map((algo) => (
+        <div class="bg-bg-surface rounded-lg border border-border-subtle p-6 hover:border-border-default transition-colors">
+          <div class="flex items-start justify-between mb-3">
+            <h3 class="text-lg font-bold text-text-primary">{algo.name}</h3>
+            <span class="text-xs text-text-muted bg-bg-elevated px-2 py-1 rounded">
+              v{algo.version}
+            </span>
+          </div>
+          <p class="text-text-secondary text-sm mb-4">{algo.description}</p>
+          <div class="flex gap-4">
+            <a
+              href={`/algorithms/backtest?id=${algo.algorithmId}`}
+              class="text-sm text-accent hover:underline font-medium"
+            >
+              Run Backtest →
+            </a>
+            <a
+              href={`/api/signals/${algo.algorithmId}`}
+              class="text-sm text-text-secondary hover:text-text-primary hover:underline"
+            >
+              View API
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Recent Signals Section (placeholder) -->
+  <section class="mb-12">
+    <h2 class="text-xl font-semibold text-text-primary mb-4">Recent Signals</h2>
+    <div class="bg-bg-surface rounded-lg border border-border-subtle p-8 text-center">
+      <p class="text-text-secondary mb-4">
+        Configure alert settings to receive signals in real-time.
+      </p>
+      <div class="flex justify-center gap-4">
+        <a
+          href="/algorithms/backtest"
+          class="inline-block bg-accent text-white px-6 py-2 rounded font-medium hover:opacity-90 transition-opacity"
+        >
+          View Backtest Results
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section>
+    <h2 class="text-xl font-semibold text-text-primary mb-4">How It Works</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="bg-bg-surface rounded-lg border border-border-subtle p-6">
+        <div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center mb-3">
+          <span class="text-accent text-xl font-bold">1</span>
+        </div>
+        <h3 class="text-lg font-semibold text-text-primary mb-2">Select Strategy</h3>
+        <p class="text-text-secondary text-sm">
+          Choose from our battle-tested algorithms, each designed for different market conditions and timeframes.
+        </p>
+      </div>
+
+      <div class="bg-bg-surface rounded-lg border border-border-subtle p-6">
+        <div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center mb-3">
+          <span class="text-accent text-xl font-bold">2</span>
+        </div>
+        <h3 class="text-lg font-semibold text-text-primary mb-2">Backtest & Validate</h3>
+        <p class="text-text-secondary text-sm">
+          Run historical simulations to see how the strategy would have performed on your selected tickers.
+        </p>
+      </div>
+
+      <div class="bg-bg-surface rounded-lg border border-border-subtle p-6">
+        <div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center mb-3">
+          <span class="text-accent text-xl font-bold">3</span>
+        </div>
+        <h3 class="text-lg font-semibold text-text-primary mb-2">Get Alerts</h3>
+        <p class="text-text-secondary text-sm">
+          Enable notifications to receive real-time signals when entry or exit conditions are met.
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>
