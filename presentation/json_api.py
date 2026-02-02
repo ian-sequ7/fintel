@@ -17,6 +17,17 @@ from domain import (
     MacroIndicator,
     ConvictionScore,
 )
+from domain.algorithm_signals import AlgorithmSignal, AlgorithmSignalType, IndicatorSnapshot
+from domain.algorithm_backtest import (
+    BacktestResult, BacktestMetrics, BacktestTrade, BacktestConfig,
+    run_backtest, create_default_config
+)
+from domain.strategies.signal_generator import (
+    get_available_strategies,
+    generate_signals_for_ticker,
+    generate_signals_batch,
+    STRATEGY_REGISTRY,
+)
 from .report import ReportData
 
 
@@ -130,6 +141,129 @@ class ReportResponse(BaseModel):
 
 
 # ============================================================================
+# Algorithm Signal Models
+# ============================================================================
+
+class IndicatorSnapshotResponse(BaseModel):
+    """Indicator values at signal time."""
+    rsi: float | None = None
+    macd_line: float | None = None
+    macd_signal: float | None = None
+    macd_histogram: float | None = None
+    bb_upper: float | None = None
+    bb_middle: float | None = None
+    bb_lower: float | None = None
+    atr: float | None = None
+    sma_20: float | None = None
+    sma_50: float | None = None
+    sma_200: float | None = None
+    volume_surge: bool = False
+
+
+class AlgorithmSignalResponse(BaseModel):
+    """API response for an algorithm signal."""
+    ticker: str
+    algorithm_id: str
+    algorithm_name: str
+    signal_type: str
+    confidence: float
+    price_at_signal: float
+    timestamp: datetime
+    indicators: IndicatorSnapshotResponse
+    rationale: str
+    suggested_entry: float | None = None
+    suggested_stop: float | None = None
+    suggested_target: float | None = None
+
+
+class SignalsResponse(BaseModel):
+    """Response for ticker signals."""
+    ticker: str
+    signals: list[AlgorithmSignalResponse]
+    current_price: float | None = None
+    last_updated: datetime
+
+
+class BatchSignalsRequest(BaseModel):
+    """Request for batch signal generation."""
+    tickers: list[str]
+    algorithm_ids: list[str] | None = None
+
+
+class BatchSignalsResponse(BaseModel):
+    """Response for batch signals."""
+    signals: dict[str, list[AlgorithmSignalResponse]]
+    tickers_processed: int
+    last_updated: datetime
+
+
+class AlgorithmConfigResponse(BaseModel):
+    """Algorithm configuration response."""
+    algorithm_id: str
+    name: str
+    description: str
+    version: str
+    parameters: list[dict]
+
+
+class AlgorithmsResponse(BaseModel):
+    """Available algorithms response."""
+    algorithms: list[AlgorithmConfigResponse]
+
+
+# Backtest models
+class BacktestRequest(BaseModel):
+    """Request for running a backtest."""
+    algorithm_id: str
+    tickers: list[str]
+    start_date: str | None = None  # ISO date, defaults to 1 year ago
+    end_date: str | None = None  # ISO date, defaults to now
+    parameters: dict | None = None
+
+
+class BacktestTradeResponse(BaseModel):
+    """Trade from backtest."""
+    ticker: str
+    entry_date: str
+    entry_price: float
+    entry_signal: str
+    exit_date: str
+    exit_price: float
+    exit_signal: str
+    return_pct: float
+    holding_days: int
+    pnl: float
+
+
+class BacktestMetricsResponse(BaseModel):
+    """Backtest performance metrics."""
+    total_return: float
+    benchmark_return: float
+    alpha: float
+    sharpe_ratio: float
+    sortino_ratio: float
+    max_drawdown: float
+    win_rate: float
+    profit_factor: float
+    total_trades: int
+    avg_holding_days: float
+
+
+class BacktestResponse(BaseModel):
+    """Backtest results response."""
+    algorithm_id: str
+    algorithm_name: str
+    start_date: str
+    end_date: str
+    tickers_tested: list[str]
+    metrics: BacktestMetricsResponse
+    trades: list[BacktestTradeResponse]
+    equity_curve: list[dict]
+    signal_breakdown: dict[str, int]
+    executed_at: datetime
+
+
+# ============================================================================
 # Conversion Functions
 # ============================================================================
 
@@ -191,6 +325,45 @@ def _news_to_response(item: ScoredNewsItem) -> NewsItemResponse:
         sector=item.sector,
         tickers_mentioned=item.tickers_mentioned,
         keywords=item.keywords_found,
+    )
+
+
+def _signal_to_response(signal: AlgorithmSignal) -> AlgorithmSignalResponse:
+    """Convert AlgorithmSignal to API response."""
+    return AlgorithmSignalResponse(
+        ticker=signal.ticker,
+        algorithm_id=signal.algorithm_id,
+        algorithm_name=signal.algorithm_name,
+        signal_type=signal.signal_type.name.lower(),
+        confidence=signal.confidence,
+        price_at_signal=signal.price_at_signal,
+        timestamp=signal.timestamp,
+        indicators=IndicatorSnapshotResponse(
+            rsi=signal.indicators.rsi,
+            macd_line=signal.indicators.macd_line,
+            macd_signal=signal.indicators.macd_signal,
+            macd_histogram=signal.indicators.macd_histogram,
+            bb_upper=signal.indicators.bb_upper,
+            bb_middle=signal.indicators.bb_middle,
+            bb_lower=signal.indicators.bb_lower,
+            atr=signal.indicators.atr,
+            sma_20=signal.indicators.sma_20,
+            sma_50=signal.indicators.sma_50,
+            sma_200=signal.indicators.sma_200,
+            volume_surge=signal.indicators.volume_surge,
+        ),
+        rationale=signal.rationale,
+        suggested_entry=signal.suggested_entry,
+        suggested_stop=signal.suggested_stop,
+        suggested_target=signal.suggested_target,
+    )
+
+
+def get_algorithms_response() -> AlgorithmsResponse:
+    """Get available algorithms."""
+    configs = get_available_strategies()
+    return AlgorithmsResponse(
+        algorithms=[AlgorithmConfigResponse(**c) for c in configs]
     )
 
 
