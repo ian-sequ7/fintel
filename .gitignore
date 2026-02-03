@@ -20,3 +20,10 @@ fintel.toml
 # Database
 data/*.db
 data/cache/
+db/*.db
+
+# Playwright test screenshots
+.playwright-mcp/
+
+# Local patches
+*.patch
