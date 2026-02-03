@@ -409,7 +409,8 @@ def store_pipeline_data_in_db(result, stock_details: dict):
                     volume=point["volume"],
                 )
                 db.upsert_price_point(db_point)
-            except Exception:
+            except Exception as e:
+                print(f"  Warning: Failed to store price point for {ticker} at {point.get('time', 'unknown date')}: {e}")
                 pass
 
     # Store macro indicators

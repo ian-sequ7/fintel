@@ -602,7 +602,8 @@ class YahooAdapter(BaseAdapter):
                             "close": round(float(row["Close"]), 2),
                             "volume": int(row["Volume"]) if row["Volume"] else 0,
                         })
-                    except Exception:
+                    except Exception as e:
+                        logger.debug(f"Skipping price point for {ticker} on {dt}: {e}")
                         continue
                 if price_points:
                     results[ticker] = price_points
@@ -628,7 +629,8 @@ class YahooAdapter(BaseAdapter):
                                     "close": round(float(close_val), 2),
                                     "volume": int(data["Volume"][ticker].loc[dt]) if not pd.isna(data["Volume"][ticker].loc[dt]) else 0,
                                 })
-                            except Exception:
+                            except Exception as e:
+                                logger.debug(f"Skipping price point for {ticker} on {dt}: {e}")
                                 continue
 
                         if price_points:

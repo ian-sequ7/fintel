@@ -372,8 +372,8 @@ class SEC13FAdapter(BaseAdapter):
             for xml in xml_matches:
                 if "primary" not in xml.lower():
                     infotable_names.insert(0, xml.split("/")[-1])
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug(f"Failed to fetch filing index for {filing.accession_number}: {e}")
 
         # Try each possible infotable file
         xml_content = None
@@ -383,7 +383,8 @@ class SEC13FAdapter(BaseAdapter):
                 xml_content = self._http_get_text(url)
                 if "<informationTable" in xml_content or "<infoTable" in xml_content:
                     break
-            except Exception:
+            except Exception as e:
+                logger.debug(f"Failed to fetch infotable file {filename} for CIK {cik}: {e}")
                 continue
 
         if not xml_content:
