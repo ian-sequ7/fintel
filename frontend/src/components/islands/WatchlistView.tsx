@@ -59,6 +59,9 @@ export default function WatchlistView({ stockDetails: initialStockDetails }: Pro
       getStockDetails().then((data) => {
         setStockDetails(data as Record<string, StockDetail>);
         setLoading(false);
+      }).catch((err) => {
+        console.error("Failed to load stock details:", err);
+        setLoading(false);
       });
     }
 
@@ -236,13 +239,13 @@ export default function WatchlistView({ stockDetails: initialStockDetails }: Pro
                     </td>
                     <td
                       className={`p-4 text-right font-medium ${
-                        (detail?.priceChange || 0) >= 0
+                        (detail?.priceChange ?? 0) >= 0
                           ? "text-success"
                           : "text-danger"
                       }`}
                     >
                       {detail
-                        ? `${detail.priceChange >= 0 ? "+" : ""}${detail.priceChange.toFixed(2)} (${detail.priceChangePercent >= 0 ? "+" : ""}${detail.priceChangePercent.toFixed(2)}%)`
+                        ? `${(detail.priceChange ?? 0) >= 0 ? "+" : ""}${(detail.priceChange ?? 0).toFixed(2)} (${(detail.priceChangePercent ?? 0) >= 0 ? "+" : ""}${(detail.priceChangePercent ?? 0).toFixed(2)}%)`
                         : "-"}
                     </td>
                     <td className="p-4 text-center">

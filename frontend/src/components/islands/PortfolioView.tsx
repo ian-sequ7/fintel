@@ -211,6 +211,9 @@ export default function PortfolioView({ stockDetails: initialStockDetails }: Por
       getStockDetails().then((data) => {
         setStockDetails(data);
         setLoading(false);
+      }).catch((err) => {
+        console.error("Failed to load stock details:", err);
+        setLoading(false);
       });
     }
 
@@ -401,6 +404,8 @@ function TabButton({
   return (
     <button
       onClick={onClick}
+      aria-label={`${children} tab, ${count} items`}
+      aria-pressed={active}
       className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
         active
           ? "border-accent text-accent"
@@ -408,7 +413,7 @@ function TabButton({
       }`}
     >
       {children}
-      <span className="ml-2 px-1.5 py-0.5 text-xs rounded bg-bg-elevated">
+      <span className="ml-2 px-1.5 py-0.5 text-xs rounded bg-bg-elevated" aria-hidden="true">
         {count}
       </span>
     </button>
@@ -418,7 +423,7 @@ function TabButton({
 function EmptyState({ tab }: { tab: "open" | "closed" | "insights" }) {
   return (
     <div className="text-center py-12 bg-bg-surface border border-border rounded-lg">
-      <div className="text-4xl mb-4">{tab === "open" ? "📊" : tab === "closed" ? "📈" : "🔍"}</div>
+      <div className="text-4xl mb-4" aria-hidden="true">{tab === "open" ? "📊" : tab === "closed" ? "📈" : "🔍"}</div>
       <p className="text-text-secondary">
         {tab === "open"
           ? "No open positions. Visit a stock page to start paper trading!"
@@ -504,14 +509,14 @@ function PortfolioInsights({ analytics }: { analytics: PortfolioAnalytics | null
       {analytics.concentrationWarnings.length > 0 && (
         <div className="bg-warning/10 border border-warning/30 rounded-lg p-4">
           <h3 className="font-semibold text-warning mb-2 flex items-center gap-2">
-            <span>⚠️</span> Concentration Warning
+            <span aria-hidden="true">⚠️</span> Concentration Warning
           </h3>
           <p className="text-sm text-text-secondary mb-2">
             The following positions exceed 20% of your portfolio:
           </p>
           <div className="flex flex-wrap gap-2">
             {analytics.concentrationWarnings.map((w) => (
-              <span key={w.ticker} className="px-2 py-1 bg-warning/20 text-warning rounded text-sm font-mono">
+              <span key={w.ticker} className="px-2 py-1 bg-warning/20 text-warning rounded text-sm font-mono" aria-label={`${w.ticker} is ${w.percent.toFixed(1)}% of portfolio`}>
                 {w.ticker}: {w.percent.toFixed(1)}%
               </span>
             ))}
@@ -522,14 +527,14 @@ function PortfolioInsights({ analytics }: { analytics: PortfolioAnalytics | null
       {/* Sector Allocation */}
       <div className="bg-bg-surface border border-border rounded-lg p-4">
         <h3 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
-          <span>🎯</span> Sector Allocation
+          <span aria-hidden="true">🎯</span> Sector Allocation
         </h3>
         <div className="space-y-2">
           {sectorEntries.map(([sector, data]) => (
             <div key={sector} className="flex items-center gap-3">
-              <div className={`w-3 h-3 rounded-full ${sectorColors[sector] || sectorColors.unknown}`}></div>
+              <div className={`w-3 h-3 rounded-full ${sectorColors[sector] || sectorColors.unknown}`} aria-hidden="true"></div>
               <span className="text-sm text-text-secondary capitalize w-28">{sector.replace("_", " ")}</span>
-              <div className="flex-1 bg-bg-elevated rounded-full h-2">
+              <div className="flex-1 bg-bg-elevated rounded-full h-2" role="progressbar" aria-label={`${sector.replace("_", " ")} allocation`} aria-valuenow={data.percent} aria-valuemin={0} aria-valuemax={100}>
                 <div
                   className={`h-2 rounded-full ${sectorColors[sector] || sectorColors.unknown}`}
                   style={{ width: `${Math.min(data.percent, 100)}%` }}
@@ -545,7 +550,7 @@ function PortfolioInsights({ analytics }: { analytics: PortfolioAnalytics | null
       {analytics.taxLossHarvesting.length > 0 && (
         <div className="bg-bg-surface border border-border rounded-lg p-4">
           <h3 className="font-semibold text-text-primary mb-2 flex items-center gap-2">
-            <span>💰</span> Tax-Loss Harvesting Opportunities
+            <span aria-hidden="true">💰</span> Tax-Loss Harvesting Opportunities
           </h3>
           <p className="text-xs text-text-secondary mb-3">
             Positions with unrealized losses that could offset gains
@@ -557,7 +562,7 @@ function PortfolioInsights({ analytics }: { analytics: PortfolioAnalytics | null
                   <a href={`/stock/${t.ticker}`} className="font-mono font-bold text-accent hover:underline">
                     {t.ticker}
                   </a>
-                  <span className={`text-xs px-1.5 py-0.5 rounded ${t.isLongTerm ? "bg-success/20 text-success" : "bg-warning/20 text-warning"}`}>
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${t.isLongTerm ? "bg-success/20 text-success" : "bg-warning/20 text-warning"}`} aria-label={t.isLongTerm ? "Long-term capital gain" : "Short-term capital gain"}>
                     {t.isLongTerm ? "Long-term" : "Short-term"}
                   </span>
                   <span className="text-xs text-text-secondary">{t.holdingDays} days</span>
@@ -575,7 +580,7 @@ function PortfolioInsights({ analytics }: { analytics: PortfolioAnalytics | null
       {analytics.meanReversionAlerts.length > 0 && (
         <div className="bg-bg-surface border border-border rounded-lg p-4">
           <h3 className="font-semibold text-text-primary mb-2 flex items-center gap-2">
-            <span>📊</span> Mean Reversion Alerts
+            <span aria-hidden="true">📊</span> Mean Reversion Alerts
           </h3>
           <p className="text-xs text-text-secondary mb-3">
             Positions trading &gt;10% from their 50-day moving average
@@ -612,7 +617,7 @@ function PortfolioInsights({ analytics }: { analytics: PortfolioAnalytics | null
        analytics.taxLossHarvesting.length === 0 &&
        analytics.meanReversionAlerts.length === 0 && (
         <div className="text-center py-8 text-text-secondary">
-          <div className="text-4xl mb-2">✓</div>
+          <div className="text-4xl mb-2" aria-hidden="true">✓</div>
           <p>No warnings or opportunities detected. Portfolio looks balanced!</p>
         </div>
       )}
@@ -636,7 +641,7 @@ function InsightCard({
   return (
     <div className="bg-bg-surface border border-border rounded-lg p-4">
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-lg">{icon}</span>
+        <span className="text-lg" aria-hidden="true">{icon}</span>
         <span className="text-sm text-text-secondary">{title}</span>
       </div>
       <div className={`text-xl font-bold ${color}`}>{value}</div>
@@ -679,7 +684,7 @@ function TradeCard({
               {trade.companyName}
             </span>
             {!isOpen && (
-              <span className="text-xs px-2 py-0.5 rounded bg-bg-elevated text-text-muted">
+              <span className="text-xs px-2 py-0.5 rounded bg-bg-elevated text-text-muted" aria-label="Trade status: closed">
                 CLOSED
               </span>
             )}
