@@ -67,6 +67,11 @@ interface Props {
 const { stock, isPick, priceHistory, stockDetail } = Astro.props;
 // Cast to StockPick for pick-specific fields (only accessed when isPick is true)
 const pick = stock as StockPick;
+// Cast to LiteStock to access fundamentals for non-picks
+const liteStock = stock as LiteStock;
+
+// Get fundamentals from either stockDetail (for picks) or directly from stock (for all stocks)
+const fundamentals = stockDetail?.fundamentals ?? liteStock.fundamentals ?? null;
 
 // Get company news for this ticker
 const companyNews = getNewsForStock(stock.ticker);
@@ -353,7 +358,7 @@ const tradeProgress = isPick ? _calculateTradeProgress() : null;
 
     <!-- Sidebar (1 col) -->
     <div class="space-y-6">
-      <!-- Key metrics - show for ALL stocks -->
+      <!-- Key metrics - show for ALL stocks with fundamentals -->
       <Card title="Key Metrics">
         <div class="space-y-0">
           {/* Market Cap - available for all stocks */}
@@ -370,78 +375,78 @@ const tradeProgress = isPick ? _calculateTradeProgress() : null;
               {_formatLargeNumber(stock.volume)}
             </span>
           </div>
-          {/* Additional metrics only for picks with fundamentals */}
-          {stockDetail?.fundamentals && (
+          {/* Additional metrics - now available for ALL stocks */}
+          {fundamentals && (
             <>
               <div class="flex justify-between py-3 border-b border-border">
                 <span class="text-text-secondary">P/E (Trailing)</span>
                 <span class="font-medium text-text-primary">
-                  {stockDetail.fundamentals.peTrailing?.toFixed(1) ?? "-"}
+                  {fundamentals.peTrailing?.toFixed(1) ?? "-"}
                 </span>
               </div>
               <div class="flex justify-between py-3 border-b border-border">
                 <span class="text-text-secondary">P/E (Forward)</span>
                 <span class="font-medium text-text-primary">
-                  {stockDetail.fundamentals.peForward?.toFixed(1) ?? "-"}
+                  {fundamentals.peForward?.toFixed(1) ?? "-"}
                 </span>
               </div>
               <div class="flex justify-between py-3 border-b border-border">
                 <span class="text-text-secondary">52W High</span>
                 <span class="font-medium text-text-primary">
-                  {_formatPrice(stockDetail.fundamentals.fiftyTwoWeekHigh)}
+                  {_formatPrice(fundamentals.fiftyTwoWeekHigh)}
                 </span>
               </div>
               <div class="flex justify-between py-3 border-b border-border">
                 <span class="text-text-secondary">52W Low</span>
                 <span class="font-medium text-text-primary">
-                  {_formatPrice(stockDetail.fundamentals.fiftyTwoWeekLow)}
+                  {_formatPrice(fundamentals.fiftyTwoWeekLow)}
                 </span>
               </div>
-              {stockDetail.fundamentals.revenueGrowth !== undefined && (
+              {fundamentals.revenueGrowth !== undefined && (
                 <div class="flex justify-between py-3 border-b border-border">
                   <span class="text-text-secondary">Revenue Growth</span>
                   <span class="font-medium text-text-primary">
-                    {(stockDetail.fundamentals.revenueGrowth * 100).toFixed(1)}%
+                    {(fundamentals.revenueGrowth * 100).toFixed(1)}%
                   </span>
                 </div>
               )}
-              {stockDetail.fundamentals.profitMargin !== undefined && (
+              {fundamentals.profitMargin !== undefined && (
                 <div class="flex justify-between py-3 border-b border-border">
                   <span class="text-text-secondary">Profit Margin</span>
                   <span class="font-medium text-text-primary">
-                    {(stockDetail.fundamentals.profitMargin * 100).toFixed(1)}%
+                    {(fundamentals.profitMargin * 100).toFixed(1)}%
                   </span>
                 </div>
               )}
-              {stockDetail.fundamentals.priceToBook !== undefined && stockDetail.fundamentals.priceToBook !== null && (
+              {fundamentals.priceToBook !== undefined && fundamentals.priceToBook !== null && (
                 <div class="flex justify-between py-3 border-b border-border">
                   <span class="text-text-secondary">P/B Ratio</span>
                   <span class="font-medium text-text-primary">
-                    {stockDetail.fundamentals.priceToBook.toFixed(2)}
+                    {fundamentals.priceToBook.toFixed(2)}
                   </span>
                 </div>
               )}
-              {stockDetail.fundamentals.dividendYield !== undefined && stockDetail.fundamentals.dividendYield !== null && (
+              {fundamentals.dividendYield !== undefined && fundamentals.dividendYield !== null && (
                 <div class="flex justify-between py-3 border-b border-border">
                   <span class="text-text-secondary">Dividend Yield</span>
                   <span class="font-medium text-text-primary">
-                    {stockDetail.fundamentals.dividendYield.toFixed(2)}%
+                    {fundamentals.dividendYield.toFixed(2)}%
                   </span>
                 </div>
               )}
-              {stockDetail.fundamentals.beta !== undefined && stockDetail.fundamentals.beta !== null && (
+              {fundamentals.beta !== undefined && fundamentals.beta !== null && (
                 <div class="flex justify-between py-3 border-b border-border">
                   <span class="text-text-secondary">Beta</span>
                   <span class="font-medium text-text-primary">
-                    {stockDetail.fundamentals.beta.toFixed(2)}
+                    {fundamentals.beta.toFixed(2)}
                   </span>
                 </div>
               )}
-              {stockDetail.fundamentals.avgVolume !== undefined && (
+              {fundamentals.avgVolume !== undefined && (
                 <div class="flex justify-between py-3">
                   <span class="text-text-secondary">Avg Volume</span>
                   <span class="font-medium text-text-primary">
-                    {_formatLargeNumber(stockDetail.fundamentals.avgVolume)}
+                    {_formatLargeNumber(fundamentals.avgVolume)}
                   </span>
                 </div>
               )}

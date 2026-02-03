@@ -567,14 +567,16 @@ def hedge_fund_holding_to_frontend(holding: HedgeFundHolding, fund_name: str, ma
 
 def fetch_sp500_batch_prices() -> dict[str, dict]:
     """
-    Fetch prices and price history for combined universe (S&P 500 + Dow + NASDAQ-100).
+    Fetch comprehensive data for combined universe (S&P 500 + Dow + NASDAQ-100).
 
     Fetches:
     - Current prices (~10 seconds for ~516 tickers)
     - Market caps (~10 seconds)
     - 90-day price history for charts (~15-20 seconds)
+    - Full fundamentals (P/E, dividend yield, beta, 52W high/low, etc.) (~60-90 seconds)
 
-    Returns stock data with price history suitable for charts, heatmap, and overview displays.
+    Returns stock data with price history and fundamentals suitable for charts,
+    heatmap, Key Metrics display, and overview displays.
     Includes index membership badges for each stock.
     """
     from adapters.yahoo import YahooAdapter
@@ -609,10 +611,20 @@ def fetch_sp500_batch_prices() -> dict[str, dict]:
     history_time = time.time() - history_start
     print(f"  Fetched price history for {len(price_histories)}/{len(tickers)} stocks in {history_time:.1f}s")
 
-    # Merge with sector info, index membership, and price history from universe
+    # Batch fetch fundamentals for ALL stocks (P/E, dividend yield, beta, 52W high/low, etc.)
+    print(f"  Fetching fundamentals for {len(tickers)} stocks (this may take 60-90 seconds)...")
+    fund_start = time.time()
+    fundamentals = yahoo.get_fundamentals_batch(tickers)
+    fund_time = time.time() - fund_start
+    fund_found = sum(1 for v in fundamentals.values() if v and v.get("pe_trailing") is not None)
+    print(f"  Fetched fundamentals for {fund_found}/{len(tickers)} stocks in {fund_time:.1f}s")
+
+    # Merge with sector info, index membership, price history, and fundamentals
     result = {}
     for ticker, price_data in prices.items():
         info = universe_info.get(ticker)
+        fund = fundamentals.get(ticker, {})
+
         result[ticker] = {
             "ticker": ticker,
             "companyName": info.name if info else ticker,
@@ -621,19 +633,31 @@ def fetch_sp500_batch_prices() -> dict[str, dict]:
             "priceChange": price_data["change"],
             "priceChangePercent": price_data["change_percent"],
             "volume": price_data.get("volume"),
-            "marketCap": market_caps.get(ticker),
+            "marketCap": market_caps.get(ticker) or fund.get("market_cap"),
             # Index membership badges (e.g., ["S&P 500", "Dow 30", "NASDAQ-100"])
             "indices": info.index_badges if info else [],
             # 90-day price history for charts
             "priceHistory": price_histories.get(ticker, []),
-            # Flag that this is lite data (no fundamentals)
-            "isLite": True,
+            # Full fundamentals for Key Metrics display
+            "fundamentals": {
+                "peTrailing": fund.get("pe_trailing"),
+                "peForward": fund.get("pe_forward"),
+                "pegRatio": fund.get("peg_ratio"),
+                "priceToBook": fund.get("price_to_book"),
+                "revenueGrowth": fund.get("revenue_growth"),
+                "profitMargin": fund.get("profit_margin"),
+                "dividendYield": fund.get("dividend_yield"),
+                "beta": fund.get("beta"),
+                "fiftyTwoWeekHigh": fund.get("fifty_two_week_high"),
+                "fiftyTwoWeekLow": fund.get("fifty_two_week_low"),
+                "avgVolume": fund.get("average_volume"),
+            } if fund else None,
         }
 
     elapsed = time.time() - start
     caps_found = sum(1 for v in market_caps.values() if v is not None)
     history_found = sum(1 for v in price_histories.values() if v)
-    print(f"  Fetched {len(result)} stocks ({caps_found} with market cap, {history_found} with price history) in {elapsed:.1f}s")
+    print(f"  Fetched {len(result)} stocks ({caps_found} with market cap, {history_found} with price history, {fund_found} with fundamentals) in {elapsed:.1f}s")
 
     return result
 

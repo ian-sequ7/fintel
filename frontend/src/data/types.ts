@@ -104,9 +104,9 @@ export interface StockFundamentals {
 export type IndexMembership = "S&P 500" | "Dow 30" | "NASDAQ-100";
 
 /**
- * Lite stock data - price info with chart history for heatmap and stock pages.
+ * Full stock data with price info, chart history, and fundamentals.
  * Includes S&P 500 + Dow 30 + NASDAQ-100 stocks.
- * Full fundamentals only available for scored picks, but all stocks get price history.
+ * All stocks now get full fundamentals for Key Metrics display.
  */
 export interface LiteStock {
   ticker: string;
@@ -119,7 +119,7 @@ export interface LiteStock {
   marketCap?: number;
   indices?: IndexMembership[]; // Which indices this stock belongs to
   priceHistory?: PricePoint[]; // 90 days of OHLCV data for charts
-  isLite: true;
+  fundamentals?: StockFundamentals; // Full fundamentals for Key Metrics
 }
 
 // =============================================================================
