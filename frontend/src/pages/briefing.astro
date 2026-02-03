@@ -62,7 +62,7 @@ function getImpactDot(impact: string): string {
         <section class="mb-6">
           <div class="bg-gradient-to-r from-accent/10 to-transparent border border-accent/30 rounded-lg p-4">
             <div class="flex items-center gap-3">
-              <span class="text-2xl">&#9200;</span>
+              <span class="text-2xl" aria-hidden="true">&#9200;</span>
               <div>
                 <div class="text-sm text-text-secondary uppercase tracking-wide">Next Major Event</div>
                 <div class="flex items-baseline gap-2">
@@ -81,7 +81,7 @@ function getImpactDot(impact: string): string {
       {briefing.historicalContext && Object.keys(briefing.historicalContext).length > 0 && (
         <section class="mb-6">
           <h2 class="text-sm font-medium text-text-secondary mb-3 flex items-center gap-2">
-            <span>&#128202;</span> Past Event Reactions
+            <span aria-hidden="true">&#128202;</span> Past Event Reactions
           </h2>
           <div class="flex flex-wrap gap-3">
             {Object.values(briefing.historicalContext).map((reaction) => {
@@ -127,7 +127,7 @@ function getImpactDot(impact: string): string {
       {(briefing.premarketGainers?.length > 0 || briefing.premarketLosers?.length > 0) && (
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
-            <span>&#128200;</span> Pre-Market Movers
+            <span aria-hidden="true">&#128200;</span> Pre-Market Movers
           </h2>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Gainers */}
@@ -193,7 +193,7 @@ function getImpactDot(impact: string): string {
       {briefing.hasEarningsToday && (
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
-            <span>&#128176;</span> Earnings Today
+            <span aria-hidden="true">&#128176;</span> Earnings Today
           </h2>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Before Market Open */}
@@ -296,7 +296,7 @@ function getImpactDot(impact: string): string {
       <!-- Today's Calendar -->
       <section class="mb-8">
         <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
-          <span>&#128197;</span> Today's Economic Calendar
+          <span aria-hidden="true">&#128197;</span> Today's Economic Calendar
         </h2>
 
         {briefing.eventsToday.length === 0 ? (
@@ -376,7 +376,7 @@ function getImpactDot(impact: string): string {
       {briefing.eventsUpcoming.length > 0 && (
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
-            <span>&#128200;</span> Upcoming High-Impact Events
+            <span aria-hidden="true">&#128200;</span> Upcoming High-Impact Events
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {briefing.eventsUpcoming.map((event) => (
@@ -408,7 +408,7 @@ function getImpactDot(impact: string): string {
         <!-- Market News -->
         <section>
           <h2 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
-            <span>&#128240;</span> Market News
+            <span aria-hidden="true">&#128240;</span> Market News
           </h2>
           {briefing.marketNews.length === 0 ? (
             <Card>
@@ -513,6 +513,7 @@ function getImpactDot(impact: string): string {
                     href={news.url}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={`${news.headline} (opens in new tab)`}
                     class={`block p-3 rounded-lg border transition-colors ${
                       news.priority === "critical" ? "border-danger/50 bg-danger/5 hover:bg-danger/10" :
                       news.priority === "high" ? "border-warning/50 hover:bg-warning/5" :

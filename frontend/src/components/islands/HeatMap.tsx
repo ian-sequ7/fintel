@@ -191,7 +191,7 @@ export default function HeatMap({
           {/* Index Filter */}
           <div className="flex items-center gap-2">
             <span className="text-sm text-text-secondary">Index:</span>
-            <div className="flex rounded-lg border border-border overflow-hidden">
+            <div className="flex rounded-lg border border-border overflow-hidden" role="group" aria-label="Index filter">
               {(
                 [
                   { value: "all", label: "All" },
@@ -203,6 +203,8 @@ export default function HeatMap({
                 <button
                   key={option.value}
                   onClick={() => setView(option.value)}
+                  aria-label={`Filter by ${option.label}`}
+                  aria-pressed={view === option.value}
                   className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                     view === option.value
                       ? "bg-text-primary text-bg-base"
@@ -218,7 +220,7 @@ export default function HeatMap({
           {/* View Filter */}
           <div className="flex items-center gap-2">
             <span className="text-sm text-text-secondary">View:</span>
-            <div className="flex rounded-lg border border-border overflow-hidden">
+            <div className="flex rounded-lg border border-border overflow-hidden" role="group" aria-label="View filter">
               {(
                 [
                   { value: "watchlist", label: "Watchlist" },
@@ -229,6 +231,8 @@ export default function HeatMap({
                 <button
                   key={option.value}
                   onClick={() => setView(option.value)}
+                  aria-label={`View ${option.label}`}
+                  aria-pressed={view === option.value}
                   className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                     view === option.value
                       ? "bg-text-primary text-bg-base"
@@ -244,7 +248,7 @@ export default function HeatMap({
           {/* Size By Toggle */}
           <div className="flex items-center gap-2">
             <span className="text-sm text-text-secondary">Size by:</span>
-            <div className="flex rounded-lg border border-border overflow-hidden">
+            <div className="flex rounded-lg border border-border overflow-hidden" role="group" aria-label="Size by filter">
               {(
                 [
                   { value: "marketCap", label: "Market Cap" },
@@ -254,6 +258,8 @@ export default function HeatMap({
                 <button
                   key={option.value}
                   onClick={() => setSizeBy(option.value)}
+                  aria-label={`Size by ${option.label}`}
+                  aria-pressed={sizeBy === option.value}
                   className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                     sizeBy === option.value
                       ? "bg-text-primary text-bg-base"
@@ -267,20 +273,22 @@ export default function HeatMap({
           </div>
 
           {/* Legend */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" role="img" aria-label="Color legend: red for negative 5% change, gray for neutral, green for positive 5% change">
             <div className="flex items-center gap-1">
               <div
                 className="w-4 h-4 rounded"
                 style={{ backgroundColor: "rgba(239, 68, 68, 0.8)" }}
+                aria-hidden="true"
               />
               <span className="text-xs text-text-secondary">-5%</span>
             </div>
-            <div className="w-24 h-4 rounded bg-gradient-to-r from-red-500 via-gray-400 to-green-500" />
+            <div className="w-24 h-4 rounded bg-gradient-to-r from-red-500 via-gray-400 to-green-500" aria-hidden="true" />
             <div className="flex items-center gap-1">
               <span className="text-xs text-text-secondary">+5%</span>
               <div
                 className="w-4 h-4 rounded"
                 style={{ backgroundColor: "rgba(34, 197, 94, 0.8)" }}
+                aria-hidden="true"
               />
             </div>
           </div>
@@ -376,7 +384,7 @@ export default function HeatMap({
                 {tooltip.tile.ticker}
               </span>
               {tooltip.tile.isWatchlist && (
-                <span className="text-yellow-500">★</span>
+                <span className="text-yellow-500" aria-label="In watchlist">★</span>
               )}
             </div>
             <div className="text-sm text-text-secondary mb-2 line-clamp-1">
@@ -438,7 +446,7 @@ export default function HeatMap({
         {tileData.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-4xl mb-2">
+              <div className="text-4xl mb-2" aria-hidden="true">
                 {view === "watchlist" ? "★" : "📊"}
               </div>
               <div className="text-text-secondary">
@@ -517,10 +525,19 @@ const HeatMapTile = React.memo(
           backgroundColor: _getColorForChange(tile.priceChangePercent),
           color: _getTextColorForChange(tile.priceChangePercent),
         }}
+        role="button"
+        tabIndex={0}
+        aria-label={`${tile.ticker}, ${tile.priceChangePercent >= 0 ? "up" : "down"} ${Math.abs(tile.priceChangePercent).toFixed(2)}%, click for details`}
         onMouseEnter={(e) => onHover(tile.ticker, e)}
         onMouseMove={(e) => onHover(tile.ticker, e)}
         onMouseLeave={() => onHover(null)}
         onClick={() => onClick(tile.ticker)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClick(tile.ticker);
+          }
+        }}
       >
         <div className="absolute inset-0 p-1 overflow-hidden flex flex-col justify-center items-center">
           {/* Ticker */}
@@ -545,7 +562,7 @@ const HeatMapTile = React.memo(
 
           {/* Watchlist star */}
           {tile.isWatchlist && !isTiny && (
-            <div className="absolute top-0.5 right-0.5 text-yellow-300 text-xs">
+            <div className="absolute top-0.5 right-0.5 text-yellow-300 text-xs" aria-hidden="true">
               ★
             </div>
           )}
