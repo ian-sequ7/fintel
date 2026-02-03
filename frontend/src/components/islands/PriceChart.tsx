@@ -364,7 +364,7 @@ export default function PriceChart({ ticker, data = [], height = 400, companyNam
   const latestData = fullData[fullData.length - 1];
   const prevData = fullData[fullData.length - 2];
   const currentChange = latestData && prevData ? latestData.close - prevData.close : 0;
-  const currentChangePercent = prevData ? (currentChange / prevData.close) * 100 : 0;
+  const currentChangePercent = latestData && prevData ? (currentChange / prevData.close) * 100 : 0;
 
   // Loading placeholder
   if (!mounted) {
