@@ -929,7 +929,7 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict, sp
     long_picks = [enhance_pick(p, stock_details) for p in result.long_term_picks]
 
     # Convert indicators
-    indicators = [indicator_to_frontend(i) for i in result.macro_indicators]
+    macro_indicators = [indicator_to_frontend(i) for i in result.macro_indicators]
 
     # Convert risks
     risks = [risk_to_frontend(r) for r in result.macro_risks]
@@ -1008,7 +1008,7 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict, sp
 
     # Determine market trend from indicators
     market_trend = "flat"
-    for ind in indicators:
+    for ind in macro_indicators:
         if "vix" in ind["id"].lower():
             if ind["value"] < 20:
                 market_trend = "up"
@@ -1029,7 +1029,7 @@ def generate_report_json(result, config: PipelineConfig, stock_details: dict, sp
         # All S&P 500 stocks with just prices (for heatmap)
         "allStocks": list(sp500_prices.values()) if sp500_prices else [],
         "macro": {
-            "indicators": indicators,
+            "indicators": macro_indicators,
             "risks": risks,
             "marketSentiment": market_trend,
             "lastUpdated": now,
