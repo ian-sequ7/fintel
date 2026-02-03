@@ -67,12 +67,13 @@ class PersistentCache:
         key_str = ":".join(parts)
         return hashlib.md5(key_str.encode()).hexdigest()
 
-    def get(self, source: str, **kwargs) -> Any | None:
+    def get(self, source: str, allow_stale: bool = False, **kwargs) -> Any | None:
         """
         Get cached data if not expired.
 
         Args:
             source: Data source name
+            allow_stale: If True, return expired data if no fresh data exists
             **kwargs: Cache key parameters
 
         Returns:
@@ -88,6 +89,9 @@ class PersistentCache:
                 if expires_at > now:
                     logger.debug(f"Memory cache hit: {source} {kwargs}")
                     return data
+                elif allow_stale:
+                    logger.debug(f"Memory cache stale hit: {source} {kwargs}")
+                    return data
                 else:
                     # Clean up expired entry
                     del self._memory_cache[key]
@@ -96,6 +100,7 @@ class PersistentCache:
         # Try SQLite cache
         try:
             with sqlite3.connect(self.db_path, timeout=5.0) as conn:
+                # First try fresh data
                 row = conn.execute(
                     "SELECT data FROM cache WHERE key = ? AND expires_at > ?",
                     (key, now.isoformat())
@@ -104,6 +109,17 @@ class PersistentCache:
                 if row:
                     logger.debug(f"Cache hit: {source} {kwargs}")
                     return json.loads(row[0])
+
+                # If allow_stale, try expired data
+                if allow_stale:
+                    row = conn.execute(
+                        "SELECT data FROM cache WHERE key = ?",
+                        (key,)
+                    ).fetchone()
+
+                    if row:
+                        logger.debug(f"Stale cache hit: {source} {kwargs}")
+                        return json.loads(row[0])
         except sqlite3.Error as e:
             logger.warning(f"Cache read failed for {key}: {e}. Returning None.")
             # Don't disable SQLite entirely on read errors - they might be transient

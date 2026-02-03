@@ -178,16 +178,23 @@ class YahooAdapter(BaseAdapter):
 
         Uses persistent cache to avoid redundant API calls - fundamentals
         don't change frequently, so caching for 24h is safe.
+
+        Fallback strategy:
+        1. Try fresh cache (not expired)
+        2. Try live yfinance fetch
+        3. Fallback to stale cache (expired but better than nothing)
+        4. Only return None if truly no data available
         """
         cache = get_cache()
         cache_ttl = timedelta(hours=24)  # Fundamentals are stable
 
-        # Check persistent cache first
+        # Check persistent cache first (fresh data)
         cached_info = cache.get("yahoo_fundamentals", ticker=ticker)
         if cached_info is not None:
             logger.debug(f"Using cached fundamentals for {ticker}")
             info = cached_info
         else:
+            # Try live fetch
             try:
                 stock = yf.Ticker(ticker)
                 info = stock.info
@@ -198,6 +205,12 @@ class YahooAdapter(BaseAdapter):
             except Exception as e:
                 logger.warning(f"Failed to fetch fundamentals for {ticker}: {e}")
                 info = None
+
+                # Fallback: try stale cache (expired but better than nothing)
+                stale_info = cache.get("yahoo_fundamentals", allow_stale=True, ticker=ticker)
+                if stale_info is not None:
+                    logger.info(f"Using stale cached fundamentals for {ticker}")
+                    info = stale_info
 
         try:
             if not info or info.get("regularMarketPrice") is None:
@@ -720,11 +733,12 @@ class YahooAdapter(BaseAdapter):
         cache_ttl = timedelta(hours=24)
 
         def _fetch_fundamental(ticker: str) -> tuple[str, dict | None]:
-            # Check cache first
+            # Check cache first (fresh data)
             cached_info = cache.get("yahoo_fundamentals", ticker=ticker)
             if cached_info is not None:
                 info = cached_info
             else:
+                # Try live fetch
                 try:
                     stock = yf.Ticker(ticker)
                     info = stock.info
@@ -732,7 +746,13 @@ class YahooAdapter(BaseAdapter):
                         cache.set("yahoo_fundamentals", info, cache_ttl, ticker=ticker)
                 except Exception as e:
                     logger.debug(f"Fundamentals fetch failed for {ticker}: {e}")
-                    return ticker, None
+                    info = None
+
+                    # Fallback: try stale cache
+                    stale_info = cache.get("yahoo_fundamentals", allow_stale=True, ticker=ticker)
+                    if stale_info is not None:
+                        logger.debug(f"Using stale cached fundamentals for {ticker}")
+                        info = stale_info
 
             if not info or info.get("regularMarketPrice") is None:
                 return ticker, None
