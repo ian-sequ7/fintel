@@ -103,6 +103,16 @@ class Settings:
         """HTTP User-Agent header."""
         return self._config.http.user_agent
 
+    @property
+    def max_retries(self) -> int:
+        """Maximum number of retries for HTTP requests."""
+        return self._config.http.max_retries
+
+    @property
+    def retry_delay_seconds(self) -> float:
+        """Base delay in seconds between retry attempts."""
+        return self._config.http.retry_delay_seconds
+
     # New properties exposing full config
     @property
     def config(self) -> FintelConfig:

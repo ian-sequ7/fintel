@@ -221,7 +221,7 @@ class BaseAdapter(ABC):
         timeout: float | None = None,
     ) -> bytes:
         """
-        Make HTTP GET request with standardized error handling.
+        Make HTTP GET request with standardized error handling and retries.
 
         Args:
             url: URL to fetch
@@ -233,76 +233,128 @@ class BaseAdapter(ABC):
 
         Raises:
             RateLimitError: On 429 response
-            FetchError: On other HTTP or network errors
+            FetchError: On other HTTP or network errors (after retries)
         """
         settings = self._settings
         timeout = timeout or settings.request_timeout
+        max_retries = settings.max_retries
+        retry_delay = settings.retry_delay_seconds
 
         req_headers = {"User-Agent": settings.user_agent}
         if headers:
             req_headers.update(headers)
 
         req = urllib.request.Request(url, headers=req_headers)
+        last_error = None
 
-        # Log request
-        logger.debug(
-            f"HTTP GET {url}",
-            extra={"source": self.source_name, "url": url},
-        )
-        start_time = time.monotonic()
+        # WHY: Retry loop with exponential backoff for transient errors
+        for attempt in range(max_retries + 1):
+            # Log request
+            logger.debug(
+                f"HTTP GET {url}" + (f" (attempt {attempt + 1}/{max_retries + 1})" if attempt > 0 else ""),
+                extra={"source": self.source_name, "url": url, "attempt": attempt + 1},
+            )
+            start_time = time.monotonic()
 
-        try:
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                data = resp.read()
+            try:
+                with urllib.request.urlopen(req, timeout=timeout) as resp:
+                    data = resp.read()
+                    elapsed = time.monotonic() - start_time
+
+                    # Log response
+                    logger.debug(
+                        f"HTTP 200 OK ({len(data)} bytes, {elapsed:.2f}s)",
+                        extra={
+                            "source": self.source_name,
+                            "url": url,
+                            "status": 200,
+                            "size": len(data),
+                            "elapsed_ms": int(elapsed * 1000),
+                        },
+                    )
+                    return data
+
+            except urllib.error.HTTPError as e:
                 elapsed = time.monotonic() - start_time
-
-                # Log response
-                logger.debug(
-                    f"HTTP 200 OK ({len(data)} bytes, {elapsed:.2f}s)",
+                logger.warning(
+                    f"HTTP {e.code} from {url} ({elapsed:.2f}s)",
                     extra={
                         "source": self.source_name,
                         "url": url,
-                        "status": 200,
-                        "size": len(data),
+                        "status": e.code,
                         "elapsed_ms": int(elapsed * 1000),
                     },
                 )
-                return data
 
-        except urllib.error.HTTPError as e:
-            elapsed = time.monotonic() - start_time
-            logger.warning(
-                f"HTTP {e.code} from {url} ({elapsed:.2f}s)",
-                extra={
-                    "source": self.source_name,
-                    "url": url,
-                    "status": e.code,
-                    "elapsed_ms": int(elapsed * 1000),
-                },
-            )
-            raise FetchError.from_http_error(
-                source=self.source_name,
-                status_code=e.code,
-                url=url,
-                response_body=e.reason,
-            )
+                # Don't retry on permanent errors (4xx except 429)
+                if 400 <= e.code < 500 and e.code != 429:
+                    raise FetchError.from_http_error(
+                        source=self.source_name,
+                        status_code=e.code,
+                        url=url,
+                        response_body=e.reason,
+                    )
 
-        except urllib.error.URLError as e:
-            elapsed = time.monotonic() - start_time
-            logger.warning(
-                f"Network error for {url}: {e.reason} ({elapsed:.2f}s)",
-                extra={
-                    "source": self.source_name,
-                    "url": url,
-                    "error": str(e.reason),
-                    "elapsed_ms": int(elapsed * 1000),
-                },
-            )
-            raise FetchError.from_network_error(
-                source=self.source_name,
-                error=e,
-                url=url,
-            )
+                # Retry on 429, 5xx (502, 503, 504)
+                last_error = e
+                if attempt < max_retries:
+                    delay = retry_delay * (2 ** attempt)
+                    logger.warning(
+                        f"Retry {attempt + 1}/{max_retries} for {url} after {delay:.1f}s: HTTP {e.code}",
+                        extra={
+                            "source": self.source_name,
+                            "url": url,
+                            "attempt": attempt + 1,
+                            "delay_seconds": delay,
+                            "status": e.code,
+                        },
+                    )
+                    time.sleep(delay)
+                    continue
+
+                # Max retries exceeded, raise the error
+                raise FetchError.from_http_error(
+                    source=self.source_name,
+                    status_code=e.code,
+                    url=url,
+                    response_body=e.reason,
+                )
+
+            except urllib.error.URLError as e:
+                elapsed = time.monotonic() - start_time
+                logger.warning(
+                    f"Network error for {url}: {e.reason} ({elapsed:.2f}s)",
+                    extra={
+                        "source": self.source_name,
+                        "url": url,
+                        "error": str(e.reason),
+                        "elapsed_ms": int(elapsed * 1000),
+                    },
+                )
+
+                # Retry on network errors (timeout, connection errors)
+                last_error = e
+                if attempt < max_retries:
+                    delay = retry_delay * (2 ** attempt)
+                    logger.warning(
+                        f"Retry {attempt + 1}/{max_retries} for {url} after {delay:.1f}s: {e.reason}",
+                        extra={
+                            "source": self.source_name,
+                            "url": url,
+                            "attempt": attempt + 1,
+                            "delay_seconds": delay,
+                            "error": str(e.reason),
+                        },
+                    )
+                    time.sleep(delay)
+                    continue
+
+                # Max retries exceeded, raise the error
+                raise FetchError.from_network_error(
+                    source=self.source_name,
+                    error=e,
+                    url=url,
+                )
 
     def _http_get_json(
         self,
