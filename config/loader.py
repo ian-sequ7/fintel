@@ -158,6 +158,88 @@ def load_config(config_path: Path | str | None = None) -> FintelConfig:
     return config
 
 
+def validate_config(config: FintelConfig | None = None) -> tuple[bool, list[str]]:
+    """
+    Validate configuration at startup.
+
+    Checks:
+    - Required data directories exist or can be created
+    - API keys are present if required features are enabled
+    - Watchlist is not empty when using watchlist mode
+
+    Args:
+        config: Configuration to validate (defaults to current config)
+
+    Returns:
+        (is_valid, warnings) - True if critical checks pass, list of warnings/errors
+    """
+    if config is None:
+        config = get_config()
+
+    warnings = []
+    errors = []
+
+    # Check data directories
+    project_root = Path(__file__).parent.parent
+    data_dir = project_root / "data"
+    cache_dir = data_dir / "cache"
+
+    # Try to create directories if they don't exist
+    for dir_path, name in [(data_dir, "data"), (cache_dir, "cache")]:
+        if not dir_path.exists():
+            try:
+                dir_path.mkdir(parents=True, exist_ok=True)
+                warnings.append(f"Created missing {name} directory: {dir_path}")
+            except Exception as e:
+                errors.append(f"ERROR: Cannot create {name} directory: {dir_path} - {e}")
+
+    # Check watchlist when using watchlist mode
+    if config.universe.source == "watchlist" and not config.watchlist:
+        errors.append("ERROR: universe.source is 'watchlist' but watchlist is empty")
+
+    # Check API keys for data sources that need them
+    # WHY: FRED is used for macro data which is important for analysis
+    if not config.api_keys.fred:
+        warnings.append(
+            "FRED API key not set (FINTEL_FRED_KEY). "
+            "Macro indicators will not be available. "
+            "Get key at: https://fred.stlouisfed.org/docs/api/api_key.html"
+        )
+
+    # WHY: Finnhub provides price/fundamental data, optional but useful
+    if not config.api_keys.finnhub:
+        warnings.append(
+            "Finnhub API key not set (FINTEL_FINNHUB_KEY). "
+            "Some price/fundamental data may be limited. "
+            "Get key at: https://finnhub.io/register"
+        )
+
+    # Validate universe configuration
+    if config.universe.source == "sector" and not config.universe.sectors:
+        errors.append("ERROR: universe.source is 'sector' but no sectors specified")
+
+    # Check max_tickers is reasonable
+    if config.universe.max_tickers > 500:
+        warnings.append(
+            f"universe.max_tickers is high ({config.universe.max_tickers}). "
+            "This may cause slow pipeline execution."
+        )
+
+    # Validate scoring weights sum to 1.0 (redundant with Pydantic but explicit check)
+    weights = config.thresholds.scoring_weights
+    total = (
+        weights.valuation + weights.growth + weights.quality +
+        weights.momentum + weights.analyst
+    )
+    if abs(total - 1.0) > 0.01:
+        errors.append(f"ERROR: Scoring weights sum to {total}, must equal 1.0")
+
+    # All errors are critical
+    is_valid = len(errors) == 0
+
+    return is_valid, errors + warnings
+
+
 @lru_cache
 def get_config() -> FintelConfig:
     """

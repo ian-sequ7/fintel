@@ -33,6 +33,7 @@ from presentation.report import ReportData, generate_markdown_report, write_repo
 from presentation.json_api import to_json
 from presentation.frontend_export import export_for_frontend
 from presentation.export import export_all
+from config import validate_config
 
 
 def setup_logging(verbose: bool) -> None:
@@ -557,6 +558,22 @@ Examples:
     backtest_parser.set_defaults(func=cmd_backtest)
 
     args = parser.parse_args(argv)
+
+    # Validate configuration after parsing args (avoids warnings on --help)
+    is_valid, messages = validate_config()
+    if not is_valid:
+        print("Configuration validation failed:", file=sys.stderr)
+        for msg in messages:
+            if msg.startswith("ERROR"):
+                print(f"  ✗ {msg}", file=sys.stderr)
+        return 1
+
+    # Show warnings if any
+    warnings = [m for m in messages if not m.startswith("ERROR")]
+    if warnings and args.verbose:
+        for msg in warnings:
+            print(f"Warning: {msg}", file=sys.stderr)
+
     return args.func(args)
 
 
