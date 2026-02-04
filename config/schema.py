@@ -257,6 +257,7 @@ class DataSourcesConfig(BaseModel):
     macro_series: list[str] = Field(default_factory=lambda: [
         "UNRATE", "CPIAUCSL", "GDP", "FEDFUNDS",
         "T10Y2Y", "UMCSENT", "INDPRO", "HOUST",
+        "WILL5000PR",  # Wilshire 5000 for Buffett indicator
     ])
 
     # Reddit subreddits for sentiment

@@ -1009,14 +1009,57 @@ def _evaluate_valuation_risk(
     gdp = by_id.get("GDP") or by_name.get("gross domestic product")
 
     # Calculate Buffett indicator if both available
-    # Wilshire 5000 is in billions when converted from index
-    # This is a simplified calculation - actual requires total market cap
     if wilshire and gdp and gdp.current_value > 0:
-        # Rough Buffett indicator approximation
-        # Wilshire 5000 price index roughly tracks total market cap in trillions
-        # We need to compare market cap to GDP
-        # Note: This is illustrative - real calc needs total market cap data
-        pass  # TODO: Add when we have proper market cap data
+        # Buffett Indicator = Total Market Cap / GDP
+        # WILL5000PR is a price index, but empirically:
+        # - Index ~45,000-50,000 corresponds to market cap ~$45-50T
+        # - Suggests approximate 1:1 ratio where index ≈ market cap in billions
+        # This is a rough approximation for risk assessment purposes
+
+        # Approximate market cap in billions (index value ≈ market cap in billions)
+        market_cap_billions = wilshire.current_value
+
+        # GDP is in billions USD from FRED
+        gdp_billions = gdp.current_value
+
+        # Calculate Buffett indicator ratio
+        buffett_ratio = market_cap_billions / gdp_billions
+
+        # Interpret the ratio
+        # Historical ranges:
+        # < 0.75: Significantly undervalued (rare, crisis levels)
+        # 0.75-1.0: Undervalued to fairly valued
+        # 1.0-1.25: Fairly valued to moderately overvalued
+        # 1.25-1.5: Overvalued
+        # > 1.5: Significantly overvalued (bubble territory)
+
+        if buffett_ratio > 1.5:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Extreme Market Valuation",
+                description=f"Buffett indicator at {buffett_ratio:.2f}x GDP - historically high valuation suggesting bubble risk",
+                severity=0.85,
+                probability=0.7,
+                source_indicator="WILL5000PR",
+            ))
+        elif buffett_ratio > 1.25:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Elevated Market Valuation",
+                description=f"Buffett indicator at {buffett_ratio:.2f}x GDP - market moderately overvalued vs historical norms",
+                severity=0.6,
+                probability=0.65,
+                source_indicator="WILL5000PR",
+            ))
+        elif buffett_ratio < 0.75 and wilshire.trend == Trend.FALLING:
+            risks.append(Risk(
+                category=RiskCategory.MACRO,
+                name="Market Capitulation",
+                description=f"Buffett indicator at {buffett_ratio:.2f}x GDP - market significantly undervalued, potential crisis",
+                severity=0.7,
+                probability=0.75,
+                source_indicator="WILL5000PR",
+            ))
 
     return risks
 
