@@ -107,6 +107,21 @@ class QualityThresholdsConfig(BaseModel):
     roe_good: float = Field(default=0.15, ge=0.05, le=0.50)
 
 
+class SentimentThresholdsConfig(BaseModel):
+    """Sentiment analysis thresholds."""
+
+    bullish_threshold: float = Field(default=0.6, ge=0.0, le=1.0, description="Sentiment above = bullish")
+    bearish_threshold: float = Field(default=0.4, ge=0.0, le=1.0, description="Sentiment below = bearish")
+
+    @field_validator("bullish_threshold")
+    @classmethod
+    def bullish_gt_bearish(cls, v: float, info) -> float:
+        bearish = info.data.get("bearish_threshold", 0.4)
+        if v <= bearish:
+            raise ValueError("bullish_threshold must be greater than bearish_threshold")
+        return v
+
+
 class MacroThresholdsConfig(BaseModel):
     """Macro environment thresholds."""
 
@@ -228,6 +243,7 @@ class AnalysisThresholdsConfig(BaseModel):
     valuation: ValuationThresholdsConfig = Field(default_factory=ValuationThresholdsConfig)
     growth: GrowthThresholdsConfig = Field(default_factory=GrowthThresholdsConfig)
     quality: QualityThresholdsConfig = Field(default_factory=QualityThresholdsConfig)
+    sentiment: SentimentThresholdsConfig = Field(default_factory=SentimentThresholdsConfig)
     macro: MacroThresholdsConfig = Field(default_factory=MacroThresholdsConfig)
     scoring_weights: ScoringWeightsConfig = Field(default_factory=ScoringWeightsConfig)
     sector_sensitivity: SectorSensitivityConfig = Field(default_factory=SectorSensitivityConfig)

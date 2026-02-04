@@ -86,12 +86,12 @@ class Settings:
     @property
     def sentiment_bullish_threshold(self) -> float:
         """Sentiment above this = bullish."""
-        return 0.6  # TODO: Add to config schema
+        return self._config.thresholds.sentiment.bullish_threshold
 
     @property
     def sentiment_bearish_threshold(self) -> float:
         """Sentiment below this = bearish."""
-        return 0.4  # TODO: Add to config schema
+        return self._config.thresholds.sentiment.bearish_threshold
 
     @property
     def request_timeout(self) -> float:
