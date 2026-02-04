@@ -430,7 +430,7 @@ export default function PriceChart({ ticker, data = [], height = 400, companyNam
               className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
                 timeRange === range
                   ? "bg-text-primary text-bg-base"
-                  : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated"
+                  : "bg-bg-elevated text-text-secondary hover:bg-bg-surface"
               }`}
             >
               {range}

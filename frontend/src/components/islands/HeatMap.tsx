@@ -208,7 +208,7 @@ export default function HeatMap({
                   className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                     view === option.value
                       ? "bg-text-primary text-bg-base"
-                      : "bg-bg-surface text-text-secondary hover:bg-bg-elevated"
+                      : "bg-bg-elevated text-text-secondary hover:bg-bg-surface"
                   }`}
                 >
                   {option.label}
@@ -236,7 +236,7 @@ export default function HeatMap({
                   className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                     view === option.value
                       ? "bg-text-primary text-bg-base"
-                      : "bg-bg-surface text-text-secondary hover:bg-bg-elevated"
+                      : "bg-bg-elevated text-text-secondary hover:bg-bg-surface"
                   }`}
                 >
                   {option.label}
@@ -263,7 +263,7 @@ export default function HeatMap({
                   className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                     sizeBy === option.value
                       ? "bg-text-primary text-bg-base"
-                      : "bg-bg-surface text-text-secondary hover:bg-bg-elevated"
+                      : "bg-bg-elevated text-text-secondary hover:bg-bg-surface"
                   }`}
                 >
                   {option.label}
