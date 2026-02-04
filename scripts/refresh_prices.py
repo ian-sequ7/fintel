@@ -9,12 +9,20 @@ Target: <30 seconds, minimal API calls (batch queries via yfinance)
 """
 
 import json
+import logging
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
 
 import yfinance as yf
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s: %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -150,12 +158,17 @@ def fetch_batch_prices(tickers: list[str]) -> dict[str, dict]:
     return results
 
 
-def update_report_prices(report: dict, prices: dict[str, dict]) -> int:
+def update_report_prices(report: dict, prices: dict[str, dict], update_timestamp: bool = True) -> int:
     """Update prices in report.json structure.
 
     Updates:
     - picks[timeframe][].currentPrice, priceChange, priceChangePercent
     - stockDetails[ticker].currentPrice, priceChange, priceChangePercent
+
+    Args:
+        report: Report dictionary to update
+        prices: Price data by ticker
+        update_timestamp: Whether to update the timestamp (only if data is fresh)
 
     Returns count of updated tickers.
     """
@@ -184,16 +197,17 @@ def update_report_prices(report: dict, prices: dict[str, dict]) -> int:
             if p.get("volume"):
                 detail["volume"] = p["volume"]
 
-    # Add/update timestamp
-    now = datetime.now().isoformat()
-    report["pricesUpdatedAt"] = now
+    # Only update timestamp if data passed freshness validation
+    if update_timestamp:
+        now = datetime.now().isoformat()
+        report["pricesUpdatedAt"] = now
 
-    # Also update generatedAt if we're doing a price refresh
-    # (keeps "last updated" visible in UI)
-    if "meta" not in report:
-        report["meta"] = {}
-    report["meta"]["pricesUpdatedAt"] = now
-    report["meta"]["priceUpdateMethod"] = "incremental"
+        # Also update generatedAt if we're doing a price refresh
+        # (keeps "last updated" visible in UI)
+        if "meta" not in report:
+            report["meta"] = {}
+        report["meta"]["pricesUpdatedAt"] = now
+        report["meta"]["priceUpdateMethod"] = "incremental"
 
     return updated
 
@@ -218,16 +232,53 @@ def main():
     all_prices = fetch_batch_prices(tickers)
     print(f"  Got prices for {len(all_prices)}/{len(tickers)} tickers")
 
-    # Update report
-    updated = update_report_prices(report, all_prices)
+    # Validate data freshness before updating timestamp
+    prices_found = len(all_prices)
+    total_tickers = len(tickers)
+    coverage = prices_found / total_tickers if total_tickers > 0 else 0
 
-    # Save
+    # WHY: Minimum 90% coverage threshold ensures we don't mark data as "fresh"
+    # when most tickers failed to update (e.g., market closed, API issues)
+    MIN_COVERAGE = 0.9
+    update_timestamp = coverage >= MIN_COVERAGE
+
+    if not update_timestamp:
+        logger.warning(
+            f"Low price coverage: {coverage:.1%} ({prices_found}/{total_tickers} tickers). "
+            f"Timestamp will NOT be updated to avoid showing stale data as fresh."
+        )
+        logger.warning(
+            "Possible causes: market closed, yfinance API issues, or network problems."
+        )
+    else:
+        logger.info(f"Price coverage: {coverage:.1%} ({prices_found}/{total_tickers} tickers)")
+
+    # Validate that we got actual price data (not all None/0)
+    valid_prices = sum(
+        1 for p in all_prices.values()
+        if p.get("price") is not None and p.get("price") > 0
+    )
+    valid_coverage = valid_prices / total_tickers if total_tickers > 0 else 0
+
+    if valid_coverage < MIN_COVERAGE:
+        logger.warning(
+            f"Low valid price coverage: {valid_coverage:.1%} ({valid_prices}/{total_tickers} tickers). "
+            f"Timestamp will NOT be updated."
+        )
+        update_timestamp = False
+
+    # Update report with prices
+    updated = update_report_prices(report, all_prices, update_timestamp=update_timestamp)
+
+    # Save (always save to update prices even if timestamp not updated)
     save_report(report)
 
     elapsed = time.time() - start
     print(f"\nDone in {elapsed:.1f}s")
     print(f"  Tickers updated: {updated}")
     print(f"  Report: {REPORT_PATH}")
+    if not update_timestamp:
+        print(f"  ⚠️  Timestamp NOT updated due to low coverage ({coverage:.1%})")
 
     # Show sample
     if all_prices:
