@@ -1024,24 +1024,3 @@ function _generateMockReport(): FinancialReport {
   };
 }
 
-// =============================================================================
-// Legacy API (backwards compatibility)
-// =============================================================================
-
-/** @deprecated Use getReportSync() instead */
-export function loadReport() {
-  return getReportSync();
-}
-
-/** @deprecated Use getPicks() instead */
-export function getAllPicks() {
-  return getPicks("all");
-}
-
-/** @deprecated Use getPicks(timeframe) instead */
-export function getPicksByTimeframe(
-  _report: unknown,
-  timeframe: Timeframe
-) {
-  return getPicks(timeframe);
-}
